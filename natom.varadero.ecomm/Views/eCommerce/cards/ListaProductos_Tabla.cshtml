@@ -1,0 +1,136 @@
+﻿<script src="/Resources/js/varadero/listaproductos.min.js?v=@DateTime.Now.Ticks" type="text/javascript"></script>
+<style type="text/css">
+    tr.sinStock {
+        background-color: #ffd6d6;
+    }
+    tr.sinStock input {
+        display:none;
+    }
+        tr.sinStock label {
+            font-weight: bold;
+            color: #b94949;
+        }
+    .btn-paginador {
+        border-radius: 15px;
+        width: 28px;
+        height: 28px;
+        border-color: #0b447e;
+        background-color: #797e88;
+        color: white;
+        border-style: solid;
+        text-align: center;
+        float: left;
+        line-height: 18px;
+        cursor:pointer;
+    }
+
+
+        .btn-paginador:first-child {
+            margin-right:5px;
+        }
+
+        .btn-paginador:last-child {
+            margin-left: 5px;
+        }
+
+        #txtNumPage {
+            float: left;
+        }
+
+    #modalFiltroListaProducto .row {
+        margin-bottom:10px;
+    }
+</style>
+<div class="card">
+    <table class="table table-hover shopping-cart-wrap tblListaProductos">
+        <thead class="text-muted">
+            <tr>
+                <th scope="col">
+                    <text style="float: left;">Productos<b style="float:right;color: #0b447e;font-size: 11px;margin-top: 3px;margin-left: 10px;">(*) con IVA</b></text>
+                    <input type="text" class="form-control txtFiltro" value="" style="" onclick="ListaProductos.MostrarFiltros()" id="txtFiltros" placeholder="Buscar producto">
+                </th>
+                <th scope="col" width="150" hide-for-mobile class="hiddenPrecioYDescuento">PVP</th>
+                <th scope="col" width="120" hide-for-mobile hidden-para-catalogo="1">Cantidad</th>
+                <th scope="col" width="80" hide-for-mobile style="text-align:center;" class="hiddenPrecioYDescuento">%Dto</th>
+                <th scope="col" width="150" hide-for-mobile style="text-align: center">Precio</th>
+                <th scope="col" width="80" hide-for-mobile style="text-align:center">Stock</th>
+
+            </tr>
+        </thead>
+        <tbody>
+
+            @Html.Partial("~/Views/eCommerce/cards/ListaProductos_Registros.cshtml", null)
+
+        </tbody>
+    </table>
+</div>
+
+<div class="modal" id="modalFiltroListaProducto">
+    <div class="modal-dialog">
+        <div class="modal-content">
+
+            <!-- Modal Header -->
+            <div class="modal-header">
+                <h4 class="modal-title">Filtrar productos</h4>
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+            </div>
+
+            <!-- Modal body -->
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="input-group">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text">Nombre de producto</span>
+                            </div>
+                            <input type="text" class="form-control txtFiltroField" id="filtroNombre" query-operator="like" query-field="A.ArticuloNombre">
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="input-group">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text">Descripción de producto</span>
+                            </div>
+                            <input type="text" class="form-control txtFiltroField" query-operator="like" query-field="A.ArticuloDescripcionAbreviada">
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="input-group">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text">Marca</span>
+                            </div>
+                            <input type="text" class="form-control txtFiltroField" query-operator="like" query-field="M.Descripcion">
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="input-group">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text">Solo con stock</span>
+                                <span class="input-group-text"><input type="checkbox" class="chkFiltroField" send-only-if-checked query-operator="more than 0" query-field="A.ArticuloStock"></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Modal footer -->
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" id="btnLimpiarFiltros" style="float:left;">Limpiar</button>
+                <button type="button" class="btn btn-primary" id="btnAplicarFiltros">Aplicar</button>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        ListaProductos.Init();
+    });
+</script>

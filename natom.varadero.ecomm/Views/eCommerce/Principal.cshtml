@@ -1,0 +1,66 @@
+﻿@using natom.varadero.entities
+<link href="/Resources/css/varadero/principal.ui.css" rel="stylesheet" type="text/css">
+<link href="/Resources/css/varadero/principal.responsive.css" rel="stylesheet" media="only screen and (max-width: 1200px)">
+@{ 
+    Pedido pedidoAbierto = ViewBag.PedidoAbierto == null ? null : (Pedido)ViewBag.PedidoAbierto;
+}
+<!-- ========================= SECTION MAIN ========================= -->
+<section class="section-main bg padding-top-sm">
+    <div class="container">
+
+        <div class="row row-sm">
+            <aside class="col-md-3">
+                <div class="card">
+                    @*<header class="card-header bg-secondary white">
+                        <i class="icon-menu"></i> Ordenes de compra
+                    </header>*@
+                    <ul class="menu-category">
+                        <li class="active"> <a href="">Mis ultimas ordenes </a></li>
+                        <li class="active"> <a href="/eCommerce/Catalogo?destacados=true">Productos destacados y ofertas</a></li>
+                    </ul>
+                </div> <!-- card.// -->
+            </aside> <!-- col.// -->
+            <div class="col-md-9">
+                <div class="row" style=" margin-bottom: 10px; ">
+                    <div class="col-md-12">
+                        @if (ViewBag.PedidoAbierto == null)
+                        {
+                            <button class="btn btn-sm btn-success" style="float:right" onclick="Carrito.NuevaOrden()">[+] CARGAR NUEVO PEDIDO</button>
+                        }
+                        else
+                        {
+                            <button class="btn btn-sm btn-warning" style="float:right" onclick="location.href='/eCommerce/Gondola'">CONTINUAR CON ORDEN @pedidoAbierto.Numero.ToString().PadLeft(8, '0')</button>
+                        }
+                    </div>
+                </div>
+
+                @Html.Partial("~/Views/eCommerce/cards/MisOrdenes.cshtml")
+
+            </div>
+            <!-- col./
+            / -->
+            <!-- card.// -->
+        </div>
+
+        @*<br />
+        <br />
+
+        <div class="row row-sm">
+            <div class="col-md-12">
+
+                @Html.Partial("~/Views/eCommerce/cards/Destacados.cshtml")
+
+            </div>
+        </div>*@
+
+        <br />
+        <br />
+
+    </div> <!-- container .//  -->
+</section>
+<!-- ========================= SECTION MAIN END// ========================= -->
+<script type="text/javascript">
+    $(document).ready(function () {
+
+    });
+</script>

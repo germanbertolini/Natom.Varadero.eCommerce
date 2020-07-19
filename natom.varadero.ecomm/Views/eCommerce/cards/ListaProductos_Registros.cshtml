@@ -1,0 +1,84 @@
+﻿@using natom.varadero.ecomm.Models.DataTable
+@model List<ListaProductosResult>
+@Html.Hidden("RowsCount")
+
+@if (Model == null || Model.Count == 0)
+{
+    <tr>
+        <td colspan="6">
+            <figure class="media">
+                <figcaption class="media-body">
+                    <center>
+                        <h6 class="title text-truncate tableStatus" style="margin-bottom:0; color:gray; margin-top:30px; margin-bottom:20px;">Sin resultados</h6>
+                    </center>
+                </figcaption>
+            </figure>
+        </td>
+    </tr>
+}
+else
+{
+    foreach (var producto in Model)
+    {
+        <tr class="@(producto.Stock == 0 ? "sinStock" : "")" articuloId="@producto.Id" @(producto.EsDestacado ? "destacado" : "")>
+            <td>
+                <figure class="media">
+                    <figcaption class="media-body">
+                        <h6 class="title text-truncate" style="margin-bottom:0">@(producto.TieneIVADiscriminado ? "(*) " : "")@(producto.EsDestacado ? "[D] " : "")@producto.Nombre</h6>
+                        <dl class="dlist-inline small">
+                            <dd>@producto.Descripcion</dd>
+                            <dl class="dlist-inline small">
+                                <dd><b>@producto.Marca</b></dd>
+                            </dl>
+                        </dl>
+                    </figcaption>
+                </figure>
+            </td>
+            <td class="hiddenPrecioYDescuento">
+                <div class="price-wrap">
+                    <var class="price tienePVP" style="display:none;" articuloId="@producto.Id">@producto.TienePVP.ToString().ToLower()</var>
+                    <var class="price precioUnitario" style="@(producto.TienePVP && !producto.TieneIVADiscriminado ? "" : "display:none;")" articuloId="@producto.Id">@(producto.EsDestacado ? "¡" : "")$ @producto.PrecioVentaPublico.ToString("#,##0.00")@(producto.EsDestacado ? "!" : "")</var>
+                    
+                </div> <!-- price-wrap .// -->
+            </td>
+            <td hidden-para-catalogo="1">
+                <input type="number" class="form-control cantidad" articuloId="@producto.Id" value="0" style="text-align:center; max-width:70px">
+            </td>
+            <td class="hiddenPrecioYDescuento">
+                <div class="price-wrap">
+                    <var class="price porcentajeIVA" style="text-align:center; display:none;" articuloId="@producto.Id">% @producto.PorcentajeIVA.ToString("F").Replace(".", ",")</var>    
+                    <var class="price porcentaje" style="text-align:center; @(producto.TienePVP && !producto.TieneIVADiscriminado ? "" : "display:none;")" articuloId="@producto.Id">% @(producto.PorcentajeDescRespectoPVP.ToString("F").Replace(".", ","))</var>
+                </div> <!-- price-wrap .// -->
+            </td>
+            <td>
+                <div class="price-wrap">
+                    <var class="price precioUnitarioConDescuentoNeto" style="text-align:center; display:none;" articuloId="@producto.Id">$ @producto.PrecioConDescuentoNeto.ToString("#,##0.00")</var>
+                    <var class="price precioUnitarioConDescuento" style="text-align:center" articuloId="@producto.Id">@(producto.EsDestacado ? "¡" : "")$ @producto.PrecioConDescuentoBruto.ToString("#,##0.00")@(producto.EsDestacado ? "!" : "")</var>
+                </div> <!-- price-wrap .// -->
+            </td>
+            <td class="text-right">
+                <center>
+                    @if (producto.Stock > 0)
+                    {
+                        <div hidden-para-catalogo="1" class="btn btn-outline-success btnAgregarCarrito" articuloId="@producto.Id"> + </div>
+                    }
+                    else
+                    {
+                        <label>SIN<br>STOCK</label>
+                    }
+                </center>
+            </td>
+        </tr>
+    }
+    <tr>
+        <td colspan="6">
+            <div style="float:right; height:30px;padding: 9px; margin-right:3rem;">
+                <div class="btn-paginador" onclick="ListaProductos.PaginaInicio()">&laquo;</div>
+                <div class="btn-paginador" onclick="ListaProductos.PaginaAnterior()">&lt;</div>
+                <input type="text" class="form-control" id="txtNumPage" style="text-align:center;width: 100px;height: 28px;color: gray;font-style: italic;text-align: left;border-radius: 30px;margin: 0 10px;text-align: center;background-color: #EEE;">
+                <div class="btn-paginador" onclick="ListaProductos.PaginaSiguiente()">&gt;</div>
+                <div class="btn-paginador" onclick="ListaProductos.PaginaFin()">&raquo;</div>
+            </div>
+        </td>
+    </tr>
+}

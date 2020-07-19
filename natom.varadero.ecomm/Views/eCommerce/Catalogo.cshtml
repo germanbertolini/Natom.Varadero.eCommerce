@@ -1,0 +1,40 @@
+﻿<link href="/Resources/css/varadero/principal.ui.css" rel="stylesheet" type="text/css">
+<link href="/Resources/css/varadero/principal.responsive.css" rel="stylesheet" media="only screen and (max-width: 1200px)">
+@Html.Hidden("EsCatalogo")
+@Html.Hidden("Destacados")
+<section class="section-content bg padding-y border-top">
+    <div class="container">
+
+        <div class="row">
+            <main class="col-lg-12 col-sm-12 col-xl-12 tblCatalogo">
+
+                @Html.Partial("~/Views/eCommerce/cards/ListaProductos_Tabla.cshtml")
+
+            </main> <!-- col.// -->
+
+
+        </div>
+
+    </div> <!-- container .//  -->
+</section>
+<!-- ========================= SECTION CONTENT END// ========================= -->
+<!-- ========================= SECTION BOTONERA // ========================= -->
+<section class="section-content bg padding-y border-top carrito-botonera">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-12 col-sm-12 col-xl-12">
+                <div class="btn btn-secondary" style="float:left;" onclick="location.href='/eCommerce/Principal'"><i class="fas fa-arrow-left"></i> MENU INICIAL</div>
+                @if (ViewBag.PedidoAbierto == null)
+                {
+                <button class="btn btn-sm btn-success" style="float:right" onclick="Carrito.NuevaOrden()">[+] CARGAR NUEVO PEDIDO</button>
+                }
+            </div>
+        </div>
+    </div>
+</section>
+<!-- ========================= SECTION BOTONERA END // ========================= -->
+<script type="text/javascript">
+    $(document).ready(function () {
+
+    });
+</script>

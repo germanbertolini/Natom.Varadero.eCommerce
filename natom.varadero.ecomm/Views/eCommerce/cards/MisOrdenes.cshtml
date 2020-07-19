@@ -1,0 +1,69 @@
+﻿@using natom.varadero.entities
+@{
+    List<Pedido> misPedidos = (List<Pedido>)ViewBag.MisPedidos;
+}
+<div class="card">
+    <table class="table table-hover shopping-cart-wrap" id="tblMisOrdenes">
+        <thead class="text-muted">
+            <tr>
+                <th scope="col">Mis Ordenes</th>
+                <th scope="col" hide-for-mobile width="120">Fecha</th>
+                <th scope="col" hide-for-mobile width="120">Monto total</th>
+                <th scope="col" hide-for-mobile class="text-right" width="150">Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            @if (misPedidos.Count == 0)
+            {
+                <tr>
+                    <td colspan="4">
+                        <center>No tienes pedidos</center>
+                    </td>
+                </tr>
+            }
+            else
+            {
+                foreach (Pedido pedido in misPedidos)
+                {
+                <tr>
+                    <td>
+                        <figure class="media">
+                            <figcaption class="media-body">
+                                <h6 class="title text-truncate" style="margin-bottom:0">
+                                    # @pedido.Numero.ToString().PadLeft(8, '0')
+                                    @if (pedido.AnuladoPorInactividad)
+                                    {
+                                        <br/><i style="color:red; position:absolute;">ANULADO POR INACTIVIDAD</i>
+                                    }
+                                </h6>
+                            </figcaption>
+                        </figure>
+                    </td>
+                    <td>
+                        <h6>@pedido.Fecha.ToString("dd/MM/yyyy")</h6>
+                    </td>
+                    <td>
+                        <h6>$ @pedido.Total.ToString("#,##0.00")</h6>
+                    </td>
+                    <td class="text-right">
+                        <a href="javascript:Carrito.Ver('@(pedido.PedidoId)')" class="btn btn-outline-primary"> Ver </a>
+                        @if (pedido.FechaHoraAnulacion.HasValue)
+                        {
+                            <a href="#" class="btn btn-outline-danger" style="background-color:#fca2a2"> Anulado </a>
+                        }
+                        else if (!pedido.FechaHoraConfirmacion.HasValue)
+                        {
+                            <a href="javascript:Carrito.CancelarOrden('@(pedido.PedidoId)')" class="btn btn-outline-danger"> Anular </a>
+                        }
+                        @if (pedido.FechaHoraConfirmacion.HasValue)
+                        {
+                            <a href="#" class="btn btn-outline-success"> @(pedido.FechaHoraFinSincronizado.HasValue ? "CONFIRMADO" : "CONFIRMADO *") </a>
+                        }
+                    </td>
+                </tr>
+                }
+            }
+
+            </tbody>
+    </table>
+</div>

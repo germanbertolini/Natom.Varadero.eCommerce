@@ -1,0 +1,154 @@
+﻿@using natom.varadero.entities
+<link href="/Resources/css/varadero/principal.ui.css" rel="stylesheet" type="text/css">
+<link href="/Resources/css/varadero/principal.responsive.css" rel="stylesheet" media="only screen and (max-width: 1200px)">
+<script src="/Resources/js/varadero/vercarrito.min.js"></script>
+
+@Html.Hidden("PedidoId")
+@{
+    Pedido pedido = (Pedido)ViewBag.PedidoAbierto;
+    List<ClienteDireccion> direcciones = (List<ClienteDireccion>)ViewBag.Direcciones;
+}
+@if (ViewBag.PedidoAbierto == null)
+{
+    <br />
+    <br />
+    <br />
+    <br />
+    <center><i style="color:red;">NO TIENES UN PEDIDO ABIERTO</i></center>
+    <br />
+    <br />
+    <br />
+    <br />
+}
+else
+{
+    <!-- ========================= SECTION CONTENT ========================= -->
+    <section class="section-content bg padding-y border-top">
+        <div class="container">
+
+            <div class="row">
+                <main class="col-lg-9 col-sm-12 col-xl-9">
+
+                    <div class="card">
+                        <table class="table table-hover shopping-cart-wrap tblPedido" id="tblVerPedido">
+                            <thead class="text-muted">
+                                <tr>
+                                    <th scope="col">Producto<b style="float:right;color: #0b447e;font-size: 11px;margin-top: 3px;margin-right: 20px;">(*) con IVA</b></th>
+                                    <th scope="col" hide-for-mobile class="hiddenPrecioYDescuento">PVP</th>
+                                    <th scope="col" hide-for-mobile>Cantidad</th>
+                                    <th scope="col" hide-for-mobile class="hiddenPrecioYDescuento">%Dto</th>
+                                    <th scope="col" hide-for-mobile>Precio</th>
+                                    <th scope="col" hide-for-mobile class="text-right" width="80">Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+
+                                @foreach (PedidoDetalle item in pedido.Detalle)
+                                {
+                                    <tr pedidoDetalleId="@item.PedidoDetalleId">
+                                        <td>
+                                            <figure class="media">
+                                                <figcaption class="media-body">
+                                                    <h6 class="title text-truncate" style="margin-bottom:0">@(item.PorcentajeIVA > 0 ? "(*) " : "")@item.Nombre</h6>
+                                                    <dl class="dlist-inline small">
+                                                        <dd>@item.ArticuloDescripcionAbreviada</dd>
+                                                        <dl class="dlist-inline small">
+                                                            <dd><b>@item.Marca</b></dd>
+                                                        </dl>
+                                                </figcaption>
+                                            </figure>
+                                        </td>
+                                        <td class="hiddenPrecioYDescuento">
+                                            <div class="price-wrap">
+                                                <var class="price precioUnitarioTotal"></var>
+                                                @*<small class="text-muted precioUnitario">P.U.: </small>*@
+                                            </div> <!-- price-wrap .// -->
+                                        </td>
+                                        <td>
+                                            <input type="number" class="form-control cantidad" pedidoDetalleId="@item.PedidoDetalleId" original-value="" value="" style="text-align:center;" />
+                                        </td>
+                                        <td class="hiddenPrecioYDescuento">
+                                            <div class="price-wrap">
+                                                <var class="price porcentajeDescuento"></var>
+                                            </div> <!-- price-wrap .// -->
+                                        </td>
+                                        <td class="tdPrecios">
+                                            <div class="price-wrap">
+                                                <var class="price precioUnitarioTotalConDescuento"></var>
+                                                <small class="text-muted precioUnitarioConDescuento">P.U.: </small>
+                                            </div> <!-- price-wrap .// -->
+                                        </td>
+                                        <td class="text-right">
+                                            <a href="javascript:EliminarItem('@(item.PedidoDetalleId)')" class="btn btn-outline-danger"> × </a>
+                                        </td>
+                                    </tr>
+                                }
+
+                            </tbody>
+                        </table>
+                    </div> <!-- card.// -->
+                    <br/>
+                    <div class="card">
+                        <form>
+                            <div class="form-group" style="margin:1rem">
+                                <label for="exampleInputEmail1"><b>Entrega en</b></label>
+                                <select class="form-control" id="entregaEn" size="1">
+                                    <option value="-2" selected>Seleccione</option>
+                                    <option value="-1">Retiro por Casa Central</option>
+                                    @foreach (ClienteDireccion direccion in direcciones)
+                                    {
+                                        <option value="@direccion.ClienteDireccionId">@direccion.Direccion (CP: @direccion.CodigoPostal), Tel.: @direccion.Telefono</option>
+                                    }
+                                </select>
+                            </div>
+                            <div class="form-group" style="margin:1rem">
+                                <label for="exampleInputEmail1"><b>Observaciones</b></label>
+                                <textarea class="form-control" style="resize:none; height:150px; max-height:150px;" maxlength="200" id="observaciones">@pedido.Observaciones</textarea>
+                            </div>
+                        </form>
+                    </div>
+                </main> <!-- col.// -->
+
+                <aside class="col-lg-3 col-sm-12 col-xl-3">
+                    <p class="alert alert-success">Precios expresados en Pesos Argentinos</p>
+                    @*<p class="alert alert-info">El pago se realizará mediante la plataforma de Mercado Pago</p>*@
+                    <dl class="dlist-align hiddenPrecioYDescuento">
+                        <dt>Sub total: </dt>
+                        <dd class="text-right subtotal"></dd>
+                    </dl>
+                    <dl class="dlist-align hiddenPrecioYDescuento">
+                        <dt style="color:#423f3f;">IVA: </dt>
+                        <dd class="text-right iva" style="color:#423f3f"></dd>
+                    </dl>
+                    <dl class="dlist-align">
+                        <dt>Total: </dt>
+                        <dd class="text-right total"></dd>
+                    </dl>
+                    <hr>
+                    <figure class="itemside mb-3">
+                        @*<center style="width:100%"><aside class="aside"><img src="~/Resources/img/mercadopago1.png" style="width: 100%;max-width: 467px;"></aside></center>*@
+                    </figure>
+
+                </aside> <!-- col.// -->
+            </div>
+
+        </div> <!-- container .//  -->
+    </section>
+    <!-- ========================= SECTION CONTENT END// ========================= -->
+    <!-- ========================= SECTION BOTONERA // ========================= -->
+    <section class="section-content bg padding-y border-top carrito-botonera">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-12 col-sm-12 col-xl-12">
+                    <div class="btn btn-secondary" style="float:left;" onclick="location.href='/eCommerce/Gondola'"><i class="fas fa-arrow-left"></i> CONTINUAR COMPRANDO</div>
+                    <div class="btn btn-danger" style="float:left; margin-left:20px;" onclick="Carrito.CancelarOrden('@(pedido.PedidoId)')"><i class="fas fa-times"></i> CANCELAR PEDIDO</div>
+                    @if (pedido.Detalle.Count > 0)
+                    {
+                        <div class="btn btn-success btnContinuar" style="float:right;">CONTINUAR <i class="fas fa-arrow-right"></i></div>
+                    }
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- ========================= SECTION BOTONERA END // ========================= -->
+}

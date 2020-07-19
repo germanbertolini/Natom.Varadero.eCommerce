@@ -1,0 +1,45 @@
+@media only screen and (max-device-width: 600px) {
+    body {
+        font-size: 5rem;
+    }
+
+    .brand-wrap .logo, .navbar-brand .logo {
+        max-height: none;
+    }
+
+    .container {
+        max-width: none;
+    }
+
+    .card {
+        width: 90%;
+        height: 30rem;
+    }
+
+    h3, .h3 {
+        font-size: 5rem;
+    }
+
+    .input-group {
+        height: 4rem;
+    }
+
+    .form-control {
+        font-size: 2rem;
+    }
+
+    .login_btn {
+        font-size: 3rem !important;
+        width: auto;
+    }
+
+    .input-group-text {
+        font-size: 2rem;
+    }
+
+    .brand-wrap .logo, .navbar-brand .logo {
+        margin-top: 0px;
+        max-height: 600px !important;
+        height: 130px;
+    }
+}

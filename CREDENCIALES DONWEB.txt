@@ -1,0 +1,11 @@
+Url:	http://wi142361.ferozo.com
+Panel:	http://wi142361.ferozo.com:2082
+usuario: wi142361@wi142361.ferozo.com
+Pass:	81ROsedege
+
+
+FTP:
+host :wi142361.ferozo.com
+usuario : wi142361@wi142361.ferozo.com
+Pass: 81ROsedege
+port : 21

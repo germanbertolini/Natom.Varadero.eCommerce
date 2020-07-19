@@ -1,0 +1,133 @@
+﻿@using natom.varadero.entities
+<link href="/Resources/css/varadero/principal.ui.css" rel="stylesheet" type="text/css">
+<link href="/Resources/css/varadero/principal.responsive.css" rel="stylesheet" media="only screen and (max-width: 1200px)">
+<script src="/Resources/js/varadero/vercarrito.min.js"></script>
+@Html.Hidden("PedidoId")
+@{
+    Pedido pedido = (Pedido)ViewBag.Pedido;
+}
+@Html.Hidden("PedidoIdCerrado", pedido.PedidoId)
+
+@if (pedido.FechaHoraAnulacion.HasValue)
+{
+    <br />
+    <center><i style="color:red; font-weight:bold;">PEDIDO ANULADO EL @(pedido.FechaHoraAnulacion.Value.ToString("dd/MM/yyyy HH:mm")) HS</i></center>
+    <br />
+}
+
+<!-- ========================= SECTION CONTENT ========================= -->
+<section class="section-content bg padding-y border-top">
+    <div class="container">
+
+        <div class="row">
+            <main class="col-lg-9 col-sm-12 col-xl-9">
+
+                <div class="card">
+                    <table class="table table-hover shopping-cart-wrap" id="tblVerPedido">
+                        <thead class="text-muted">
+                            <tr>
+                                <th scope="col">Producto<b style="float:right;color: #0b447e;font-size: 11px;margin-top: 3px;margin-right: 20px;">(*) con IVA</b></th>
+                                <th scope="col" hide-for-mobile class="hiddenPrecioYDescuento">PVP</th>
+                                <th scope="col" hide-for-mobile>Cantidad</th>
+                                <th scope="col" hide-for-mobile class="hiddenPrecioYDescuento">%Dto</th>
+                                <th scope="col" hide-for-mobile>Precio</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+
+                            @foreach (PedidoDetalle item in pedido.Detalle)
+                            {
+                                <tr pedidoDetalleId="@item.PedidoDetalleId">
+                                    <td>
+                                        <figure class="media">
+                                            <figcaption class="media-body">
+                                                <h6 class="title text-truncate" style="margin-bottom:0">@(item.PorcentajeIVA > 0 ? "(*) " : "")@item.Nombre</h6>
+                                                <dl class="dlist-inline small">
+                                                    <dd>@item.ArticuloDescripcionAbreviada</dd>
+                                                    <dl class="dlist-inline small">
+                                                        <dd><b>@item.Marca</b></dd>
+                                                    </dl>
+                                            </figcaption>
+                                        </figure>
+                                    </td>
+                                    <td class="hiddenPrecioYDescuento">
+                                        <div class="price-wrap">
+                                            <var class="price precioUnitarioTotal"></var>
+                                            @*<small class="text-muted precioUnitario">P.U.: </small>*@
+                                        </div> <!-- price-wrap .// -->
+                                    </td>
+                                    <td>
+                                        <input type="number" class="form-control cantidad" disabled pedidoDetalleId="@item.PedidoDetalleId" original-value="" value="" style="text-align:center;" />
+                                    </td>
+                                    <td class="hiddenPrecioYDescuento">
+                                        <div class="price-wrap">
+                                            <var class="price porcentajeDescuento"></var>
+                                        </div> <!-- price-wrap .// -->
+                                    </td>
+                                    <td class="tdPrecios">
+                                        <div class="price-wrap">
+                                            <var class="price precioUnitarioTotalConDescuento"></var>
+                                            <small class="text-muted precioUnitarioConDescuento">P.U.: </small>
+                                        </div> <!-- price-wrap .// -->
+                                    </td>
+                                </tr>
+                            }
+
+                        </tbody>
+                    </table>
+                </div> <!-- card.// -->
+
+                <br />
+                <div class="card">
+                    <form>
+                        <div class="form-group" style="margin:1rem">
+                            <label for="exampleInputEmail1"><b>Entrega en</b></label>
+                            <input type="text" class="form-control" readonly value="@(string.IsNullOrEmpty(pedido.EnvioDireccion) ? "Retiro por Casa Central" : String.Format("{0} (CP: {1}), Tel.: {2}", pedido.EnvioDireccion, pedido.EnvioCodigoPostal, pedido.EnvioTelefono))" />
+                        </div>
+                        <div class="form-group" style="margin:1rem">
+                            <label for="exampleInputEmail1"><b>Observaciones</b></label>
+                            <textarea class="form-control" readonly style="resize:none; height:150px; max-height:150px;" maxlength="200" id="observaciones">@pedido.Observaciones</textarea>
+                        </div>
+                    </form>
+                </div>
+
+            </main> <!-- col.// -->
+
+            <aside class="col-lg-3 col-sm-12 col-xl-3">
+                <p class="alert alert-success">Precios expresados en Pesos Argentinos</p>
+                @*<p class="alert alert-info">El pago se realizó mediante la plataforma de Mercado Pago el @((pedido.FechaHoraConfirmacion ?? DateTime.Now).ToString("dd/MM/yyyy HH:mm")) hs.</p>*@
+                <dl class="dlist-align hiddenPrecioYDescuento">
+                    <dt>Sub total: </dt>
+                    <dd class="text-right subtotal"></dd>
+                </dl>
+                <dl class="dlist-align hiddenPrecioYDescuento">
+                    <dt style="color:#423f3f;">IVA: </dt>
+                    <dd class="text-right iva" style="color:#423f3f"></dd>
+                </dl>
+                <dl class="dlist-align">
+                    <dt>Total: </dt>
+                    <dd class="text-right total"></dd>
+                </dl>
+                <hr>
+                @*<figure class="itemside mb-3">
+                    <center style="width:100%"><aside class="aside"><img src="~/Resources/img/mercadopago1.png" style="width: 100%;max-width: 467px;"></aside></center>
+                </figure>*@
+
+            </aside> <!-- col.// -->
+        </div>
+
+    </div> <!-- container .//  -->
+</section>
+<!-- ========================= SECTION CONTENT END// ========================= -->
+<!-- ========================= SECTION BOTONERA // ========================= -->
+<section class="section-content bg padding-y border-top carrito-botonera">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-12 col-sm-12 col-xl-12">
+                <div class="btn btn-secondary" style="float:left;" onclick="location.href='/eCommerce/Principal'"><i class="fas fa-arrow-left"></i> VOLVER</div>
+                @*<div class="btn btn-success" style="float:right;">CONTINUAR <i class="fas fa-arrow-right"></i></div>*@
+            </div>
+        </div>
+    </div>
+</section>
+<!-- ========================= SECTION BOTONERA END // ========================= -->

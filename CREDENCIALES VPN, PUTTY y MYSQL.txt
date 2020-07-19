@@ -1,0 +1,14 @@
+Vpn:
+User: GastonGilSanchez
+Pass: TMP!548892
+
+Servidor: 10.2.100.100
+Usuario: operador
+Pass: V4r4d3r0
+
+MySql:
+Usuario:hcya
+Pass:hcya2013
+
+PARA CORRER LA CONSOLA SYNC:
+D:\Natom\natom.varadero.ecomm\natom.varadero.ecomm.sync\bin\Release\netcoreapp1.0\publish\natom.varadero.ecomm.sync.dll

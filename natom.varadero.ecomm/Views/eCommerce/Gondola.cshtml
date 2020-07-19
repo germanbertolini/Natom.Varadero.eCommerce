@@ -1,0 +1,43 @@
+﻿<link href="/Resources/css/varadero/principal.ui.css" rel="stylesheet" type="text/css">
+<link href="/Resources/css/varadero/principal.responsive.css" rel="stylesheet" media="only screen and (max-width: 1200px)">
+
+<style type="text/css">
+    tr[destacado] {
+            background-color:#d3ebe0;
+        }
+</style>
+
+<section class="section-content bg padding-y border-top">
+    <div class="container">
+
+        <div class="row">
+            <main class="col-lg-12 col-sm-12 col-xl-12">
+
+                @Html.Partial("~/Views/eCommerce/cards/ListaProductos_Tabla.cshtml")
+
+            </main> <!-- col.// -->
+
+
+        </div>
+
+    </div> <!-- container .//  -->
+</section>
+<!-- ========================= SECTION CONTENT END// ========================= -->
+<!-- ========================= SECTION BOTONERA // ========================= -->
+<section class="section-content bg padding-y border-top carrito-botonera">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-12 col-sm-12 col-xl-12">
+                <div class="btn btn-secondary" style="float:left;" onclick="location.href='/eCommerce/Principal'"><i class="fas fa-arrow-left"></i> VOLVER</div>
+                <div class="btn btn-danger" style="float: left; margin-left: 20px;" onclick="Carrito.CancelarOrden('@(ViewBag.PedidoId)')"><i class="fas fa-times"></i> CANCELAR PEDIDO</div>
+                <div class="btn btn-success" style="float:right;" onclick="Carrito.VerAbierto()">CONTINUAR <i class="fas fa-arrow-right"></i></div>
+            </div>
+        </div>
+    </div>
+</section>
+<!-- ========================= SECTION BOTONERA END // ========================= -->
+<script type="text/javascript">
+    $(document).ready(function () {
+
+    });
+</script>
