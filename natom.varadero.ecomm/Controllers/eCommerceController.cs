@@ -362,14 +362,23 @@ namespace natom.varadero.ecomm.Controllers
         [HttpGet]
         public ActionResult DownloadListaPrecios()
         {
-            //var data = ObtenerDatosCarnet(id);
+            ClienteManager clienteMgr = new ClienteManager();
+            eCommStatusManager mgr = new eCommStatusManager();
+            if (mgr.IsRunnningSyncRoutine())
+            {
+                return PartialView("~/Views/eCommerce/Mantenimiento.cshtml");
+            }
+            var cliente = clienteMgr.ObtenerPorToken(this.SesionToken);
+
+            //var data = ObtenerDatosCarnet(cliente.ClienteId);
 
             ReportViewer viewer = new ReportViewer();
             viewer.ProcessingMode = ProcessingMode.Local;
             viewer.LocalReport.ReportPath = System.Web.HttpContext.Current.Server.MapPath("~/Reporting/ListaDePreciosReport.rdlc");
             
-            //viewer.LocalReport.SetParameters(new ReportParameter("NombreApellido", data.NombreApellido));
-            //viewer.LocalReport.SetParameters(new ReportParameter("Establecimiento", data.Establecimiento.Length > 40 ? data.Establecimiento.Substring(0, 40) : data.Establecimiento));
+            viewer.LocalReport.SetParameters(new ReportParameter("pCliente", cliente.RazonSocial));
+            viewer.LocalReport.SetParameters(new ReportParameter("pDate", DateTime.Now.ToString("dd/MM/yyyy")));
+
             //viewer.LocalReport.SetParameters(new ReportParameter("DNI", data.DNI));
             //viewer.LocalReport.SetParameters(new ReportParameter("NumeroAfiliado", data.NumeroAfiliado));
             //viewer.LocalReport.SetParameters(new ReportParameter("FechaAfiliacion", data.FechaAfiliacion.Value.ToString("dd/MM/yyyy")));
