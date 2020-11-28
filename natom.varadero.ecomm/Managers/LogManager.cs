@@ -28,6 +28,14 @@ namespace natom.varadero.ecomm.Managers
             }
         }
 
+        public static void LimpiarLogsViejos()
+        {
+            using (var db = new DbEcommerceContext())
+            {
+                db.Database.ExecuteSqlCommand("DELETE FROM log WHERE id > 0 AND datediff(now(), fechahora) > 90;");
+            }
+        }
+
         public void Log(Log log)
         {
             this.stackLogs.Add(log);
@@ -114,7 +122,8 @@ namespace natom.varadero.ecomm.Managers
             };
             stackLogs.Add(log);
 
-            EnviarLogPorMailAsync(log);
+            //COMENTADO POR GERMAN EL 28/11/2020
+            //EnviarLogPorMailAsync(log);
         }
 
         private void EnviarLogPorMailAsync(Log log)

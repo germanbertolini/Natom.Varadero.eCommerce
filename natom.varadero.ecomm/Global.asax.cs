@@ -20,6 +20,8 @@ namespace natom.varadero.ecomm
             FilterConfig.RegisterGlobalFilters(GlobalFilters.Filters);
             RouteConfig.RegisterRoutes(RouteTable.Routes);
 
+            LogManager.LimpiarLogsViejos();
+
             BackgroundManager.Init();
             eCommStatusManager.Instance.RegisterStartUp();
         }
