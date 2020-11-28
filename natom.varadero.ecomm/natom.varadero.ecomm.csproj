@@ -214,6 +214,7 @@
     <Compile Include="Models\eCommerceResponse.cs" />
     <Compile Include="Models\ViewModels\LoginView.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Reporting\ReportHelper.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="favicon.ico" />
@@ -380,6 +381,11 @@
       <Project>{1b1c110c-f7c7-47e5-90ff-f84617540a4b}</Project>
       <Name>natom.varadero.entities</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Reporting\ListaDePreciosReport.rdlc">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>

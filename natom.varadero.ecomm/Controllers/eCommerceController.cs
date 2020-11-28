@@ -1,7 +1,9 @@
-﻿using natom.varadero.ecomm.Exceptions;
+﻿using Microsoft.Reporting.WebForms;
+using natom.varadero.ecomm.Exceptions;
 using natom.varadero.ecomm.Managers;
 using natom.varadero.ecomm.Models;
 using natom.varadero.ecomm.Models.ViewModels;
+using natom.varadero.ecomm.Reporting;
 using natom.varadero.entities;
 using System;
 using System.Collections.Generic;
@@ -360,7 +362,30 @@ namespace natom.varadero.ecomm.Controllers
         [HttpGet]
         public ActionResult DownloadListaPrecios()
         {
-            return Content("asd");
+            //var data = ObtenerDatosCarnet(id);
+
+            ReportViewer viewer = new ReportViewer();
+            viewer.ProcessingMode = ProcessingMode.Local;
+            viewer.LocalReport.ReportPath = System.Web.HttpContext.Current.Server.MapPath("~/Reporting/ListaDePreciosReport.rdlc");
+            
+            //viewer.LocalReport.SetParameters(new ReportParameter("NombreApellido", data.NombreApellido));
+            //viewer.LocalReport.SetParameters(new ReportParameter("Establecimiento", data.Establecimiento.Length > 40 ? data.Establecimiento.Substring(0, 40) : data.Establecimiento));
+            //viewer.LocalReport.SetParameters(new ReportParameter("DNI", data.DNI));
+            //viewer.LocalReport.SetParameters(new ReportParameter("NumeroAfiliado", data.NumeroAfiliado));
+            //viewer.LocalReport.SetParameters(new ReportParameter("FechaAfiliacion", data.FechaAfiliacion.Value.ToString("dd/MM/yyyy")));
+            //viewer.LocalReport.SetParameters(new ReportParameter("FechaVencimiento", data.FechaVencimiento.Value.ToString("dd/MM/yyyy")));
+
+            byte[] b = ReportHelper.ExportToPDF(viewer);
+
+            viewer.Dispose();
+
+            Response.Clear();
+            Response.ContentType = "application/pdf";
+            Response.AppendHeader("Content-Disposition", "attachment; filename=Lista de precios al " + DateTime.Now.ToString("dd-MM-yyyy") + ".pdf");
+            Response.BinaryWrite(b);
+            Response.End();
+            return null;
+            //return File(b, "application/pdf");
         }
 
         [HttpPost]
