@@ -2290,7 +2290,7 @@ ul.row, ul.row-sm {
         padding-top: 17px;
         margin-top: -70px;
         box-shadow: 0px 7px 20px black;
-        z-index:1;
+        z-index:3;
     }
     .section-footer {
         /*opacity:0;*/

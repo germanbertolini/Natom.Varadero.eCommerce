@@ -357,6 +357,12 @@ namespace natom.varadero.ecomm.Controllers
             return PartialView();
         }
 
+        [HttpGet]
+        public ActionResult DownloadListaPrecios()
+        {
+            return Content("asd");
+        }
+
         [HttpPost]
         public ActionResult Login(LoginView data)
         {
