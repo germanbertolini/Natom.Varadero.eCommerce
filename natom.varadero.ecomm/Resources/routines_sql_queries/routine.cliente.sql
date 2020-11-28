@@ -9,8 +9,8 @@ SELECT
     'CABA'							AS CodigoProvincia,
     'PES'							AS Moneda,
     
-    'testing'						AS UsuarioAlias,
-    '1234'							AS UsuarioClave,
+    'admin'						    AS UsuarioAlias,
+    'Azsxdc123'						AS UsuarioClave,
     'german.bertolini@gmail.com'	AS UsuarioEmail,
 
 	11								AS CondVtaId,
