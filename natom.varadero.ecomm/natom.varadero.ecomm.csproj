@@ -212,8 +212,14 @@
     <Compile Include="Models\DataTable\ListaProductosResult.cs" />
     <Compile Include="Models\DataTable\StockReservadoResult.cs" />
     <Compile Include="Models\eCommerceResponse.cs" />
+    <Compile Include="Models\ViewModels\ListaDePreciosReportResult.cs" />
     <Compile Include="Models\ViewModels\LoginView.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Reporting\DataSetReporting.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>DataSetReporting.xsd</DependentUpon>
+    </Compile>
     <Compile Include="Reporting\ReportHelper.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -375,6 +381,17 @@
     <Content Include="Views\eCommerce\VerPedidoAbierto.cshtml" />
     <Content Include="Views\eCommerce\PedidoConfirmado.cshtml" />
     <Content Include="Views\eCommerce\Catalogo.cshtml" />
+    <Content Include="Reporting\DataSetReporting.xsc">
+      <DependentUpon>DataSetReporting.xsd</DependentUpon>
+    </Content>
+    <None Include="Reporting\DataSetReporting.xsd">
+      <SubType>Designer</SubType>
+      <Generator>MSDataSetGenerator</Generator>
+      <LastGenOutput>DataSetReporting.Designer.cs</LastGenOutput>
+    </None>
+    <Content Include="Reporting\DataSetReporting.xss">
+      <DependentUpon>DataSetReporting.xsd</DependentUpon>
+    </Content>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\natom.varadero.entities\natom.varadero.entities.csproj">

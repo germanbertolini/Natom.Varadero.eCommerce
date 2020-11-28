@@ -362,15 +362,25 @@ namespace natom.varadero.ecomm.Controllers
         [HttpGet]
         public ActionResult DownloadListaPrecios()
         {
-            ClienteManager clienteMgr = new ClienteManager();
-            eCommStatusManager mgr = new eCommStatusManager();
-            if (mgr.IsRunnningSyncRoutine())
-            {
+            var listaProductosManager = new ListaProductosManager();
+            var clienteMgr = new ClienteManager();
+            if (new eCommStatusManager().IsRunnningSyncRoutine())
                 return PartialView("~/Views/eCommerce/Mantenimiento.cshtml");
-            }
+
             var cliente = clienteMgr.ObtenerPorToken(this.SesionToken);
 
-            //var data = ObtenerDatosCarnet(cliente.ClienteId);
+            /** OBTIENE PRECIOS **/
+            long rowsCount = 0;
+            var precios = listaProductosManager.ConsultarAsync(cliente.ListaPreciosId, Server, new List<string>() { "NONE" }, false, int.MaxValue, 1, out rowsCount).GetAwaiter().GetResult();
+            var data = precios.Select(producto => new ListaDePreciosReportResult
+            {
+                Producto = producto.Nombre,
+                ConIVA = producto.TieneIVADiscriminado ? "SI" : "NO",
+                PVP = producto.TienePVP && !producto.TieneIVADiscriminado ? (producto.EsDestacado ? ("¡$ " + producto.PrecioVentaPublico.ToString("#,##0.00") + "!") : "$ " + producto.PrecioVentaPublico.ToString("#,##0.00")) : "",
+                PorcDto = producto.TienePVP && !producto.TieneIVADiscriminado ? ("% " + producto.PorcentajeDescRespectoPVP.ToString("F").Replace(".", ",")) : "",
+                Precio = producto.EsDestacado ? ("¡$ " + producto.PrecioConDescuentoBruto.ToString("#,##0.00") + "!") : "$ " + producto.PrecioConDescuentoBruto.ToString("#,##0.00")
+            }).OrderBy(p => p.Producto).ToList();
+            /****************/
 
             ReportViewer viewer = new ReportViewer();
             viewer.ProcessingMode = ProcessingMode.Local;
@@ -378,11 +388,7 @@ namespace natom.varadero.ecomm.Controllers
             
             viewer.LocalReport.SetParameters(new ReportParameter("pCliente", cliente.RazonSocial));
             viewer.LocalReport.SetParameters(new ReportParameter("pDate", DateTime.Now.ToString("dd/MM/yyyy")));
-
-            //viewer.LocalReport.SetParameters(new ReportParameter("DNI", data.DNI));
-            //viewer.LocalReport.SetParameters(new ReportParameter("NumeroAfiliado", data.NumeroAfiliado));
-            //viewer.LocalReport.SetParameters(new ReportParameter("FechaAfiliacion", data.FechaAfiliacion.Value.ToString("dd/MM/yyyy")));
-            //viewer.LocalReport.SetParameters(new ReportParameter("FechaVencimiento", data.FechaVencimiento.Value.ToString("dd/MM/yyyy")));
+            viewer.LocalReport.DataSources.Add(new ReportDataSource("DataSet1", data));
 
             byte[] b = ReportHelper.ExportToPDF(viewer);
 
