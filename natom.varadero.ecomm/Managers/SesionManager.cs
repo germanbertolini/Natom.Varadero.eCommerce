@@ -2,6 +2,7 @@
 using natom.varadero.entities;
 using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Linq;
 using System.Web;
 
@@ -9,6 +10,7 @@ namespace natom.varadero.ecomm.Managers
 {
     public class SesionManager
     {
+        private const string cTokenForDashboard = "98237_jc193jdxu-_2k11@9j2&%#cvko**fgsw3";
         private DbEcommerceContext db = new DbEcommerceContext();
 
         public Cliente ValidarLogin(string usuario, string clave, HttpRequestBase request)
@@ -65,6 +67,37 @@ namespace natom.varadero.ecomm.Managers
             }
 
             return cliente;
+        }
+
+        public Cliente ValidarLoginDashboard(string usuario, string clave, HttpRequestBase request)
+        {
+            if (string.IsNullOrEmpty(usuario))
+                throw new HandledException("Debe completar USUARIO");
+
+            if (string.IsNullOrEmpty(clave))
+                throw new HandledException("Debe completar CLAVE");
+
+            usuario = usuario.ToLower().Trim();
+            var userConfig = ConfigurationManager.AppSettings["Dashboard.Security.Login.UserName"].ToString().ToLower().Trim();
+            var passwdConfig = ConfigurationManager.AppSettings["Dashboard.Security.Login.Password"].ToString();
+
+            if (!usuario.Equals(userConfig))
+                throw new HandledException("No existe el usuario");
+
+            if (!clave.Equals(passwdConfig))
+                throw new HandledException("Clave incorrecta");
+
+            return new Cliente
+            {
+                ClienteId = -1,
+                RazonSocial = "Varadero",
+                NombreFantasia = "Varadero",
+                SesionAgent = request.UserAgent,
+                SesionIP = request.UserHostAddress,
+                SesionInicio = DateTime.Now,
+                SesionUltimaAccion = DateTime.Now,
+                SesionToken = cTokenForDashboard //Guid.NewGuid().ToString().Replace("{", "").Replace("}", "").Replace("-", "").ToLower()
+            };
         }
 
         public Cliente ObtenerCliente(string sesionToken)

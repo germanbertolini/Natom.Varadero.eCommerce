@@ -179,6 +179,7 @@
     <Compile Include="App_Start\FilterConfig.cs" />
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="Controllers\BaseController.cs" />
+    <Compile Include="Controllers\DashboardController.cs" />
     <Compile Include="Controllers\eCommerceController.cs" />
     <Compile Include="Controllers\ListaProductosController.cs" />
     <Compile Include="Controllers\SyncPedidoController.cs" />
@@ -392,6 +393,7 @@
     <Content Include="Reporting\DataSetReporting.xss">
       <DependentUpon>DataSetReporting.xsd</DependentUpon>
     </Content>
+    <Content Include="Views\Dashboard\Login.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\natom.varadero.entities\natom.varadero.entities.csproj">
