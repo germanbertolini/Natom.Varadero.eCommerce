@@ -149,6 +149,33 @@ namespace natom.varadero.ecomm.Controllers
             }
         }
 
+        [HttpPost]
+        public ActionResult BuscarProductos(string productos)
+        {
+            try
+            {
+                var manager = new ListaProductosManager();
+                return Json(new
+                {
+                    success = true,
+                    datos = from l in manager.BuscarArticulos(productos)
+                            select new
+                            {
+                                id = l.PKArticuloId,
+                                label = l.ArticuloNombre
+                            }
+                });
+            }
+            catch (Exception ex)
+            {
+                return Json(new
+                {
+                    success = false,
+                    error = ex.Message
+                });
+            }
+        }
+
         [HttpGet]
         public ActionResult GetDestacadosTableData(JQueryDataTableParamModel param)
         {

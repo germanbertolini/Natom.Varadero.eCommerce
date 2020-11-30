@@ -231,6 +231,9 @@
     <Content Include="ApplicationInsights.config">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <Content Include="Resources\components\bootstrap-3-typeahead\bootstrap3-typeahead.js" />
+    <Content Include="Resources\components\bootstrap-3-typeahead\bootstrap3-typeahead.min.js" />
+    <Content Include="Resources\components\bootstrap-3-typeahead\Gruntfile.js" />
     <Content Include="Resources\components\chosen\bootstrap-chosen.css" />
     <Content Include="Resources\components\chosen\chosen-sprite.png" />
     <Content Include="Resources\components\chosen\chosen.jquery.js" />
@@ -2114,6 +2117,11 @@
     <Content Include="Resources\components\fontawesome-5.12.1\webfonts\fa-solid-900.ttf" />
     <Content Include="Resources\components\fontawesome-5.12.1\webfonts\fa-solid-900.woff" />
     <Content Include="Resources\components\fontawesome-5.12.1\webfonts\fa-solid-900.woff2" />
+    <Content Include="Resources\components\bootstrap-3-typeahead\.jscsrc" />
+    <Content Include="Resources\components\bootstrap-3-typeahead\.jshintrc" />
+    <Content Include="Resources\components\bootstrap-3-typeahead\bower.json" />
+    <Content Include="Resources\components\bootstrap-3-typeahead\composer.json" />
+    <Content Include="Resources\components\bootstrap-3-typeahead\package.json" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\natom.varadero.entities\natom.varadero.entities.csproj">

@@ -98,12 +98,11 @@ namespace natom.varadero.ecomm.Managers
 
         public void AgregarDestacado(int id)
         {
-            var destacado = new ArticuloDestacado()
-            {
-                PKArticuloId = id
-            };
-            this.db.ArticulosDestacados.Add(destacado);
-            this.db.SaveChanges();
+            var existente = this.db.ArticulosDestacados.FirstOrDefault(a => a.PKArticuloId.Equals(id));
+            if (existente != null)
+                throw new Exception("El artículo ya fue añadido el " + existente.Desde.ToString("dd/MM/yyyy"));
+
+            this.db.Database.ExecuteSqlCommand("CALL spArticuloDestacadoAgregar(" + id + ")");
         }
 
         public int GetDestacadosCount()
@@ -122,6 +121,15 @@ namespace natom.varadero.ecomm.Managers
                         Articulo = a.ArticuloNombre,
                         DesdeFecha = d.Desde
                    };
+        }
+
+        public List<Articulo> BuscarArticulos(string productos)
+        {
+            productos = productos.ToLower();
+            return this.db.Articulos.Where(a => a.ArticuloActivo && a.ArticuloNombre.ToLower().Contains(productos))
+                            .OrderBy(a => a.ArticuloNombre)
+                            .Take(20)
+                            .ToList();
         }
     }
 }

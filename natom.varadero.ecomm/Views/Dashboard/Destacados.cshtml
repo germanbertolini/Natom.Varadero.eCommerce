@@ -1,6 +1,7 @@
 ﻿@using natom.varadero.entities
 <link href="/Resources/css/varadero/dashboard/principal.ui.css" rel="stylesheet" type="text/css">
 <link href="/Resources/css/varadero/dashboard/principal.responsive.css" rel="stylesheet" media="only screen and (max-width: 1200px)">
+<script src="~/Resources/components/bootstrap-3-typeahead/bootstrap3-typeahead.min.js"></script>
 @{
     Layout = "~/Views/Shared/_LayoutDashboard.cshtml";
 }
@@ -51,9 +52,58 @@
         <br />
 
     </div> <!-- container .//  -->
+
+
+    <div class="modal" id="modalAgregarDestacado">
+        <div class="modal-dialog">
+            <div class="modal-content">
+
+                <!-- Modal Header -->
+                <div class="modal-header">
+                    <h4 class="modal-title">Filtrar productos</h4>
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                </div>
+
+                <!-- Modal body -->
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="input-group">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text">Producto</span>
+                                </div>
+                                <input type="text" class="form-control buscadorProducto" id="buscadorProducto" query-operator="like" query-field="A.ArticuloNombre">
+                                <input type="hidden" id="buscadorProductoId" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Modal footer -->
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" style="float:left;" data-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-primary" id="btnAgregarDestacado">Agregar</button>
+                </div>
+
+            </div>
+        </div>
+    </div>
 </section>
 <!-- ========================= SECTION MAIN END// ========================= -->
 <script type="text/javascript">
+    var productos = {};
+
+    var TypeAhead = {
+        constructMap: function (data, map) {
+            var objects = [];
+            $.each(data, function (i, object) {
+                map[object.label] = object;
+                objects.push(object.label);
+            });
+            return objects;
+        }
+    };
+
     $(document).ready(function () {
         var oTable = $('#tblIndex').DataTable({
             "responsive": true,
@@ -65,7 +115,7 @@
             "bSort": true,
             "bInfo": true,
             "scrollY": "305px",
-            "aaSorting": [[0, "desc"]],
+            "aaSorting": [[0, "asc"]],
             "bDeferRender": true,
             "aoColumns": [
                 { "bSortable": true, "sWidth": '60%', "sClass": "bolded" },
@@ -100,15 +150,57 @@
                 }, false);
             });
         });
+
+        $("#btnAgregarDestacado").click(function () {
+            var id = $("#buscadorProductoId").val();
+            if (id == "") {
+                Mensajes.MostrarError("Debes seleccionar un producto.");
+            } else {
+                AgregarDestacado(id);
+            }
+        });
+
+        
+        $('.buscadorProducto').typeahead({
+            minLength: 1,
+            items: 13,
+            matcher: function (item) { return true; },
+            source: function (query, process) {
+                productos = {};
+
+                $.ajax({
+                    type: "POST",
+                    url: '/Dashboard/BuscarProductos',
+                    data: JSON.stringify({
+                        productos: query
+                    }),
+                    dataType: "json",
+                    contentType: "application/json",
+                    success: function (data) {
+                        objects = TypeAhead.constructMap(data.datos, productos);
+                        process(objects);
+                    }
+                });
+            },
+            updater: function (item, dom) {
+                $("#buscadorProductoId").val(productos[item].id);
+                $("#buscadorProducto").val(productos[item].label);
+
+                return item;
+            }
+        });
     });
 
     function MostrarModalAgregarNuevo() {
-
+        $("#buscadorProducto").val("");
+        $("#buscadorProductoId").val("");
+        $("#modalAgregarDestacado").modal("show");
     }
 
     function AgregarDestacado(id) {
         eCommerce.DoPOST("Dashboard", "AgregarDestacado?id=" + id, {}, function (response) {
             if (response.success) {
+                $("#modalAgregarDestacado").modal("hide");
                 $('#tblIndex').DataTable().ajax.reload();
             }
             else {
