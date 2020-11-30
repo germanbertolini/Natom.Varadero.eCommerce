@@ -12,6 +12,7 @@ namespace natom.varadero.ecomm
     public class DbEcommerceContext : DbContext
     {
         public DbSet<Articulo> Articulos { get; set; }
+        public DbSet<ArticuloDestacado> ArticulosDestacados { get; set; }
         public DbSet<ArticuloGrupo> ArticulosGrupos { get; set; }
         public DbSet<Cliente> Clientes { get; set; }
         public DbSet<ClienteDireccion> ClientesDirecciones { get; set; }
@@ -38,6 +39,7 @@ namespace natom.varadero.ecomm
         {
             modelBuilder.Conventions.Remove<PluralizingTableNameConvention>();
             modelBuilder.Entity<Articulo>().HasKey(i => i.EF_Id);
+            modelBuilder.Entity<ArticuloDestacado>().HasKey(i => i.PKArticuloId);
             modelBuilder.Entity<ArticuloGrupo>().HasKey(i => i.EF_Id);
             modelBuilder.Entity<Cliente>().HasKey(i => i.EF_Id);
             modelBuilder.Entity<ClienteDireccion>().HasKey(i => i.EF_Id);

@@ -129,6 +129,22 @@ namespace natom.varadero.ecomm.Managers
             return item;
         }
 
+        public IEnumerable<Pedido> GetPedidos()
+        {
+            IEnumerable<Pedido> query = this.db.Pedidos
+                                                    .Include(p => p.Detalle)
+                                                    .Where(p => !p.AnuladoPorInactividad
+                                                                    && p.FechaHoraConfirmacion.HasValue);
+
+            return query;
+        }
+
+        public int GetPedidosCount()
+        {
+            return this.db.Pedidos.Where(p => !p.AnuladoPorInactividad
+                                                    && p.FechaHoraConfirmacion.HasValue).Count();
+        }
+
         public PedidoDetalle ObtenerPedidoDetalle(int pedidoDetalleId)
         {
             return this.db.PedidosDetalles.FirstOrDefault(p => p.PedidoDetalleId == pedidoDetalleId);

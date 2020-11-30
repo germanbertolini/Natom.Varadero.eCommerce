@@ -1,0 +1,120 @@
+﻿@using natom.varadero.entities
+<link href="/Resources/css/varadero/dashboard/principal.ui.css" rel="stylesheet" type="text/css">
+<link href="/Resources/css/varadero/dashboard/principal.responsive.css" rel="stylesheet" media="only screen and (max-width: 1200px)">
+@{
+    Layout = "~/Views/Shared/_LayoutDashboard.cshtml";
+}
+<style type="text/css">
+    .bolded {
+        font-weight: bold;
+    }
+
+    .right-align {
+        text-align: right;
+    }
+
+    td.center {
+        text-align: center;
+    }
+</style>
+<!-- ========================= SECTION MAIN ========================= -->
+<section class="section-main bg padding-top-sm">
+    <div class="container">
+
+        <div class="row row-sm">
+            <aside class="col-md-3">
+                <div class="card">
+                    <ul class="menu-category">
+                        <li> <a href="/Dashboard/Ordenes">Ordenes</a></li>
+                        <li class="active"> <a href="/Dashboard/Destacados">Productos destacados</a></li>
+                    </ul>
+                </div> <!-- card.// -->
+                <button class="btn btn-sm btn-success" style="float:right; margin-top:10px;" onclick="MostrarModalAgregarNuevo()">[+] Agregar destacado</button>
+            </aside> <!-- col.// -->
+            <div class="col-md-9">
+                <table class="table table-striped table-bordered dt-responsive nowrap" id="tblIndex" style="width:100%;">
+                    <thead>
+                        <tr>
+                            <th>Producto</th>
+                            <th>Destacado desde</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                </table>
+            </div>
+            <!-- col./
+            / -->
+            <!-- card.// -->
+        </div>
+
+        <br />
+        <br />
+
+    </div> <!-- container .//  -->
+</section>
+<!-- ========================= SECTION MAIN END// ========================= -->
+<script type="text/javascript">
+    $(document).ready(function () {
+        var oTable = $('#tblIndex').DataTable({
+            "responsive": true,
+            "bProcessing": true,
+            "bServerSide": true,
+            "sAjaxSource": "/Dashboard/GetDestacadosTableData",
+            "bLengthChange": true,
+            "bFilter": true,
+            "bSort": true,
+            "bInfo": true,
+            "scrollY": "305px",
+            "aaSorting": [[0, "desc"]],
+            "bDeferRender": true,
+            "aoColumns": [
+                { "bSortable": true, "sWidth": '60%', "sClass": "bolded" },
+                { "bSortable": true, "sWidth": '15%' },
+                {
+                    "bSortable": false,
+                    "bSearchable": false,
+                    "sWidth": '25%',
+                    "mRender": function (data, type, full) {
+                        var html = "";
+                        html += '&nbsp;<a class="btn btn-danger btn-sm remove-smt-btn" id="' + data + '"><i class="fa fa-times" aria-hidden="true"></i> Quitar</a>';
+
+                        return html;
+                    }
+                }
+            ]
+        });
+
+        //new $.fn.dataTable.FixedHeader(oTable);
+
+        $('#tblIndex').on('click', '.remove-smt-btn', function (e) {
+            var id = e.currentTarget.id;
+            Mensajes.MostrarSiNo("¿Desea realmente quitarlo de 'destacados'?", function () {
+                eCommerce.DoPOST("Dashboard", "QuitarDestacado?id=" + id, { }, function (response) {
+                    if (response.success) {
+                        $('#tblIndex').DataTable().ajax.reload();
+                    }
+                    else {
+                        Mensajes.MostrarError(response.error);
+                    }
+                    eCommerce.OcultarProcesando();
+                }, false);
+            });
+        });
+    });
+
+    function MostrarModalAgregarNuevo() {
+
+    }
+
+    function AgregarDestacado(id) {
+        eCommerce.DoPOST("Dashboard", "AgregarDestacado?id=" + id, {}, function (response) {
+            if (response.success) {
+                $('#tblIndex').DataTable().ajax.reload();
+            }
+            else {
+                Mensajes.MostrarError(response.error);
+            }
+            eCommerce.OcultarProcesando();
+        }, false);
+    }
+</script>

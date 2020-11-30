@@ -45,7 +45,19 @@ namespace natom.varadero.ecomm
                 }
                 finally
                 {
-                    if (!controllerName.ToLower().StartsWith("sync"))
+                    if (controllerName.ToLower().Equals("dashboard"))
+                    {
+                        if (!(actionName.ToLower().Equals("login")))
+                        {
+                            HttpCookie cookie = Request.Cookies["d"];
+                            if (cookie == null)
+                            {
+                                Response.Redirect("Login");
+                                Response.End();
+                            }
+                        }
+                    }
+                    else if (!controllerName.ToLower().StartsWith("sync"))
                     {
                         if (rd != null && !string.IsNullOrEmpty(actionName))
                         {

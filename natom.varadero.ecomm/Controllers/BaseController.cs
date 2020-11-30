@@ -24,6 +24,22 @@ namespace natom.varadero.ecomm.Controllers
             }
         }
 
+        public string SesionTokenDashboard
+        {
+            get
+            {
+                HttpCookie cookie = Request.Cookies["d"];
+                if (cookie == null)
+                {
+                    return null;
+                }
+                else
+                {
+                    return cookie.Value;
+                }
+            }
+        }
+
         public int? PedidoId
         {
             get

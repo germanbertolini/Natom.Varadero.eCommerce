@@ -15,6 +15,17 @@ namespace natom.varadero.ecomm.Managers
             return db.Clientes.FirstOrDefault(c => c.SesionToken.Equals(sesionToken));
         }
 
+        public Cliente ObtenerParaDashboard()
+        {
+            return new Cliente
+            {
+                ClienteId = -1,
+                RazonSocial = "Varadero",
+                NombreFantasia = "Varadero",
+                UsuarioAlias = "Admin"
+            };
+        }
+
         public List<ClienteDireccion> ObtenerDirecciones(Cliente cliente)
         {
             List<ClienteDireccion> direcciones = new List<ClienteDireccion>();

@@ -1,4 +1,6 @@
 ﻿using natom.varadero.ecomm.Models.DataTable;
+using natom.varadero.ecomm.Models.ViewModels;
+using natom.varadero.entities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -85,6 +87,41 @@ namespace natom.varadero.ecomm.Managers
             query = query.Replace("/**[[-LIMIT_SENTENCIES-]]**/", String.Format("LIMIT {0}, {1}", start, end));
 
             return db.Database.SqlQuery<ListaProductosResult>(query).ToListAsync();
+        }
+
+        public void QuitarDestacado(int id)
+        {
+            var destacado = this.db.ArticulosDestacados.First(a => a.PKArticuloId.Equals(id));
+            this.db.ArticulosDestacados.Remove(destacado);
+            this.db.SaveChanges();
+        }
+
+        public void AgregarDestacado(int id)
+        {
+            var destacado = new ArticuloDestacado()
+            {
+                PKArticuloId = id
+            };
+            this.db.ArticulosDestacados.Add(destacado);
+            this.db.SaveChanges();
+        }
+
+        public int GetDestacadosCount()
+        {
+            return (from a in this.db.Articulos
+                    join d in this.db.ArticulosDestacados on a.PKArticuloId equals d.PKArticuloId
+                    select d).Count();
+        }
+
+        public IEnumerable<DestacadoResult> GetDestacados()
+        {
+            return from a in this.db.Articulos
+                   join d in this.db.ArticulosDestacados on a.PKArticuloId equals d.PKArticuloId
+                   select new DestacadoResult() {
+                        PKArticuloId = a.PKArticuloId,
+                        Articulo = a.ArticuloNombre,
+                        DesdeFecha = d.Desde
+                   };
         }
     }
 }

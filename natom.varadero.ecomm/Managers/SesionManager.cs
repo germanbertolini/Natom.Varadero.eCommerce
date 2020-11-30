@@ -104,5 +104,10 @@ namespace natom.varadero.ecomm.Managers
         {
             return this.db.Clientes.FirstOrDefault(c => c.SesionToken.Equals(sesionToken));
         }
+
+        public bool SesionTokenDashboardValido(string sesionTokenDashboard)
+        {
+            return cTokenForDashboard.Equals(sesionTokenDashboard);
+        }
     }
 }
