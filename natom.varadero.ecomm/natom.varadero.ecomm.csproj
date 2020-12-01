@@ -226,6 +226,12 @@
     <Compile Include="Reporting\ReportHelper.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Emails\ConfirmacionRecepcionPedido.html">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Emails\PedidoListoParaDespachar.html">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="favicon.ico" />
     <Content Include="Global.asax" />
     <Content Include="ApplicationInsights.config">

@@ -10,6 +10,7 @@ using System.Data;
 using System.Data.Entity;
 using System.Web.Mvc;
 using Newtonsoft.Json;
+using System.Threading.Tasks;
 
 namespace natom.varadero.ecomm.Controllers
 {
@@ -73,6 +74,9 @@ namespace natom.varadero.ecomm.Controllers
                 response.Success = true;
 
                 LogManager.Instance.LogInfo(null, "/SyncPedido/ConfirmSync", "FIN CONFIRMACIÓN SYNC PEDIDOS");
+
+                var htmlPath = System.Web.HttpContext.Current.Server.MapPath("~/Emails/ConfirmacionRecepcionPedido.html");
+                Task.Run(() => EmailManager.EnviarConfirmacionesRecepcionPedido(htmlPath, ids));
             }
             catch (Exception ex)
             {

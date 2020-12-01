@@ -5,6 +5,8 @@ using System.Linq;
 using System.Net;
 using System.Net.Mail;
 using System.Web;
+using System.Data.Entity;
+using natom.varadero.entities;
 
 namespace natom.varadero.ecomm.Managers
 {
@@ -48,6 +50,37 @@ namespace natom.varadero.ecomm.Managers
             {
                 throw ex;
             }
+        }
+
+        public static void EnviarConfirmacionesRecepcionPedido(string htmlPath, List<int> ids)
+        {
+            try
+            {
+                using (var db = new DbEcommerceContext())
+                {
+                    var pedidos = db.Pedidos
+                                        .Where(p => ids.Contains(p.PedidoId))
+                                        .ToList();
+                    foreach (var pedido in pedidos)
+                    {
+                        var cliente = db.Clientes.First(c => c.PKClienteId.Equals(pedido.ClienteId));
+                        EnviarCorreoConfirmacionPedido(htmlPath, cliente, pedido);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+
+            }
+        }
+
+        private static void EnviarCorreoConfirmacionPedido(string htmlPath, Cliente cliente, Pedido pedido)
+        {
+            var html = System.IO.File.ReadAllText(htmlPath);
+            var content = html.Replace("{{PEDIDO_NUMERO}}", pedido.Numero.ToString());
+            var dest = new List<System.Net.Mail.MailAddress>() { new System.Net.Mail.MailAddress(cliente.UsuarioEmail) };
+
+            EmailManager.Enviar("Droguería Varadero | Confirmación de pedido", content, dest);
         }
     }
 }

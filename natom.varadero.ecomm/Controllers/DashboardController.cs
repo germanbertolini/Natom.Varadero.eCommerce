@@ -258,5 +258,21 @@ namespace natom.varadero.ecomm.Controllers
                 return Json(new { success = false, error = ex.Message });
             }
         }
+
+        private void EnviarCorreoPedidoListoParaDespachar(Cliente cliente, Pedido pedido)
+        {
+            try
+            {
+                var htmlPath = System.Web.HttpContext.Current.Server.MapPath("~/Emails/PedidoListoParaDespachar.html");
+                var html = System.IO.File.ReadAllText(htmlPath);
+                var content = html.Replace("{{PEDIDO_NUMERO}}", pedido.Numero.ToString());
+                var dest = new List<System.Net.Mail.MailAddress>() { new System.Net.Mail.MailAddress(cliente.UsuarioEmail) };
+                EmailManager.Enviar("Droguería Varadero | Pedido preparado", content, dest);
+            }
+            catch (Exception ex)
+            {
+
+            }
+        }
     }
 }

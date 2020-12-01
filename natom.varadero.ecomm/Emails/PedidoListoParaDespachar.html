@@ -1,0 +1,50 @@
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"> 
+<html xmlns="http://www.w3.org/1999/xhtml"> 
+	<head> 
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /> 
+		<title>Confirmación de pedido</title> 
+		<meta name="viewport" content="width=device-width, initial-scale=1.0"/> 
+		<style type="text/css">
+			.varaderoContent {
+				font-family: 'Graphik Web',Helvetica,sans-serif;
+				color: #65605c;
+			}
+		</style>
+	</head>
+	<body style="margin: 0; padding: 0;" class="varaderoContent"> 
+		<table border="0" cellpadding="0" cellspacing="0" width="100%"> 
+			<tr style="background-color:#f7f7f7"> 
+				<td width="30%"> 
+					<img height="60" src="http://tienda-dvaradero.com.ar/Resources/img/logo.png" />
+				</td> 
+				<td width="70%" colspan="2" style="text-align:right;"> 
+					<h2 style="margin-right:20px; color:#a5a19f">Pedido listo para despachar</h2>
+				</td> 
+			</tr>
+			<tr>
+				<td colspan="3" style="padding:1rem 1.5rem;" class="varaderoBackgroundIcon">
+					<p>
+						<b>Gracias por confiar en nosotros.</b>
+					</p>
+					<p>
+						Tu pedido <b>#{{PEDIDO_NUMERO}}</b> ha sido preparado y se encuentra listo para ser despachado.<br/>
+						Agradecemos tu paciencia.
+					</p>
+					<p>
+						<i>Atte. Equipo de Varadero</i><br/><br/>
+						<a href="http://tienda-dvaradero.com.ar/" style="font-weight:bold; text-decoration:none;"><img width="20" src="data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iaXNvLTg4NTktMSI/Pg0KPCEtLSBHZW5lcmF0b3I6IEFkb2JlIElsbHVzdHJhdG9yIDE5LjAuMCwgU1ZHIEV4cG9ydCBQbHVnLUluIC4gU1ZHIFZlcnNpb246IDYuMDAgQnVpbGQgMCkgIC0tPg0KPHN2ZyB2ZXJzaW9uPSIxLjEiIGlkPSJDYXBhXzEiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgeG1sbnM6eGxpbms9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkveGxpbmsiIHg9IjBweCIgeT0iMHB4Ig0KCSB2aWV3Qm94PSIwIDAgNTEyLjAwOCA1MTIuMDA4IiBzdHlsZT0iZW5hYmxlLWJhY2tncm91bmQ6bmV3IDAgMCA1MTIuMDA4IDUxMi4wMDg7IiB4bWw6c3BhY2U9InByZXNlcnZlIj4NCjxwYXRoIHN0eWxlPSJmaWxsOiNGRkMxMDc7IiBkPSJNNTA4LjI4OCw4NS43NjRjLTMuMDQtMy42NDgtNy41NTItNS43Ni0xMi4yODgtNS43NkgxMDcuNTJjLTQuOTYsMC05LjY2NCwyLjMwNC0xMi43MDQsNi4yNA0KCWMtMy4wMDgsMy45NjgtNC4wMzIsOS4wODgtMi43NTIsMTMuODg4bDUxLjIsMTkxLjM2YzEuODg4LDcuMDQsOC4yMjQsMTEuODcyLDE1LjQ1NiwxMS44NzJjMC4yNTYsMCwwLjU0NCwwLDAuOC0wLjAzMmwzMDUuMjgtMTUuMzYNCgljNy4zOTItMC4zODQsMTMuNi01Ljc5MiwxNC45NDQtMTMuMDg4bDMyLTE3NkM1MTIuNjA4LDk0LjE4LDUxMS4zMjgsODkuMzgsNTA4LjI4OCw4NS43NjR6Ii8+DQo8Zz4NCgk8cGF0aCBzdHlsZT0iZmlsbDojRkFGQUZBOyIgZD0iTTQwMCwyNDAuMDA0Yy04LjgzMiwwLTE2LTcuMTY4LTE2LTE2di02NGMwLTguODMyLDcuMTY4LTE2LDE2LTE2czE2LDcuMTY4LDE2LDE2djY0DQoJCUM0MTYsMjMyLjgzNiw0MDguODMyLDI0MC4wMDQsNDAwLDI0MC4wMDR6Ii8+DQoJPHBhdGggc3R5bGU9ImZpbGw6I0ZBRkFGQTsiIGQ9Ik0zMDQsMjQwLjAwNGMtOC44MzIsMC0xNi03LjE2OC0xNi0xNnYtNjRjMC04LjgzMiw3LjE2OC0xNiwxNi0xNnMxNiw3LjE2OCwxNiwxNnY2NA0KCQlDMzIwLDIzMi44MzYsMzEyLjgzMiwyNDAuMDA0LDMwNCwyNDAuMDA0eiIvPg0KCTxwYXRoIHN0eWxlPSJmaWxsOiNGQUZBRkE7IiBkPSJNMjA4LDI0MC4wMDRjLTguODMyLDAtMTYtNy4xNjgtMTYtMTZ2LTY0YzAtOC44MzIsNy4xNjgtMTYsMTYtMTZzMTYsNy4xNjgsMTYsMTZ2NjQNCgkJQzIyNCwyMzIuODM2LDIxNi44MzIsMjQwLjAwNCwyMDgsMjQwLjAwNHoiLz4NCjwvZz4NCjxnPg0KCTxjaXJjbGUgc3R5bGU9ImZpbGw6IzQ1NUE2NDsiIGN4PSIyMDgiIGN5PSI0NDguMDA0IiByPSI0OCIvPg0KCTxjaXJjbGUgc3R5bGU9ImZpbGw6IzQ1NUE2NDsiIGN4PSI0MDAiIGN5PSI0NDguMDA0IiByPSI0OCIvPg0KCTxwYXRoIHN0eWxlPSJmaWxsOiM0NTVBNjQ7IiBkPSJNNDMyLDM2OC4wMDRIMTc2Yy03LjI2NCwwLTEzLjYtNC44NjQtMTUuNDU2LTExLjg3Mkw3OC4yNzIsNDguMDA0SDE2Yy04LjgzMiwwLTE2LTcuMTY4LTE2LTE2DQoJCXM3LjE2OC0xNiwxNi0xNmg3NC41NmM3LjI2NCwwLDEzLjYsNC44NjQsMTUuNDU2LDExLjg3Mmw4Mi4yNzIsMzA4LjEyOEg0MzJjOC44MzIsMCwxNiw3LjE2OCwxNiwxNlM0NDAuODMyLDM2OC4wMDQsNDMyLDM2OC4wMDR6Ig0KCQkvPg0KPC9nPg0KPGc+DQo8L2c+DQo8Zz4NCjwvZz4NCjxnPg0KPC9nPg0KPGc+DQo8L2c+DQo8Zz4NCjwvZz4NCjxnPg0KPC9nPg0KPGc+DQo8L2c+DQo8Zz4NCjwvZz4NCjxnPg0KPC9nPg0KPGc+DQo8L2c+DQo8Zz4NCjwvZz4NCjxnPg0KPC9nPg0KPGc+DQo8L2c+DQo8Zz4NCjwvZz4NCjxnPg0KPC9nPg0KPC9zdmc+DQo=" /> Click aquí para ir a la tienda</b>
+					</p>
+				</td> 
+			</tr>
+			<tr style="background-color:#239b7b">
+				<td colspan="3"> 
+					<p style="margin-left: 1rem; font-size: 12px; color: #eee; line-height: 15px;">
+						<b>DROGUERIA VARADERO S.A.</b><br/>
+						Dirección: México 3002, CABA (C.P.: C1223ABL)<br/>
+						Teléfono: (011) 4874-3434
+					</p>
+				</td>
+			</tr>
+		</table> 
+	</body>
+</html>
