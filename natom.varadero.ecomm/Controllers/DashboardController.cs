@@ -48,6 +48,43 @@ namespace natom.varadero.ecomm.Controllers
             }
         }
 
+        [HttpPost]
+        public ActionResult MarcarComoPreparado(int pedidoId)
+        {
+            try
+            {
+                var manager = new CarritoManager();
+                var pedido = manager.ObtenerPedido(pedidoId);
+                var cliente = manager.ObtenerCliente(pedido.ClienteId);
+                manager.MarcarComoPreparado(pedidoId);
+
+                var htmlPath = System.Web.HttpContext.Current.Server.MapPath("~/Emails/PedidoListoParaDespachar.html");
+                EmailManager.EnviarCorreoPedidoListoParaDespachar(htmlPath, cliente, pedido);
+
+                return Json(new { success = true });
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false, error = ex.Message });
+            }
+        }
+
+        [HttpPost]
+        public ActionResult MarcarComoCompletado(int pedidoId)
+        {
+            try
+            {
+                var manager = new CarritoManager();
+                manager.MarcarComoCompletado(pedidoId);
+
+                return Json(new { success = true });
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false, error = ex.Message });
+            }
+        }
+
         public ActionResult Index()
         {
             return RedirectToAction("Ordenes");
@@ -130,9 +167,12 @@ namespace natom.varadero.ecomm.Controllers
                                  "# " + c.Numero,
                                  c.FechaHoraConfirmacion.Value.ToString("dd/MM/yyyy"),
                                  "$ " + c.Total.ToString("#,##0.00"),
-                                 "Estado",
-                                 "ult. act",
-                                 c.PedidoId
+                                 CarritoManager.ObtenerEstadoPedido(c),
+                                 (c.FechaHoraAnulacion ?? c.FechaHoraCompletado ?? c.FechaHoraPreparado ?? c.FechaHoraFinSincronizado ?? c.FechaHoraConfirmacion).Value.ToString("dd/MM/yyyy HH:mm") + " hs",
+                                 c.PedidoId,
+                                 c.FechaHoraFinSincronizado.HasValue,   /* ESTÁ SINCRONIZADO */
+                                 c.FechaHoraPreparado.HasValue,         /* ESTÁ PREPARADO */
+                                 c.FechaHoraCompletado.HasValue         /* ESTÁ COMPLETADO */
                             };
 
                 return Json(new
@@ -256,22 +296,6 @@ namespace natom.varadero.ecomm.Controllers
             catch (Exception ex)
             {
                 return Json(new { success = false, error = ex.Message });
-            }
-        }
-
-        private void EnviarCorreoPedidoListoParaDespachar(Cliente cliente, Pedido pedido)
-        {
-            try
-            {
-                var htmlPath = System.Web.HttpContext.Current.Server.MapPath("~/Emails/PedidoListoParaDespachar.html");
-                var html = System.IO.File.ReadAllText(htmlPath);
-                var content = html.Replace("{{PEDIDO_NUMERO}}", pedido.Numero.ToString());
-                var dest = new List<System.Net.Mail.MailAddress>() { new System.Net.Mail.MailAddress(cliente.UsuarioEmail) };
-                EmailManager.Enviar("Droguería Varadero | Pedido preparado", content, dest);
-            }
-            catch (Exception ex)
-            {
-
             }
         }
     }

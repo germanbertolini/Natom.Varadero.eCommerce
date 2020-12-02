@@ -82,5 +82,20 @@ namespace natom.varadero.ecomm.Managers
 
             EmailManager.Enviar("Droguería Varadero | Confirmación de pedido", content, dest);
         }
+
+        public static void EnviarCorreoPedidoListoParaDespachar(string htmlPath, Cliente cliente, Pedido pedido)
+        {
+            try
+            {
+                var html = System.IO.File.ReadAllText(htmlPath);
+                var content = html.Replace("{{PEDIDO_NUMERO}}", pedido.Numero.ToString());
+                var dest = new List<System.Net.Mail.MailAddress>() { new System.Net.Mail.MailAddress(cliente.UsuarioEmail) };
+                EmailManager.Enviar("Droguería Varadero | Pedido preparado", content, dest);
+            }
+            catch (Exception ex)
+            {
+
+            }
+        }
     }
 }

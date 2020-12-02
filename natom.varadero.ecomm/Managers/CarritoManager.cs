@@ -61,6 +61,27 @@ namespace natom.varadero.ecomm.Managers
             this.db.SaveChanges();
         }
 
+        public void MarcarComoPreparado(int pedidoId)
+        {
+            Pedido pedido = this.db.Pedidos.Find(pedidoId);
+            this.db.Entry(pedido).State = EntityState.Modified;
+            pedido.FechaHoraPreparado = DateTime.Now;
+            this.db.SaveChanges();
+        }
+
+        public void MarcarComoCompletado(int pedidoId)
+        {
+            Pedido pedido = this.db.Pedidos.Find(pedidoId);
+            this.db.Entry(pedido).State = EntityState.Modified;
+            pedido.FechaHoraCompletado = DateTime.Now;
+            this.db.SaveChanges();
+        }
+
+        public Cliente ObtenerCliente(int clienteId)
+        {
+            return db.Clientes.First(c => c.PKClienteId.Equals(clienteId));
+        }
+
         public PedidoDetalle AgregarItem(int pedidoId, int articuloId, decimal cantidad, bool tienePVP, decimal? pu, decimal porcDesc, decimal puConDesc, decimal porcIVA, decimal puConDescNeto)
         {
             Articulo articulo = this.db.Articulos.FirstOrDefault(a => a.PKArticuloId == articuloId);   

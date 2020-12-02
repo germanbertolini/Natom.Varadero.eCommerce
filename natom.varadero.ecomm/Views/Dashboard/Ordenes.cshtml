@@ -20,7 +20,7 @@
     <div class="container">
 
         <div class="row row-sm">
-            <aside class="col-md-3">
+            <aside class="col-md-2">
                 <div class="card">
                     <ul class="menu-category">
                         <li class="active"> <a href="/Dashboard/Ordenes">Ordenes</a></li>
@@ -28,14 +28,14 @@
                     </ul>
                 </div> <!-- card.// -->
             </aside> <!-- col.// -->
-            <div class="col-md-9">
+            <div class="col-md-10">
                 <table class="table table-striped table-bordered dt-responsive nowrap" id="tblIndex" style="width:100%;">
                     <thead>
                         <tr>
                             <th>Orden</th>
                             <th>Fecha</th>
                             <th>Monto total</th>
-                            <th>Estado</th>
+                            <th style="text-align:center">Estado</th>
                             <th>Ult. actualización</th>
                             <th>Acciones</th>
                         </tr>
@@ -79,7 +79,19 @@
                     "sWidth": '23%',
                     "mRender": function (data, type, full) {
                         var html = "";
-                        html += '&nbsp;<a class="btn btn-secondary btn-sm history-smt-btn" id="' + data + '"><i class="fa fa-history" aria-hidden="true"></i></a>';
+                        var sincronizado = full[6];
+                        var preparado = full[7];
+                        var completado = full[8];
+
+                        html += '&nbsp;<a class="btn btn-primary btn-sm ver-smt-btn" id="' + data + '"><i class="fa fa-eye" aria-hidden="true"></i> Ver</a>';
+                        if (sincronizado) {
+                            if (!preparado) {
+                                html += '&nbsp;<a class="btn btn-warning btn-sm preparado-smt-btn" id="' + data + '"><i class="fa fa-cubes" aria-hidden="true"></i> Preparado</a>';
+                            }
+                            else if (!completado) {
+                                html += '&nbsp;<a class="btn btn-success btn-sm completado-smt-btn" id="' + data + '"><i class="fa fa-check" aria-hidden="true"></i> Completado</a>';
+                            }
+                        }
 
                         return html;
                     }
@@ -87,12 +99,42 @@
             ]
         });
 
-        new $.fn.dataTable.FixedHeader(oTable);
+        //new $.fn.dataTable.FixedHeader(oTable);
 
-        $('#tblIndex').on('click', '.edit-smt-btn', function (e) {
+        $('#tblIndex').on('click', '.ver-smt-btn', function (e) {
             var id = e.currentTarget.id;
-            var url = urlEdit + "?id=" + encodeURIComponent(id);
-            location.href = url;
+
         });
+
+        $('#tblIndex').on('click', '.preparado-smt-btn', function (e) {
+            var id = e.currentTarget.id;
+            Mensajes.MostrarSiNo("¿Está seguro de marcar al pedido como <b>PREPARADO</b>?<br/><i>Se le enviará un mail de aviso al cliente.</i>", function () {
+                eCommerce.DoPOST("Dashboard", "MarcarComoPreparado?pedidoId=" + id, {}, function (response) {
+                    if (response.success) {
+                        $('#tblIndex').DataTable().ajax.reload();
+                    }
+                    else {
+                        Mensajes.MostrarError(response.error);
+                    }
+                    eCommerce.OcultarProcesando();
+                }, false);
+            });
+        });
+
+        $('#tblIndex').on('click', '.completado-smt-btn', function (e) {
+            var id = e.currentTarget.id;
+            Mensajes.MostrarSiNo("¿Está seguro de marcar el pedido como <b>COMPLETADO</b>?", function () {
+                eCommerce.DoPOST("Dashboard", "MarcarComoCompletado?pedidoId=" + id, {}, function (response) {
+                    if (response.success) {
+                        $('#tblIndex').DataTable().ajax.reload();
+                    }
+                    else {
+                        Mensajes.MostrarError(response.error);
+                    }
+                    eCommerce.OcultarProcesando();
+                }, false);
+            });
+        });
+
     });
 </script>
