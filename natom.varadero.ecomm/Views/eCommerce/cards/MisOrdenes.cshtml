@@ -1,4 +1,5 @@
 ﻿@using natom.varadero.entities
+@using natom.varadero.ecomm.Managers
 @{
     List<Pedido> misPedidos = (List<Pedido>)ViewBag.MisPedidos;
 }
@@ -25,45 +26,45 @@
             {
                 foreach (Pedido pedido in misPedidos)
                 {
-                <tr>
-                    <td>
-                        <figure class="media">
-                            <figcaption class="media-body">
-                                <h6 class="title text-truncate" style="margin-bottom:0">
-                                    # @pedido.Numero.ToString().PadLeft(8, '0')
-                                    @if (pedido.AnuladoPorInactividad)
-                                    {
-                                        <br/><i style="color:red; position:absolute;">ANULADO POR INACTIVIDAD</i>
-                                    }
-                                </h6>
-                            </figcaption>
-                        </figure>
-                    </td>
-                    <td>
-                        <h6>@pedido.Fecha.ToString("dd/MM/yyyy")</h6>
-                    </td>
-                    <td>
-                        <h6>$ @pedido.Total.ToString("#,##0.00")</h6>
-                    </td>
-                    <td class="text-right">
-                        <a href="javascript:Carrito.Ver('@(pedido.PedidoId)')" class="btn btn-outline-primary"> Ver </a>
-                        @if (pedido.FechaHoraAnulacion.HasValue)
-                        {
-                            <a href="#" class="btn btn-outline-danger" style="background-color:#fca2a2"> Anulado </a>
-                        }
-                        else if (!pedido.FechaHoraConfirmacion.HasValue)
-                        {
-                            <a href="javascript:Carrito.CancelarOrden('@(pedido.PedidoId)')" class="btn btn-outline-danger"> Anular </a>
-                        }
-                        @if (pedido.FechaHoraConfirmacion.HasValue)
-                        {
-                            <a href="#" class="btn btn-outline-success"> @(pedido.FechaHoraFinSincronizado.HasValue ? "CONFIRMADO" : "CONFIRMADO *") </a>
-                        }
-                    </td>
-                </tr>
+                    <tr>
+                        <td>
+                            <figure class="media">
+                                <figcaption class="media-body">
+                                    <h6 class="title text-truncate" style="margin-bottom:0">
+                                        # @pedido.Numero.ToString().PadLeft(8, '0')
+                                        @if (pedido.AnuladoPorInactividad)
+                                        {
+                                            <br /><i style="color:red; position:absolute;">ANULADO POR INACTIVIDAD</i>
+                                        }
+                                    </h6>
+                                </figcaption>
+                            </figure>
+                        </td>
+                        <td>
+                            <h6>@pedido.Fecha.ToString("dd/MM/yyyy")</h6>
+                        </td>
+                        <td>
+                            <h6>$ @pedido.Total.ToString("#,##0.00")</h6>
+                        </td>
+                        <td class="text-right">
+                            <a href="javascript:Carrito.Ver('@(pedido.PedidoId)')" class="btn btn-outline-primary"> Ver </a>
+                            @if (pedido.FechaHoraAnulacion.HasValue)
+                            {
+                                <a href="#" class="btn btn-outline-danger" style="background-color:#fca2a2"> Anulado </a>
+                            }
+                            else if (!pedido.FechaHoraConfirmacion.HasValue)
+                            {
+                                <a href="javascript:Carrito.CancelarOrden('@(pedido.PedidoId)')" class="btn btn-outline-danger"> Anular </a>
+                            }
+                            @if (pedido.FechaHoraConfirmacion.HasValue)
+                            {
+                                <a href="#" class="btn btn-outline-success"> @CarritoManager.ObtenerEstadoPedido(pedido, true) </a>
+                            }
+                        </td>
+                    </tr>
                 }
             }
 
-            </tbody>
+        </tbody>
     </table>
 </div>

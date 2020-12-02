@@ -29,6 +29,8 @@ namespace natom.varadero.entities
         public DateTime? FechaHoraAnulacionEnvioEmail { get; set; }
         public DateTime? FechaHoraInicioSincronizado { get; set; }
         public DateTime? FechaHoraFinSincronizado { get; set; }
+        public DateTime? FechaHoraPreparado { get; set; }
+        public DateTime? FechaHoraCompletado { get; set; }
 
         public string EnvioDireccion { get; set; }
         public long? EnvioCodigoPostal { get; set; }

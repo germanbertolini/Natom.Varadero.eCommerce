@@ -292,5 +292,25 @@ namespace natom.varadero.ecomm.Managers
                 this.db.SaveChanges();
             }
         }
+
+        public static string ObtenerEstadoPedido(Pedido pedido, bool esUsuario = false)
+        {
+            var limite = Convert.ToDateTime(ConfigurationManager.AppSettings["Dashboard.Ordenes.CircuitoAPartirDe"]);
+
+            if (pedido.FechaHoraAnulacion.HasValue)
+                return "ANULADO";
+
+            else if (pedido.FechaHoraConfirmacion.HasValue && pedido.FechaHoraConfirmacion.Value < limite)
+                return "COMPLETADO"; //COMPATIBILIDAD PEDIDOS ANTERIORES A ESTE FEATURE
+
+            else if (!pedido.FechaHoraFinSincronizado.HasValue)
+                return esUsuario ? "CONFIRMADO *" : "PEND. SINCRONIZACIÓN";
+            else if (!pedido.FechaHoraPreparado.HasValue)
+                return "CONFIRMADO";
+            else if (!pedido.FechaHoraCompletado.HasValue)
+                return "PREPARADO";
+            else
+                return "COMPLETADO";
+        }
     }
 }
