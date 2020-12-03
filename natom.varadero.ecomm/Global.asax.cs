@@ -61,7 +61,8 @@ namespace natom.varadero.ecomm
                     {
                         if (rd != null && !string.IsNullOrEmpty(actionName))
                         {
-                            if (!(actionName.ToLower().Equals("login")))
+                            if (!(actionName.ToLower().Equals("login"))
+                                && !actionName.ToLower().Equals("obtenertotalespedido"))
                             {
                                 HttpCookie cookie = Request.Cookies["t"];
                                 if (cookie == null)
