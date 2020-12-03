@@ -2128,6 +2128,7 @@
     <Content Include="Resources\components\bootstrap-3-typeahead\bower.json" />
     <Content Include="Resources\components\bootstrap-3-typeahead\composer.json" />
     <Content Include="Resources\components\bootstrap-3-typeahead\package.json" />
+    <Content Include="Views\Dashboard\VerPedido.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\natom.varadero.entities\natom.varadero.entities.csproj">

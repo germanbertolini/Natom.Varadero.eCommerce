@@ -5,6 +5,7 @@ using natom.varadero.ecomm.Models.ViewModels;
 using natom.varadero.entities;
 using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
@@ -123,13 +124,28 @@ namespace natom.varadero.ecomm.Controllers
         }
 
         [HttpGet]
-        public ActionResult GetOrdenesTableData(JQueryDataTableParamModel param)
+        public ActionResult GetOrdenesTableData(JQueryDataTableParamModel param, int filtro)
         {
             try
             {
+                var limite = Convert.ToDateTime(ConfigurationManager.AppSettings["Dashboard.Ordenes.CircuitoAPartirDe"]);
+
                 CarritoManager manager = new CarritoManager();
                 int cantidadRegistros = manager.GetPedidosCount();
                 IEnumerable<Pedido> queryData = manager.GetPedidos();
+
+                if (filtro != 0)
+                {
+                    if (filtro == 1) /* PEND.SINCRONIZACIÓN */
+                        queryData = queryData.Where(p => p.FechaHoraConfirmacion.Value >= limite && !p.FechaHoraFinSincronizado.HasValue);
+                    else if (filtro == 2) /* CONFIRMADO */
+                        queryData = queryData.Where(p => p.FechaHoraConfirmacion.Value >= limite && p.FechaHoraFinSincronizado.HasValue && !p.FechaHoraPreparado.HasValue);
+                    else if (filtro == 3) /* PREPARADO */
+                        queryData = queryData.Where(p => p.FechaHoraConfirmacion.Value >= limite && p.FechaHoraFinSincronizado.HasValue && p.FechaHoraPreparado.HasValue && !p.FechaHoraCompletado.HasValue);
+                    else if (filtro == 4) /* COMPLETADO */
+                        queryData = queryData.Where(p => p.FechaHoraConfirmacion.Value < limite || p.FechaHoraCompletado.HasValue);
+                }
+                
 
                 var sSearch = Request.QueryString["sSearch"].ToString();
                 var sortColumnIndex = Convert.ToInt32(Request.QueryString["iSortCol_0"].ToString());
@@ -170,9 +186,9 @@ namespace natom.varadero.ecomm.Controllers
                                  CarritoManager.ObtenerEstadoPedido(c),
                                  (c.FechaHoraAnulacion ?? c.FechaHoraCompletado ?? c.FechaHoraPreparado ?? c.FechaHoraFinSincronizado ?? c.FechaHoraConfirmacion).Value.ToString("dd/MM/yyyy HH:mm") + " hs",
                                  c.PedidoId,
-                                 c.FechaHoraFinSincronizado.HasValue,   /* ESTÁ SINCRONIZADO */
-                                 c.FechaHoraPreparado.HasValue,         /* ESTÁ PREPARADO */
-                                 c.FechaHoraCompletado.HasValue         /* ESTÁ COMPLETADO */
+                                 c.FechaHoraFinSincronizado.HasValue,               /* ESTÁ SINCRONIZADO */
+                                 c.FechaHoraPreparado.HasValue,                     /* ESTÁ PREPARADO */
+                                 (c.FechaHoraConfirmacion.HasValue && c.FechaHoraConfirmacion.Value < limite) || c.FechaHoraCompletado.HasValue         /* ESTÁ COMPLETADO */
                             };
 
                 return Json(new
@@ -297,6 +313,26 @@ namespace natom.varadero.ecomm.Controllers
             {
                 return Json(new { success = false, error = ex.Message });
             }
+        }
+
+        public ActionResult VerPedido(int id)
+        {
+            ClienteManager clienteMgr = new ClienteManager();
+            CarritoManager carritoMgr = new CarritoManager();
+            eCommStatusManager mgr = new eCommStatusManager();
+
+            if (mgr.IsRunnningSyncRoutine())
+                return PartialView("~/Views/eCommerce/Mantenimiento.cshtml");
+
+            if (!new SesionManager().SesionTokenDashboardValido(this.SesionTokenDashboard))
+                return RedirectToAction("Login");
+
+            var pedido = carritoMgr.ObtenerPedido(id);
+            ViewBag.Cliente = clienteMgr.ObtenerParaDashboard();
+            ViewBag.Pedido = pedido;
+            ViewBag.ClientePedido = carritoMgr.ObtenerCliente(pedido.ClienteId);
+
+            return View();
         }
     }
 }

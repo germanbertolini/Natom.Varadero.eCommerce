@@ -29,13 +29,25 @@
                 </div> <!-- card.// -->
             </aside> <!-- col.// -->
             <div class="col-md-10">
+                <div class="row">
+                    <div class="col-md-3" style="position: absolute; right: 260px; margin-top: -4px; z-index:1">
+                        <select class="form-control" id="filtroEstado" style="width:250px;">
+                            <option selected value="0">[SIN FILTRO] VER TODOS</option>
+                            <option value="1">PEND. SINCRONIZACIÓN</option>
+                            <option value="2">CONFIRMADO</option>
+                            <option value="3">PREPARADO</option>
+                            <option value="4">COMPLETADO</option>
+                        </select>
+                    </div>
+                </div>
+
                 <table class="table table-striped table-bordered dt-responsive nowrap" id="tblIndex" style="width:100%;">
                     <thead>
                         <tr>
                             <th>Orden</th>
                             <th>Fecha</th>
                             <th>Monto total</th>
-                            <th style="text-align:center">Estado</th>
+                            <th style="text-align:center">Estado actual</th>
                             <th>Ult. actualización</th>
                             <th>Acciones</th>
                         </tr>
@@ -55,11 +67,13 @@
 <!-- ========================= SECTION MAIN END// ========================= -->
 <script type="text/javascript">
     $(document).ready(function () {
+        $("#filtroEstado").chosen();
+
         var oTable = $('#tblIndex').DataTable({
             "responsive": true,
             "bProcessing": true,
             "bServerSide": true,
-            "sAjaxSource": "/Dashboard/GetOrdenesTableData",
+            "sAjaxSource": "/Dashboard/GetOrdenesTableData?filtro=" + $("#filtroEstado").val(),
             "bLengthChange": true,
             "bFilter": true,
             "bSort": true,
@@ -84,11 +98,11 @@
                         var completado = full[8];
 
                         html += '&nbsp;<a class="btn btn-primary btn-sm ver-smt-btn" id="' + data + '"><i class="fa fa-eye" aria-hidden="true"></i> Ver</a>';
-                        if (sincronizado) {
+                        if (sincronizado && !completado) {
                             if (!preparado) {
                                 html += '&nbsp;<a class="btn btn-warning btn-sm preparado-smt-btn" id="' + data + '"><i class="fa fa-cubes" aria-hidden="true"></i> Preparado</a>';
                             }
-                            else if (!completado) {
+                            else {
                                 html += '&nbsp;<a class="btn btn-success btn-sm completado-smt-btn" id="' + data + '"><i class="fa fa-check" aria-hidden="true"></i> Completado</a>';
                             }
                         }
@@ -103,7 +117,7 @@
 
         $('#tblIndex').on('click', '.ver-smt-btn', function (e) {
             var id = e.currentTarget.id;
-
+            location.href = "/Dashboard/VerPedido?id=" + id;
         });
 
         $('#tblIndex').on('click', '.preparado-smt-btn', function (e) {
@@ -134,6 +148,11 @@
                     eCommerce.OcultarProcesando();
                 }, false);
             });
+        });
+
+        $("#filtroEstado").change(function () {
+            $('#tblIndex').DataTable().ajax.url("/Dashboard/GetOrdenesTableData?filtro=" + $("#filtroEstado").val());
+            $('#tblIndex').DataTable().ajax.reload();
         });
 
     });
