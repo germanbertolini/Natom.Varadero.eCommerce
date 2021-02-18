@@ -221,7 +221,7 @@ namespace natom.varadero.ecomm.Controllers
             return View();
         }
 
-        public ActionResult Catalogo(bool destacados = false)
+        public ActionResult Catalogo(bool destacados = false, bool? filtroDestacados = null)
         {
             ClienteManager clienteMgr = new ClienteManager();
             CarritoManager carritoMgr = new CarritoManager();
@@ -236,6 +236,7 @@ namespace natom.varadero.ecomm.Controllers
             ViewBag.PedidoId = ViewBag.PedidoAbierto == null ? (int?)null : ((Pedido)ViewBag.PedidoAbierto).PedidoId;
             ViewBag.EsCatalogo = true;
             ViewBag.Destacados = destacados;
+            ViewBag.FiltroDestacados = filtroDestacados ?? destacados;
 
             return View();
         }
@@ -431,7 +432,7 @@ namespace natom.varadero.ecomm.Controllers
                 else
                 {
                     //Response.Redirect("/eCommerce/Principal");
-                    Response.Redirect("/eCommerce/Catalogo");
+                    Response.Redirect("/eCommerce/Catalogo?destacados=true&filtroDestacados=false");
                     Response.End();
                 }
                 

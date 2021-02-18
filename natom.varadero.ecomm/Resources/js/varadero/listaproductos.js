@@ -110,18 +110,32 @@
 
     Consultar: function () {
         var destacados = false;
-        if ($("#Destacados").length > 0) {
-            destacados = $("#Destacados").val().toLowerCase() == "true";
+        if ($("#FiltroDestacados").length > 0) {
+            destacados = $("#FiltroDestacados").val().toLowerCase() == "true";
         }
         var filters = ListaProductos._currentFilters;
         if (filters === null || filters.length === 0) {
             filters = [];
             filters.push("NONE");
             $("#txtFiltros").val("");
+
+            //EDIT 17/02/2021
+            //SI NO HAY FILTROS Y LA VISTA ES Destacados=true ENTONCES MOSTRAMOS LOS DESTACADOS POR MAS QUE filtroDestacados=false
+            //ESTO ES PORQUE AHORA LA PAGINA PRINCIPAL ES /Catalogo?destacados=true PERO CUANDO USAN EL BUSCADOR DE PRODUCTOS SE TIENE
+            //QUE BUSCAR POR TODOS LOS PRODUCTOS SIN IMPORTAR SI ES DESTACADO O NO!
+            if ($("#Destacados").length > 0) {
+                destacados = $("#Destacados").val().toLowerCase() == "true";
+            }
         }
         else {
             $("#txtFiltros").val(filters.length + " filtros aplicados");
         }
+
+        if (destacados)
+            $("#labelDestacados").show();
+        else
+            $("#labelDestacados").hide();
+
         eCommerce.DoGET("ListaProductos", "Get", {
             prodfilters: JSON.stringify(filters),
             soloDestacados: destacados,
