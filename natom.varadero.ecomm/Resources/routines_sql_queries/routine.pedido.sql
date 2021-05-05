@@ -196,7 +196,7 @@ NOW(),
 0,
 1,
 0,
-177,	/* nrocanalventa */
+6, /*177,*/	/* nrocanalventa */  /* EDIT BY GERMAN 05/05/2021: COLOCO "6" PARA QUE QUEDE EN CATEGORIA "FARMACIA"
 NOW(),
 '/**[[-DIRECCION_ENTREGA-]]**/',
 0,
