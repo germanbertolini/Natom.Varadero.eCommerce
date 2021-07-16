@@ -200,7 +200,8 @@ namespace natom.varadero.ecomm.Controllers
             ViewBag.Pedido = carritoMgr.ObtenerPedido(id);
             ViewBag.PedidoItemsCount = 0;
             ViewBag.PedidoId = null;
-
+            ViewBag.PromocionalesMostrarVistaPrevia = GetPromocionalVistaPreviaPath() != null;
+            ViewBag.PromocionalesMostrarContenido = GetPromocionalContenidoPath() != null;
             return View();
         }
 
@@ -218,6 +219,8 @@ namespace natom.varadero.ecomm.Controllers
             ViewBag.PedidoItemsCount = ViewBag.PedidoAbierto != null ? ((Pedido)ViewBag.PedidoAbierto).Detalle.Count : 0;
             ViewBag.MisPedidos = carritoMgr.ObtenerPedidos((Cliente)ViewBag.Cliente);
             ViewBag.PedidoId = ViewBag.PedidoAbierto == null ? (int?)null : ((Pedido)ViewBag.PedidoAbierto).PedidoId;
+            ViewBag.PromocionalesMostrarVistaPrevia = GetPromocionalVistaPreviaPath() != null;
+            ViewBag.PromocionalesMostrarContenido = GetPromocionalContenidoPath() != null;
 
             return View();
         }
@@ -238,6 +241,8 @@ namespace natom.varadero.ecomm.Controllers
             ViewBag.EsCatalogo = true;
             ViewBag.Destacados = destacados;
             ViewBag.FiltroDestacados = filtroDestacados ?? destacados;
+            ViewBag.PromocionalesMostrarVistaPrevia = GetPromocionalVistaPreviaPath() != null;
+            ViewBag.PromocionalesMostrarContenido = GetPromocionalContenidoPath() != null;
 
             return View();
         }
@@ -256,6 +261,8 @@ namespace natom.varadero.ecomm.Controllers
             ViewBag.PedidoItemsCount = ViewBag.PedidoAbierto != null ? ((Pedido)ViewBag.PedidoAbierto).Detalle.Count : 0;
             ViewBag.PedidoId = ViewBag.PedidoAbierto == null ? (int?)null : ((Pedido)ViewBag.PedidoAbierto).PedidoId;
             ViewBag.EsCatalogo = false;
+            ViewBag.PromocionalesMostrarVistaPrevia = GetPromocionalVistaPreviaPath() != null;
+            ViewBag.PromocionalesMostrarContenido = GetPromocionalContenidoPath() != null;
 
             return View();
         }
@@ -306,6 +313,9 @@ namespace natom.varadero.ecomm.Controllers
             ViewBag.PedidoItemsCount = ViewBag.PedidoAbierto != null ? ((Pedido)ViewBag.PedidoAbierto).Detalle.Count : 0;
             ViewBag.PedidoId = ViewBag.PedidoAbierto == null ? (int?)null : ((Pedido)ViewBag.PedidoAbierto).PedidoId;
             ViewBag.Direcciones = clienteMgr.ObtenerDirecciones((Cliente)ViewBag.Cliente);
+            ViewBag.PromocionalesMostrarVistaPrevia = GetPromocionalVistaPreviaPath() != null;
+            ViewBag.PromocionalesMostrarContenido = GetPromocionalContenidoPath() != null;
+
             return View();
         }
 
@@ -348,6 +358,8 @@ namespace natom.varadero.ecomm.Controllers
             ViewBag.Pedido = carritoMgr.ObtenerPedido(id);
             ViewBag.PedidoItemsCount = ViewBag.PedidoAbierto != null ? ((Pedido)ViewBag.PedidoAbierto).Detalle.Count : 0;
             ViewBag.PedidoId = ViewBag.PedidoAbierto == null ? (int?)null : ((Pedido)ViewBag.PedidoAbierto).PedidoId;
+            ViewBag.PromocionalesMostrarVistaPrevia = GetPromocionalVistaPreviaPath() != null;
+            ViewBag.PromocionalesMostrarContenido = GetPromocionalContenidoPath() != null;
 
             return View();
         }

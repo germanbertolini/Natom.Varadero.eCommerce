@@ -29,7 +29,31 @@
     <script type="text/javascript">
         $(document).ready(function () {
             Carrito.ActualizarTotalizador();
+
+            $(window).resize(function () {
+                if ($(window).width() < 1460)
+                    $("html").addClass("less-than-1460");
+                else
+                    $("html").removeClass("less-than-1460");
+                if ($(window).width() > 1200)
+                    $("html").addClass("more-than-1200");
+                else
+                    $("html").removeClass("more-than-1200");
+            }).trigger("resize");
         });
+
+        function CerrarPromocional() {
+            $("html #transparencia").remove();
+            $("html #promocional").remove();
+            $("html #cerrar-promocional").remove();
+        }
+
+        function MostrarPromocional() {
+            CerrarPromocional();
+            $("html").append('<div id="transparencia" style="position:fixed; top:0px; left:0px; width:100%; height:100%; z-index:9999998; background-color:rgba(0, 0, 0, 0.7)"></div>');
+            $("html").append('<label id="cerrar-promocional" style="position:fixed; top:3%; left:50%;z-index:99999999; margin-left:-2rem; color:white; cursor:pointer; font-size:2rem;" onclick="CerrarPromocional()">CERRAR [ X ]</label>');
+            $("html").append('<iframe id="promocional" height="87%" width="90%" style="position:fixed; margin:5% 5%; top:0px; left:0px; z-index:9999999; box-shadow:0px 0px 100rem #000" src="/Dashboard/GetPromocionalesContenido?v=' + new Date().getMilliseconds().toString() + '"></iframe>');
+        }
     </script>
     <style type="text/css">
         /*.hiddenPrecioYDescuento {
@@ -41,13 +65,36 @@
         #noty_topLeft_layout_container {
             margin-top:60px!important;
         }
+
+        .promoVistaPrevia {
+            top: 0;
+            margin-top: -14px;
+            margin-left: 9%;
+            border: solid 1px #aaa;
+            background-color:white;
+        }
+
+        .less-than-1460 .promoVistaPrevia {
+            top: 75px;
+            margin-top: -14px;
+            margin-left: 0;
+        }
+
+        .less-than-1460.more-than-1200 .promoVistaPrevia {
+            margin-left: 5%;
+        }
+
+        .less-than-1460 section.section-content,
+        .less-than-1460 section.section-main {
+            padding-top: 80px;
+        }
     </style>
 </head>
 <body style="">
     <header class="section-header">
 
         <section class="header-main shadow-sm">
-            <div class="container">
+            <div class="container-fluid">
                 <div class="row align-items-center">
                     <div class="col-lg-3 col-sm-3">
                         <div class="brand-wrap">
@@ -67,6 +114,10 @@
                         </div>
                     </div>
                     <div class="col-lg-9 col-xl-9 col-sm-9">
+                        @if (ViewBag.PromocionalesMostrarVistaPrevia == true)
+                        {
+                            <img class="promoVistaPrevia" src="/eCommerce/GetPromocionalesVistaPrevia?v=@(DateTime.Now.Ticks)" width="500" height="70" style="position: absolute; @(ViewBag.PromocionalesMostrarContenido == true ? "cursor:pointer;" : "")" onclick="@(ViewBag.PromocionalesMostrarContenido == true ? "MostrarPromocional()" : "")" />
+                        }
                         <div class="widgets-wrap float-right">
                             @if (ViewBag.PedidoId != null)
                             {
