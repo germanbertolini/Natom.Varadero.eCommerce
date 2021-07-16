@@ -15,6 +15,8 @@ namespace natom.varadero.ecomm
         public DbSet<ArticuloDestacado> ArticulosDestacados { get; set; }
         public DbSet<ArticuloGrupo> ArticulosGrupos { get; set; }
         public DbSet<Cliente> Clientes { get; set; }
+        public DbSet<Region> Regiones { get; set; }
+        public DbSet<RegionMontoMinimo> RegionesMontosMinimos { get; set; }
         public DbSet<ClienteDireccion> ClientesDirecciones { get; set; }
         public DbSet<CondicionDeVenta> CondicionesDeVenta { get; set; }
         public DbSet<ListaPrecios> ListasDePrecios { get; set; }

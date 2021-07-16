@@ -416,3 +416,33 @@ ALTER TABLE Pedido ADD PorcentajeIIBB DECIMAL(18,2) DEFAULT 0;
 /******** UPDATE 01/03/2020 ***********/
 ALTER TABLE Cliente ADD ResponsableId INT;
 ALTER TABLE Pedido ADD ResponsableId INT;
+
+/******* UPDATE 16/07/2021 ***********/
+CREATE TABLE Region
+(
+	RegionId INT NOT NULL AUTO_INCREMENT,
+    Descripcion NVARCHAR(30),
+    DeletedAt DATETIME,
+    PRIMARY KEY (RegionId)
+);
+
+INSERT INTO Region (Descripcion) VALUES
+	('INTERIOR'),
+    ('PATAGONIA'),
+    ('TIERRA DEL FUEGO'),
+    ('CAPITAL - AMBA');
+    
+ALTER TABLE Cliente ADD RegionId INT;
+
+CREATE TABLE RegionMontoMinimo
+(
+	RegionMontoMinimoId INT NOT NULL AUTO_INCREMENT,
+    RegionId INT NOT NULL,
+    DiaDeLaSemana INT NOT NULL,
+    MontoMinimo DECIMAL(10, 2),
+    DeletedAt DATETIME,
+    PRIMARY KEY (RegionMontoMinimoId),
+    FOREIGN KEY (RegionId) REFERENCES Region(RegionId)
+);
+
+ALTER TABLE Pedido ADD RegionMontoMinimoId INT;

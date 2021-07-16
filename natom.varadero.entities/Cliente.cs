@@ -26,6 +26,9 @@ namespace natom.varadero.entities
         public int CondVtaId { get; set; }
         public int ListaPreciosId { get; set; }
 
+        public int? RegionId { get; set; }
+        public Region Region { get; set; }
+
         public decimal? LimiteDeCredito { get; set; }
         public decimal? SaldoEnCtaCte { get; set; }
 

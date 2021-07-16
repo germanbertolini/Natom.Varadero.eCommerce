@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Text;
 using System.Linq;
 
 namespace natom.varadero.entities
@@ -43,6 +41,9 @@ namespace natom.varadero.entities
         public List<PedidoDetalle> Detalle { get; set; }
 
         public bool AnuladoPorInactividad { get; set; }
+
+        public int? RegionMontoMinimoId { get; set; }
+        public RegionMontoMinimo RegionMontoMinimo { get; set; }
 
         public decimal Total
         {

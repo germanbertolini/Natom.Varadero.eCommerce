@@ -88,6 +88,22 @@ namespace natom.varadero.ecomm.Controllers
             }
         }
 
+        [HttpPost]
+        public ActionResult AgregarMontoMinimo(RegionMontoMinimo montoMinimo)
+        {
+            try
+            {
+                var manager = new RegionMontosMinimosManager();
+                manager.Grabar(montoMinimo);
+
+                return Json(new { success = true });
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false, error = ex.Message });
+            }
+        }
+
         public ActionResult Index()
         {
             return RedirectToAction("Ordenes");
@@ -121,6 +137,23 @@ namespace natom.varadero.ecomm.Controllers
                 return RedirectToAction("Login");
 
             ViewBag.Cliente = clienteMgr.ObtenerParaDashboard();
+
+            return View();
+        }
+
+        public ActionResult MontosMinimosPorRegion()
+        {
+            ClienteManager clienteMgr = new ClienteManager();
+            eCommStatusManager mgr = new eCommStatusManager();
+
+            if (mgr.IsRunnningSyncRoutine())
+                return PartialView("~/Views/eCommerce/Mantenimiento.cshtml");
+
+            if (!new SesionManager().SesionTokenDashboardValido(this.SesionTokenDashboard))
+                return RedirectToAction("Login");
+
+            ViewBag.Cliente = clienteMgr.ObtenerParaDashboard();
+            ViewBag.Regiones = clienteMgr.ObtenerRegiones();
 
             return View();
         }
@@ -168,6 +201,99 @@ namespace natom.varadero.ecomm.Controllers
                 var bytes = System.IO.File.ReadAllBytes(fileFullPath);
                 var contentType = MimeMapping.GetMimeMapping(fileFullPath);
                 return File(bytes, contentType);
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false, error = ex.Message });
+            }
+        }
+
+        [HttpPost]
+        public async Task<ActionResult> GetMontoMinimo(int id)
+        {
+            try
+            {
+                var manager = new RegionMontosMinimosManager();
+                var montoMinimo = manager.GetMontoMinimo(id);
+                return Json(new { success = true, data = montoMinimo });
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false, error = ex.Message });
+            }
+        }
+
+        [HttpPost]
+        public async Task<ActionResult> EliminarMontoMinimo(int id)
+        {
+            try
+            {
+                var manager = new RegionMontosMinimosManager();
+                manager.EliminarMontoMinimo(id);
+                return Json(new { success = true });
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false, error = ex.Message });
+            }
+        }
+
+        [HttpGet]
+        public ActionResult GetRegionMontoMinimoTableData(JQueryDataTableParamModel param, int filtro)
+        {
+            try
+            {
+                RegionMontosMinimosManager manager = new RegionMontosMinimosManager();
+                int cantidadRegistros = manager.GetMontosMinimosCount();
+                IEnumerable<RegionMontoMinimo> queryData = manager.GetMontosMinimos();
+
+                if (filtro != 0)
+                {
+                    queryData = queryData.Where(r => r.RegionId == filtro);
+                }
+
+                var diasSemana = new List<string>() { "Domingo", "Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sabado" };
+                var sSearch = Request.QueryString["sSearch"].ToString();
+                var sortColumnIndex = Convert.ToInt32(Request.QueryString["iSortCol_0"].ToString());
+                Func<RegionMontoMinimo, string> orderingFunction =
+                    (c => sortColumnIndex == 0 ? c.Region.Descripcion.ToString().PadLeft(8, '0') :
+                        sortColumnIndex == 1 ? (c.DiaDeLaSemana == 0 ? 7 : c.DiaDeLaSemana).ToString() :
+                        sortColumnIndex == 2 ? c.MontoMinimo.ToString().PadLeft(8, '0') :
+                "");
+
+                if (!string.IsNullOrEmpty(sSearch))
+                {
+                    queryData = queryData.Where(r => diasSemana[r.DiaDeLaSemana].ToUpper().Contains(sSearch)
+                                                        || r.Region.Descripcion.ToUpper().Contains(sSearch));
+                }
+
+
+                var sortDirection = Request.QueryString["sSortDir_0"].ToString(); // asc or desc
+                if (sortDirection == "asc")
+                    queryData = queryData.OrderBy(orderingFunction);
+                else
+                    queryData = queryData.OrderByDescending(orderingFunction);
+
+                List<RegionMontoMinimo> displayedData = queryData
+                                                .Skip(param.iDisplayStart)
+                                                .Take(param.iDisplayLength)
+                                                .ToList();
+
+                var result = from c in displayedData
+                             select new object[] {
+                                 c.Region.Descripcion,
+                                 diasSemana[c.DiaDeLaSemana],
+                                 "$ " + c.MontoMinimo.ToString("#,##0.00"),
+                                 c.RegionMontoMinimoId
+                            };
+
+                return Json(new
+                {
+                    sEcho = param.sEcho,
+                    iTotalRecords = cantidadRegistros,
+                    iTotalDisplayRecords = queryData.Count(),
+                    aaData = result
+                }, JsonRequestBehavior.AllowGet);
             }
             catch (Exception ex)
             {

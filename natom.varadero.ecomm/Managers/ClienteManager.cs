@@ -60,5 +60,10 @@ namespace natom.varadero.ecomm.Managers
             }
             return direcciones;
         }
+
+        public List<Region> ObtenerRegiones()
+        {
+            return db.Regiones.Where(r => r.DeletedAt == null).ToList();
+        }
     }
 }

@@ -1,0 +1,280 @@
+﻿@using natom.varadero.entities
+<link href="/Resources/css/varadero/dashboard/principal.ui.css" rel="stylesheet" type="text/css">
+<link href="/Resources/css/varadero/dashboard/principal.responsive.css" rel="stylesheet" media="only screen and (max-width: 1200px)">
+@{ 
+    Layout = "~/Views/Shared/_LayoutDashboard.cshtml";
+}
+<style type="text/css">
+    .bolded {
+        font-weight: bold;
+    }
+    .right-align {
+        text-align:right;
+    }
+    td.center {
+        text-align:center;
+    }
+</style>
+<!-- ========================= SECTION MAIN ========================= -->
+<section class="section-main bg padding-top-sm">
+    <div class="container-fluid">
+
+        <div class="row row-sm">
+            <aside class="col-md-3">
+                <div class="card">
+                    <ul class="menu-category">
+                        <li> <a href="/Dashboard/Ordenes">Ordenes</a></li>
+                        <li> <a href="/Dashboard/Destacados">Productos destacados</a></li>
+                        <li> <a href="/Dashboard/Promocionales">Promocionales</a></li>
+                        <li class="active"> <a href="/Dashboard/MontosMinimosPorRegion">Montos mínimos por región</a></li>
+                    </ul>
+                </div> <!-- card.// -->
+                <button class="btn btn-sm btn-success" style="float:right; margin-top:10px;" onclick="MostrarModalAgregarNuevo()">[+] Agregar nuevo Monto mínimo</button>
+            </aside> <!-- col.// -->
+            <div class="col-md-9">
+                <div class="row">
+                    <div class="col-md-3" style="position: absolute; right: 260px; margin-top: -4px; z-index:1">
+                        <select class="form-control" id="filtroRegion" style="width:250px;">
+                            <option selected value="0">[SIN FILTRO] VER TODOS</option>
+                            @foreach (var region in ViewBag.Regiones as List<Region>)
+                            {
+                                <option value="@region.RegionId">@region.Descripcion</option>
+                            }
+                        </select>
+                    </div>
+                </div>
+
+                <table class="table table-striped table-bordered dt-responsive nowrap" id="tblIndex" style="width:100%;">
+                    <thead>
+                        <tr>
+                            <th>Región</th>
+                            <th>Aplica</th>
+                            <th>Monto mínimo</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                </table>
+            </div>
+            <!-- col./
+            / -->
+            <!-- card.// -->
+        </div>
+
+        <br />
+        <br />
+
+    </div> <!-- container .//  -->
+
+    <div class="modal" id="modalAgregarNuevo">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                @Html.Hidden("RegionMontoMinimoId")
+                <!-- Modal Header -->
+                <div class="modal-header">
+                    <h4 class="modal-title">Nuevo Monto mínimo</h4>
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                </div>
+
+                <!-- Modal body -->
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="form-group">
+                                <label for="exampleInputPassword1">Región</label>
+                                <select class="form-control" id="region" style="width:100%;">
+                                    <option selected value="-1">Seleccione...</option>
+                                    @foreach (var region in ViewBag.Regiones as List<Region>)
+                                    {
+                                        <option value="@region.RegionId">@region.Descripcion</option>
+                                    }
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-12">
+                            <div class="form-group">
+                                <label for="exampleInputPassword1">Aplica</label>
+                                <select class="form-control" id="aplica" style="width:100%;">
+                                    <option selected value="-1">Seleccione...</option>
+                                    <option value="@((int)DayOfWeek.Monday)">Lunes</option>
+                                    <option value="@((int)DayOfWeek.Tuesday)">Martes</option>
+                                    <option value="@((int)DayOfWeek.Wednesday)">Miércoles</option>
+                                    <option value="@((int)DayOfWeek.Thursday)">Jueves</option>
+                                    <option value="@((int)DayOfWeek.Friday)">Viernes</option>
+                                    <option value="@((int)DayOfWeek.Saturday)">Sabado</option>
+                                    <option value="@((int)DayOfWeek.Sunday)">Domingo</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-12">
+                            <div class="form-group">
+                                <label for="exampleInputPassword1">Monto mínimo</label>
+                                <div class="input-group">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text" id="basic-addon1">$</span>
+                                    </div>
+                                    <input type="text" class="form-control decimal" id="montoMinimo" value="0.00" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Modal footer -->
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" style="float:left;" data-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-primary" onclick="AgregarMontoMinimo()">Grabar</button>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</section>
+<!-- ========================= SECTION MAIN END// ========================= -->
+<script type="text/javascript">
+    $(document).ready(function () {
+        $("#filtroRegion, #region, #aplica").chosen();
+
+        setTimeout(function () {
+            $('.decimal').keypress(function (event) {
+                var charCode = (event.which) ? event.which : event.keyCode
+
+                if (
+                    (charCode != 45 || $(this).val().indexOf('-') != -1) && // “-” CHECK MINUS, AND ONLY ONE.
+                    (charCode != 46 || $(this).val().indexOf('.') != -1) && // “.” CHECK DOT, AND ONLY ONE.
+                    (charCode < 48 || charCode > 57))
+                    return false;
+
+                return true;
+
+            }).focusout(function () {
+                if ($(this).val() == "") {
+                    $(this).val("0.00");
+                }
+            });
+        }, 300);
+
+        var oTable = $('#tblIndex').DataTable({
+            "responsive": true,
+            "bProcessing": true,
+            "bServerSide": true,
+            "sAjaxSource": "/Dashboard/GetRegionMontoMinimoTableData?filtro=" + $("#filtroRegion").val(),
+            "bLengthChange": true,
+            "bFilter": true,
+            "bSort": true,
+            "bInfo": true,
+            "scrollY": "305px",
+            "aaSorting": [[1, "asc"]],
+            "bDeferRender": true,
+            "aoColumns": [
+                { "bSortable": true, "sWidth": '35%', "sClass": "bolded" },
+                { "bSortable": true, "sWidth": '30%', "sClass": "bolded" },
+                { "bSortable": true, "sWidth": '20%', "sClass": "right-align" },
+                {
+                    "bSortable": false,
+                    "bSearchable": false,
+                    "sWidth": '15%',
+                    "mRender": function (data, type, full) {
+                        var html = "";
+
+                        html += '&nbsp;<a class="btn btn-primary btn-sm editar-smt-btn" id="' + data + '">Editar</a>';
+                        html += '&nbsp;<a class="btn btn-danger btn-sm baja-smt-btn" id="' + data + '">Eliminar</a>';
+
+                        return html;
+                    }
+                }
+            ]
+        });
+
+        //new $.fn.dataTable.FixedHeader(oTable);
+
+        $('#tblIndex').on('click', '.editar-smt-btn', function (e) {
+            var id = e.currentTarget.id;
+            eCommerce.DoPOST("Dashboard", "GetMontoMinimo?id=" + id, { }, function (response) {
+                if (response.success) {
+                    $(".modal-title").html("Editar Monto mínimo");
+                    $("#RegionMontoMinimoId").val(id);
+                    $("#region").val(response.data.RegionId).trigger("chosen:updated");
+                    $("#aplica").val(response.data.DiaDeLaSemana).trigger("chosen:updated");
+                    $("#montoMinimo").val(response.data.MontoMinimo);
+                    $("#modalAgregarNuevo").modal("show");
+                }
+                else {
+                    Mensajes.MostrarError(response.error);
+                }
+                eCommerce.OcultarProcesando();
+            }, false);
+        });
+
+        $('#tblIndex').on('click', '.baja-smt-btn', function (e) {
+            var id = e.currentTarget.id;
+            Mensajes.MostrarSiNo("¿Desea eliminar el Monto mínimo?", function () {
+                eCommerce.DoPOST("Dashboard", "EliminarMontoMinimo?id=" + id, { }, function (response) {
+                    if (response.success) {
+                        $('#tblIndex').DataTable().ajax.reload();
+                    }
+                    else {
+                        Mensajes.MostrarError(response.error);
+                    }
+                    eCommerce.OcultarProcesando();
+                }, false);
+            });
+        });
+
+        $("#filtroRegion").change(function () {
+            $('#tblIndex').DataTable().ajax.url("/Dashboard/GetRegionMontoMinimoTableData?filtro=" + $("#filtroRegion").val());
+            $('#tblIndex').DataTable().ajax.reload();
+        });
+
+    });
+
+    function MostrarModalAgregarNuevo() {
+        $(".modal-title").html("Nuevo Monto mínimo");
+        $("#region").val("0").trigger("chosen:updated");
+        $("#aplica").val("-1").trigger("chosen:updated");
+        $("#RegionMontoMinimoId").val("0");
+        $("#montoMinimo").val("0.00");
+        $("#modalAgregarNuevo").modal("show");
+    }
+
+    function AgregarMontoMinimo() {
+        var obj = {
+            RegionMontoMinimoId: $("#RegionMontoMinimoId").val(),
+            RegionId: parseInt($("#region").val()),
+            DiaDeLaSemana: parseInt($("#aplica").val()),
+            MontoMinimo: parseFloat($("#montoMinimo").val())
+        };
+
+        if (isNaN(obj.RegionId) || obj.RegionId == -1) {
+            Mensajes.MostrarError("Debe seleccionar 'Región'");
+            return;
+        }
+
+        if (isNaN(obj.DiaDeLaSemana) || obj.DiaDeLaSemana == -1) {
+            Mensajes.MostrarError("Debe seleccionar 'Aplica'");
+            return;
+        }
+
+        if (isNaN(obj.MontoMinimo)) {
+            Mensajes.MostrarError("Debe ingresar 'Monto mínimo'");
+            return;
+        }
+
+        if (obj.MontoMinimo == 0) {
+            Mensajes.MostrarError("'Monto mínimo' no puede ser CERO");
+            return;
+        }
+
+        eCommerce.DoPOST("Dashboard", "AgregarMontoMinimo", { montoMinimo: obj }, function (response) {
+            if (response.success) {
+                $("#modalAgregarNuevo").modal("hide");
+                $('#tblIndex').DataTable().ajax.reload();
+            }
+            else {
+                Mensajes.MostrarError(response.error);
+            }
+            eCommerce.OcultarProcesando();
+        }, false);
+    }
+
+
+</script>

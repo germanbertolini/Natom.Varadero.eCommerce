@@ -204,6 +204,7 @@
     <Compile Include="Managers\ListaProductosManager.cs" />
     <Compile Include="Managers\LogManager.cs" />
     <Compile Include="Managers\ReceivedDataInfo.cs" />
+    <Compile Include="Managers\RegionMontosMinimosManager.cs" />
     <Compile Include="Managers\SesionManager.cs" />
     <Compile Include="Managers\StockManager.cs" />
     <Compile Include="Models\DataTable\CountResult.cs" />
@@ -2129,6 +2130,7 @@
     <Content Include="Resources\components\bootstrap-3-typeahead\package.json" />
     <Content Include="Views\Dashboard\VerPedido.cshtml" />
     <Content Include="Views\Dashboard\Promocionales.cshtml" />
+    <Content Include="Views\Dashboard\MontosMinimosPorRegion.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\natom.varadero.entities\natom.varadero.entities.csproj">
