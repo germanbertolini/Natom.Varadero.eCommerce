@@ -214,6 +214,8 @@
     <Compile Include="Models\ViewModels\DestacadoResult.cs" />
     <Compile Include="Models\ViewModels\ListaDePreciosReportResult.cs" />
     <Compile Include="Models\ViewModels\LoginView.cs" />
+    <Compile Include="Models\ViewModels\reqUploadResource.cs" />
+    <Compile Include="Models\ViewModels\respUploadResource.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Reporting\DataSetReporting.Designer.cs">
       <AutoGen>True</AutoGen>
@@ -2126,6 +2128,7 @@
     <Content Include="Resources\components\bootstrap-3-typeahead\composer.json" />
     <Content Include="Resources\components\bootstrap-3-typeahead\package.json" />
     <Content Include="Views\Dashboard\VerPedido.cshtml" />
+    <Content Include="Views\Dashboard\Promocionales.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\natom.varadero.entities\natom.varadero.entities.csproj">

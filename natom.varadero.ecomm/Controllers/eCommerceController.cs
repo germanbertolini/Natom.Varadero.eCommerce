@@ -8,6 +8,7 @@ using natom.varadero.entities;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -479,6 +480,56 @@ namespace natom.varadero.ecomm.Controllers
                 LogManager.Instance.LogException(null, "/eCommerce/Logout", new { SesionToken = SesionToken }, ex, Request);
             }
             return RedirectToAction("Login", "eCommerce", new { @error = "" });
+        }
+
+        [HttpGet]
+        public async Task<ActionResult> GetPromocionalesVistaPrevia()
+        {
+            try
+            {
+                var fileFullPath = GetPromocionalVistaPreviaPath();
+                var bytes = System.IO.File.ReadAllBytes(fileFullPath);
+                var contentType = MimeMapping.GetMimeMapping(fileFullPath);
+                return File(bytes, contentType);
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false, error = ex.Message });
+            }
+        }
+
+        [HttpGet]
+        public async Task<ActionResult> GetPromocionalesContenido()
+        {
+            try
+            {
+                var fileFullPath = GetPromocionalContenidoPath();
+                var bytes = System.IO.File.ReadAllBytes(fileFullPath);
+                var contentType = MimeMapping.GetMimeMapping(fileFullPath);
+                return File(bytes, contentType);
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false, error = ex.Message });
+            }
+        }
+
+        private string GetPromocionalVistaPreviaPath()
+        {
+            var uploadsPath = System.Web.HttpContext.Current.Server.MapPath("~/Uploads");
+            if (!Directory.Exists(uploadsPath))
+                Directory.CreateDirectory(uploadsPath);
+            var di = new DirectoryInfo(uploadsPath);
+            return di.GetFiles("promocional_vista_previa.*").FirstOrDefault()?.FullName;
+        }
+
+        private string GetPromocionalContenidoPath()
+        {
+            var uploadsPath = System.Web.HttpContext.Current.Server.MapPath("~/Uploads");
+            if (!Directory.Exists(uploadsPath))
+                Directory.CreateDirectory(uploadsPath);
+            var di = new DirectoryInfo(uploadsPath);
+            return di.GetFiles("promocional.*").FirstOrDefault()?.FullName;
         }
     }
 }

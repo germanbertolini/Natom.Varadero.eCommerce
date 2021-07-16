@@ -1,0 +1,326 @@
+﻿@using natom.varadero.entities
+<link href="/Resources/css/varadero/dashboard/principal.ui.css" rel="stylesheet" type="text/css">
+<link href="/Resources/css/varadero/dashboard/principal.responsive.css" rel="stylesheet" media="only screen and (max-width: 1200px)">
+<script src="~/Resources/components/bootstrap-3-typeahead/bootstrap3-typeahead.min.js"></script>
+@{
+    Layout = "~/Views/Shared/_LayoutDashboard.cshtml";
+}
+<style type="text/css">
+    .bolded {
+        font-weight: bold;
+    }
+
+    .right-align {
+        text-align: right;
+    }
+
+    td.center {
+        text-align: center;
+    }
+</style>
+<!-- ========================= SECTION MAIN ========================= -->
+<section class="section-main bg padding-top-sm">
+    <div class="container">
+
+        <div class="row row-sm">
+            <aside class="col-md-2">
+                <div class="card">
+                    <ul class="menu-category">
+                        <li> <a href="/Dashboard/Ordenes">Ordenes</a></li>
+                        <li> <a href="/Dashboard/Destacados">Productos destacados</a></li>
+                        <li class="active"> <a href="/Dashboard/Promocionales">Promocionales</a></li>
+                    </ul>
+                </div> <!-- card.// -->
+            </aside> <!-- col.// -->
+            <div class="col-md-10" style="padding: 0; display: flex;">
+                <div class="col-md-6">
+                    <h4>Vista previa</h4>
+                    <small>Tipo de archivo: jpg, png, bmp, gif</small><br />
+                    <small>Tamaño de imágen: 420x85</small><br />
+                    <div class="form-group">
+                        <button class="btn btn-warning" style="float:left; margin-top: 32px;" onclick="SeleccionarVistaPrevia()">Subir una imágen</button>
+                        <input type="file" id="vista-previa-upload" style="display:none;" accept="image/png, image/gif, image/jpeg, image/jpg, image/bmp" />
+                        <button class="btn btn-danger" id="btnQuitarVistaPrevia" style="@(ViewBag.VistaPreviaCargada == false ? "display:none;" : "")margin-top: 32px; margin-left: 10px;" onclick="BorrarVistaPrevia()">Borrar</button>
+                        <button class="btn btn-info" id="btnVerVistaPrevia" style="@(ViewBag.VistaPreviaCargada == false ? "display:none;" : "")margin-top: 32px; margin-left: 10px;" onclick="MostrarModalVistaPrevia()">Ver</button>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <h4>Contenido maximizado</h4>
+                    <small>Tipo de archivo: jpg, png, bmp, gif, pdf</small><br />
+                    <small>Tamaño de imágen: Sin límite</small><br />
+                    <div class="form-group">
+                        <button class="btn btn-warning" style="float:left; margin-top: 32px;" onclick="SeleccionarContenido()">Subir una imágen o PDF</button>
+                        <input type="file" id="contenido-upload" style="display:none;" accept="image/png, image/gif, image/jpeg, image/jpg, image/bmp, application/pdf" />
+                        <button class="btn btn-danger" id="btnQuitarContenido" style="@(ViewBag.ContenidoCargado == false ? "display:none;" : "")margin-top: 32px; margin-left: 10px;" onclick="BorrarContenido()">Borrar</button>
+                        <button class="btn btn-info" id="btnVerContenido" style="@(ViewBag.ContenidoCargado == false ? "display:none;" : "")margin-top: 32px; margin-left: 10px;" onclick="MostrarModalContenido()">Ver</button>
+                    </div>
+                </div>
+            </div>
+            <!-- col./
+            / -->
+            <!-- card.// -->
+        </div>
+
+        <br />
+        <br />
+
+    </div> <!-- container .//  -->
+
+
+    <div class="modal" id="modalVerVistaPrevia">
+        <div class="modal-dialog">
+            <div class="modal-content">
+
+                <!-- Modal Header -->
+                <div class="modal-header">
+                    <h4 class="modal-title">Ver vista previa</h4>
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                </div>
+
+                <!-- Modal body -->
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-md-12" id="exampleVistaPrevia" style="height: 300px; background-position: center; background-repeat: no-repeat; background-size: 420px 85px;">
+
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Modal footer -->
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" style="float:left;" data-dismiss="modal">Cerrar</button>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <div class="modal" id="modalVerContenido">
+        <div class="modal-dialog">
+            <div class="modal-content" style="width: 1000px; margin-left: -250px;">
+
+                <!-- Modal Header -->
+                <div class="modal-header">
+                    <h4 class="modal-title">Ver contenido</h4>
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                </div>
+
+                <!-- Modal body -->
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <iframe id="exampleContenido" src="" height="500" width="100%"></iframe>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Modal footer -->
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" style="float:left;" data-dismiss="modal">Cerrar</button>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</section>
+<!-- ========================= SECTION MAIN END// ========================= -->
+<script type="text/javascript">
+    var productos = {};
+
+    var TypeAhead = {
+        constructMap: function (data, map) {
+            var objects = [];
+            $.each(data, function (i, object) {
+                map[object.label] = object;
+                objects.push(object.label);
+            });
+            return objects;
+        }
+    };
+
+    $(document).ready(function () {
+        $('#vista-previa-upload').on('change', function (event) {
+            uploadFileVistaPrevia();
+        });
+
+        $('#contenido-upload').on('change', function (event) {
+            uploadFileContenido();
+        });
+
+        var oTable = $('#tblIndex').DataTable({
+            "responsive": true,
+            "bProcessing": true,
+            "bServerSide": true,
+            "sAjaxSource": "/Dashboard/GetDestacadosTableData",
+            "bLengthChange": true,
+            "bFilter": true,
+            "bSort": true,
+            "bInfo": true,
+            "scrollY": "305px",
+            "aaSorting": [[0, "asc"]],
+            "bDeferRender": true,
+            "aoColumns": [
+                { "bSortable": true, "sWidth": '60%', "sClass": "bolded" },
+                { "bSortable": true, "sWidth": '15%' },
+                {
+                    "bSortable": false,
+                    "bSearchable": false,
+                    "sWidth": '25%',
+                    "mRender": function (data, type, full) {
+                        var html = "";
+                        html += '&nbsp;<a class="btn btn-danger btn-sm remove-smt-btn" id="' + data + '"><i class="fa fa-times" aria-hidden="true"></i> Quitar</a>';
+
+                        return html;
+                    }
+                }
+            ]
+        });
+
+        //new $.fn.dataTable.FixedHeader(oTable);
+
+        $('#tblIndex').on('click', '.remove-smt-btn', function (e) {
+            var id = e.currentTarget.id;
+            Mensajes.MostrarSiNo("¿Desea realmente quitarlo de 'destacados'?", function () {
+                eCommerce.DoPOST("Dashboard", "QuitarDestacado?id=" + id, { }, function (response) {
+                    if (response.success) {
+                        $('#tblIndex').DataTable().ajax.reload();
+                    }
+                    else {
+                        Mensajes.MostrarError(response.error);
+                    }
+                    eCommerce.OcultarProcesando();
+                }, false);
+            });
+        });
+
+        $("#btnAgregarDestacado").click(function () {
+            var id = $("#buscadorProductoId").val();
+            if (id == "") {
+                Mensajes.MostrarError("Debes seleccionar un producto.");
+            } else {
+                AgregarDestacado(id);
+            }
+        });
+
+        
+        $('.buscadorProducto').typeahead({
+            minLength: 1,
+            items: 13,
+            matcher: function (item) { return true; },
+            source: function (query, process) {
+                productos = {};
+
+                $.ajax({
+                    type: "POST",
+                    url: '/Dashboard/BuscarProductos',
+                    data: JSON.stringify({
+                        productos: query
+                    }),
+                    dataType: "json",
+                    contentType: "application/json",
+                    success: function (data) {
+                        objects = TypeAhead.constructMap(data.datos, productos);
+                        process(objects);
+                    }
+                });
+            },
+            updater: function (item, dom) {
+                $("#buscadorProductoId").val(productos[item].id);
+                $("#buscadorProducto").val(productos[item].label);
+
+                return item;
+            }
+        });
+    });
+
+    function MostrarModalVistaPrevia() {
+        $("#exampleVistaPrevia").css("backgroundImage", "url(/Dashboard/GetPromocionalesVistaPrevia?v=" + new Date().getMilliseconds().toString() + ")");
+        $("#modalVerVistaPrevia").modal("show");
+    }
+
+    function MostrarModalContenido() {
+        $("#exampleContenido").attr("src", "/Dashboard/GetPromocionalesContenido?v=" + new Date().getMilliseconds().toString() + "");
+        $("#modalVerContenido").modal("show");
+    }
+
+    function SeleccionarVistaPrevia() {
+        $("#vista-previa-upload").click();
+    }
+
+    function uploadFileVistaPrevia() {
+        var f = document.querySelector('#vista-previa-upload').files[0];
+        if (f === undefined)
+            return;
+        var reader = new FileReader();
+        reader.onload = processFileVistaPrevia(f);
+        reader.readAsDataURL(f);
+    }
+
+    function processFileVistaPrevia(theFile) {
+        return function (e) {
+            var base64Content = e.target.result;
+            eCommerce.DoPOST("Dashboard", "UploadVistaPrevia", { Base64: base64Content }, function (response) {
+                if (response.success) {
+                    $("#btnVerVistaPrevia").show();
+                    $("#btnQuitarVistaPrevia").show();
+                } else {
+                    Mensajes.MostrarError(response.error);
+                }
+            });
+        }
+    }
+
+    function SeleccionarContenido() {
+        $("#contenido-upload").click();
+    }
+
+    function uploadFileContenido() {
+        var f = document.querySelector('#contenido-upload').files[0];
+        if (f === undefined)
+            return;
+        var reader = new FileReader();
+        reader.onload = processFileContenido(f);
+        reader.readAsDataURL(f);
+    }
+
+    function processFileContenido(theFile) {
+        return function (e) {
+            var base64Content = e.target.result;
+            eCommerce.DoPOST("Dashboard", "UploadContenido", { Base64: base64Content }, function (response) {
+                if (response.success) {
+                    $("#btnVerContenido").show();
+                    $("#btnQuitarContenido").show();
+                } else {
+                    Mensajes.MostrarError(response.error);
+                }
+            });
+        }
+    }
+
+    function BorrarVistaPrevia() {
+        Mensajes.MostrarSiNo("¿Desea borrar la vista previa? (Dejarán de visualizarla los clientes de manera instantánea)", function () {
+            eCommerce.DoPOST("Dashboard", "BorrarVistaPrevia", { }, function (response) {
+                if (response.success) {
+                    $("#btnVerVistaPrevia").hide();
+                    $("#btnQuitarVistaPrevia").hide();
+                } else {
+                    Mensajes.MostrarError(response.error);
+                }
+            });
+        });
+    }
+
+    function BorrarContenido() {
+        Mensajes.MostrarSiNo("¿Desea borrar el contenido maximizado? (Dejarán de visualizarlo los clientes de manera instantánea)", function () {
+            eCommerce.DoPOST("Dashboard", "BorrarContenido", {}, function (response) {
+                if (response.success) {
+                    $("#btnVerContenido").hide();
+                    $("#btnQuitarContenido").hide();
+                } else {
+                    Mensajes.MostrarError(response.error);
+                }
+            });
+        });
+    }
+
+</script>

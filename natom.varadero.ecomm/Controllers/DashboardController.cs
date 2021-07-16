@@ -6,7 +6,9 @@ using natom.varadero.entities;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
+using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
 
@@ -121,6 +123,56 @@ namespace natom.varadero.ecomm.Controllers
             ViewBag.Cliente = clienteMgr.ObtenerParaDashboard();
 
             return View();
+        }
+
+        public ActionResult Promocionales()
+        {
+            ClienteManager clienteMgr = new ClienteManager();
+            eCommStatusManager mgr = new eCommStatusManager();
+
+            if (mgr.IsRunnningSyncRoutine())
+                return PartialView("~/Views/eCommerce/Promocionales.cshtml");
+
+            if (!new SesionManager().SesionTokenDashboardValido(this.SesionTokenDashboard))
+                return RedirectToAction("Login");
+
+            ViewBag.Cliente = clienteMgr.ObtenerParaDashboard();
+            ViewBag.VistaPreviaCargada = GetPromocionalVistaPreviaPath() != null;
+            ViewBag.ContenidoCargado = GetPromocionalContenidoPath() != null;
+
+            return View();
+        }
+
+        [HttpGet]
+        public async Task<ActionResult> GetPromocionalesVistaPrevia()
+        {
+            try
+            {
+                var fileFullPath = GetPromocionalVistaPreviaPath();
+                var bytes = System.IO.File.ReadAllBytes(fileFullPath);
+                var contentType = MimeMapping.GetMimeMapping(fileFullPath);
+                return File(bytes, contentType);
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false, error = ex.Message });
+            }
+        }
+
+        [HttpGet]
+        public async Task<ActionResult> GetPromocionalesContenido()
+        {
+            try
+            {
+                var fileFullPath = GetPromocionalContenidoPath();
+                var bytes = System.IO.File.ReadAllBytes(fileFullPath);
+                var contentType = MimeMapping.GetMimeMapping(fileFullPath);
+                return File(bytes, contentType);
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false, error = ex.Message });
+            }
         }
 
         [HttpGet]
@@ -334,5 +386,106 @@ namespace natom.varadero.ecomm.Controllers
 
             return View();
         }
+
+        [HttpPost]
+        public async Task<ActionResult> BorrarVistaPrevia()
+        {
+            try
+            {
+                var filePath = GetPromocionalVistaPreviaPath();
+                System.IO.File.Delete(filePath);
+                return Json(new { success = true });
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false, error = ex.Message });
+            }
+        }
+
+        [HttpPost]
+        public async Task<ActionResult> BorrarContenido()
+        {
+            try
+            {
+                var filePath = GetPromocionalContenidoPath();
+                System.IO.File.Delete(filePath);
+                return Json(new { success = true });
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false, error = ex.Message });
+            }
+        }
+
+        [HttpPost]
+        public async Task<ActionResult> UploadVistaPrevia(reqUploadResource request)
+        {
+            try
+            {
+                var content = request.Base64.Split(',');
+                byte[] bytes = Convert.FromBase64String(content[1]);
+                string contentType = content[0].Split(';')[0].Split(':')[1].Trim();
+
+                var uploadsPath = System.Web.HttpContext.Current.Server.MapPath("~/Uploads");
+                if (!Directory.Exists(uploadsPath))
+                    Directory.CreateDirectory(uploadsPath);
+                var di = new DirectoryInfo(uploadsPath);
+                foreach (var fi in di.GetFiles("promocional_vista_previa.*"))
+                    System.IO.File.Delete(fi.FullName);
+                var fileExtension = contentType.Split('/').Last();
+                System.IO.File.WriteAllBytes(uploadsPath + "\\promocional_vista_previa." + fileExtension, bytes);
+
+                return Json(new { success = true });
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false, error = ex.Message });
+            }
+        }
+
+        [HttpPost]
+        public async Task<ActionResult> UploadContenido(reqUploadResource request)
+        {
+            try
+            {
+                var content = request.Base64.Split(',');
+                byte[] bytes = Convert.FromBase64String(content[1]);
+                string contentType = content[0].Split(';')[0].Split(':')[1].Trim();
+
+                var uploadsPath = System.Web.HttpContext.Current.Server.MapPath("~/Uploads");
+                if (!Directory.Exists(uploadsPath))
+                    Directory.CreateDirectory(uploadsPath);
+                var di = new DirectoryInfo(uploadsPath);
+                foreach (var fi in di.GetFiles("promocional.*"))
+                    System.IO.File.Delete(fi.FullName);
+                var fileExtension = contentType.Split('/').Last();
+                System.IO.File.WriteAllBytes(uploadsPath + "\\promocional." + fileExtension, bytes);
+
+                return Json(new { success = true });
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false, error = ex.Message });
+            }
+        }
+
+        private string GetPromocionalVistaPreviaPath()
+        {
+            var uploadsPath = System.Web.HttpContext.Current.Server.MapPath("~/Uploads");
+            if (!Directory.Exists(uploadsPath))
+                Directory.CreateDirectory(uploadsPath);
+            var di = new DirectoryInfo(uploadsPath);
+            return di.GetFiles("promocional_vista_previa.*").FirstOrDefault()?.FullName;
+        }
+
+        private string GetPromocionalContenidoPath()
+        {
+            var uploadsPath = System.Web.HttpContext.Current.Server.MapPath("~/Uploads");
+            if (!Directory.Exists(uploadsPath))
+                Directory.CreateDirectory(uploadsPath);
+            var di = new DirectoryInfo(uploadsPath);
+            return di.GetFiles("promocional.*").FirstOrDefault()?.FullName;
+        }
+
     }
 }
