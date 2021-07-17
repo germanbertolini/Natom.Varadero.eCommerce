@@ -210,6 +210,18 @@ namespace natom.varadero.ecomm.Managers
         public object ObtenerTotalesPedido(int pedidoId)
         {
             Pedido pedido = this.ObtenerPedido(pedidoId);
+            Cliente cliente = new CarritoManager().ObtenerCliente(pedido.ClienteId);
+
+            //OBTENEMOS MONTO MINIMO PARA EL PEDIDO
+            decimal? montoMinimo = 0;
+            if (cliente.RegionId != null)
+            {
+                var regionMontoMinimo = new RegionMontosMinimosManager().ObtenerMontoMinimoParaHoy(cliente.RegionId.Value);
+                if (regionMontoMinimo != null)
+                    montoMinimo = regionMontoMinimo.MontoMinimo;
+            }
+
+            //DEVOLVEMOS LA DATA
             return new
             {
                 detalle = from item in pedido.Detalle select new {
@@ -227,7 +239,9 @@ namespace natom.varadero.ecomm.Managers
                 },
                 subtotal = String.Format("$ {0}", pedido.Detalle.Sum(item => item.PrecioUnitarioConDescuentoNeto * item.Cantidad).ToString("#,##0.00")),
                 iva = String.Format("$ {0}", pedido.Detalle.Sum(item => (item.PrecioUnitarioConDescuento - item.PrecioUnitarioConDescuentoNeto) * item.Cantidad).ToString("#,##0.00")),
-                total = String.Format("$ {0}", pedido.Detalle.Sum(item => item.PrecioUnitarioConDescuento * item.Cantidad).ToString("#,##0.00"))
+                total = String.Format("$ {0}", pedido.Detalle.Sum(item => item.PrecioUnitarioConDescuento * item.Cantidad).ToString("#,##0.00")),
+                montoMinimo = montoMinimo != null && montoMinimo != 0 ? String.Format("$ {0}", montoMinimo.Value.ToString("#,##0.00")) : null,
+                montoMinimoEnRojo = pedido.Detalle.Sum(item => item.PrecioUnitarioConDescuentoNeto * item.Cantidad) < montoMinimo
             };
         }
 

@@ -60,5 +60,13 @@ namespace natom.varadero.ecomm.Managers
             obj.DeletedAt = DateTime.Now;
             db.SaveChanges();
         }
+
+        public RegionMontoMinimo ObtenerMontoMinimoParaHoy(int regionId)
+        {
+            int diaDeLaSemanaHoy = (int)DateTime.Now.DayOfWeek;
+            return db.RegionesMontosMinimos.FirstOrDefault(r => r.DeletedAt == null
+                                                                && r.RegionId == regionId
+                                                                && r.DiaDeLaSemana == diaDeLaSemanaHoy);
+        }
     }
 }

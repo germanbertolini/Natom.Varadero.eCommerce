@@ -65,5 +65,13 @@ namespace natom.varadero.ecomm.Managers
         {
             return db.Regiones.Where(r => r.DeletedAt == null).ToList();
         }
+
+        public void ReflejarPedidoEnSaldoCtaCte(int clienteId, decimal montoTotalPedido)
+        {
+            Cliente cliente = db.Clientes.First(c => c.PKClienteId == clienteId);
+            db.Entry(cliente).State = System.Data.Entity.EntityState.Modified;
+            cliente.SaldoEnCtaCte += montoTotalPedido;
+            db.SaveChanges();
+        }
     }
 }

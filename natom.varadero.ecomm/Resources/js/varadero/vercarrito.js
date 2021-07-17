@@ -57,6 +57,23 @@ function ActualizarTotales(datosTotales) {
         $(".iva").html(data.iva);
         $(".subtotal").html(data.subtotal);
         $(".total").html(data.total);
+
+        $(".dMontoMinimo").removeAttr("total-por-debajo-minimo");
+
+        if (data.montoMinimo != null) {
+            $(".dMontoMinimo").show();
+            $(".monto-minimo").html(data.montoMinimo);
+            if (data.montoMinimoEnRojo == true) {
+                $(".dMontoMinimo").css("color", "red");
+                $(".dMontoMinimo").attr("total-por-debajo-minimo", "total-por-debajo-minimo");
+            }
+            else {
+                $(".dMontoMinimo").css("color", "black");
+            }
+        }
+        else {
+            $(".dMontoMinimo").hide();
+        }
     };
     if (datosTotales === undefined) {
         var pedidoId = $("#PedidoIdCerrado").length == 0 ? parseInt($("#PedidoId").val()) : parseInt($("#PedidoIdCerrado").val());
@@ -73,22 +90,29 @@ function ActualizarTotales(datosTotales) {
 
 function asjl() {
     Mensajes.MostrarSiNo("¿Desea CONFIRMAR la orden?", function () {
-        var entregaEn = $("#entregaEn").val();
-        if (entregaEn == "-2") {
-            Mensajes.MostrarError("Debe seleccionar el domicilio de Entrega");
-            return;
-        }
-        if (entregaEn == "-1") {
-            entregaEn = null;
-        }
-        eCommerce.DoPOST("eCommerce", "ConfirmarPedido", { clienteDireccionId: entregaEn }, function (response) {
-            if (response.success) {
-                location.href = "/eCommerce/PedidoConfirmado?id=" + response.pedidoId;
+        var callbackConfirmar = function () {
+            var entregaEn = $("#entregaEn").val();
+            if (entregaEn == "-2") {
+                Mensajes.MostrarError("Debe seleccionar el domicilio de Entrega");
+                return;
             }
-            else {
-                Mensajes.MostrarError(response.error);
-                eCommerce.OcultarProcesando();
+            if (entregaEn == "-1") {
+                entregaEn = null;
             }
-        }, false);
+            eCommerce.DoPOST("eCommerce", "ConfirmarPedido", { clienteDireccionId: entregaEn }, function (response) {
+                if (response.success) {
+                    location.href = "/eCommerce/PedidoConfirmado?id=" + response.pedidoId;
+                }
+                else {
+                    Mensajes.MostrarError(response.error);
+                    eCommerce.OcultarProcesando();
+                }
+            }, false);
+        };
+
+        if ($(".dMontoMinimo").is("[total-por-debajo-minimo]"))
+            Mensajes.MostrarSiNo("<b>ATENCIÓN:</b> El subtotal del pedido se encuentra por debajo del monto mínimo. Esto implica que, en caso de continuar con la confirmación, un vendedor estará contactandose con usted para terminar de confirmar el pedido.<br/>¿Desea continuar?", callbackConfirmar);
+        else
+            callbackConfirmar();
     });
 }

@@ -286,6 +286,8 @@ namespace natom.varadero.ecomm.Controllers
 
                 QuitarCookieCarrito();
 
+                clienteMgr.ReflejarPedidoEnSaldoCtaCte(cliente.PKClienteId, pedido.Total);
+
                 return Json(new { success = true, pedidoId = pedido.PedidoId });
             }
             catch (HandledException ex)
