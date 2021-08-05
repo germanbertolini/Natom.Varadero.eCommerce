@@ -27,7 +27,9 @@ SELECT
 	NULL							AS SesionUltimaAccion,
     
     1								AS PorcentajeIIBB,
-	1								AS ResponsableId
+	1								AS ResponsableId,
+
+    NULL                            AS RegionId
     
 UNION
 
@@ -64,7 +66,18 @@ SELECT
 	NULL				AS SesionUltimaAccion,
     
     COALESCE(iibb.alicuota, 0)	AS PorcentajeIIBB,
-	cli.nrorespcta				AS ResponsableId
+	cli.nrorespcta				AS ResponsableId,
+
+    CASE WHEN cli.codzona IN (10, 100, 130, 160, 190, 300, 400, 450, 480, 500, 550, 600,
+                                680, 700, 780, 800, 850, 880, 900, 950, 980, 985, 999) THEN
+        1 /*INTERIOR*/
+    WHEN cli.codzona IN (750, 350, 380, 650) THEN
+        2 /*PATAGONIA*/
+    WHEN cli.codzona IN (580) THEN
+        3 /*TIERRA DEL FUEGO*/
+    WHEN cli.codzona IN (200, 201, 202, 203, 210, 220, 230) THEN
+        4 /*CAPITAL - AMBA*/
+    END                 AS RegionId
 FROM
 	clientes cli
     LEFT JOIN clientesperciib iibb ON iibb.nrocli = cli.nrocli AND iibb.codjurisdiccion = 901
