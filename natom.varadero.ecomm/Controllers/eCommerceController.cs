@@ -394,9 +394,9 @@ namespace natom.varadero.ecomm.Controllers
             {
                 Producto = producto.Nombre,
                 ConIVA = producto.TieneIVADiscriminado ? "SI" : "NO",
-                PVP = producto.TienePVP && !producto.TieneIVADiscriminado ? (producto.EsDestacado ? ("¡$ " + producto.PrecioVentaPublico.ToString("#,##0.00") + "!") : "$ " + producto.PrecioVentaPublico.ToString("#,##0.00")) : "",
+                PVP = producto.TienePVP && !producto.TieneIVADiscriminado ? (producto.EsDestacado ? ("¡$ " + producto.PrecioVentaPublico.ToString("F").Replace(".", ",") + "!") : "$ " + producto.PrecioVentaPublico.ToString("F").Replace(".", ",")) : "",
                 PorcDto = producto.TienePVP && !producto.TieneIVADiscriminado ? ("% " + producto.PorcentajeDescRespectoPVP.ToString("F").Replace(".", ",")) : "",
-                Precio = producto.EsDestacado ? ("¡$ " + producto.PrecioConDescuentoBruto.ToString("#,##0.00") + "!") : "$ " + producto.PrecioConDescuentoBruto.ToString("#,##0.00")
+                Precio = producto.EsDestacado ? ("¡$ " + producto.PrecioConDescuentoBruto.ToString("F").Replace(".", ",") + "!") : "$ " + producto.PrecioConDescuentoBruto.ToString("F").Replace(".", ",")
             }).OrderBy(p => p.Producto).ToList();
             /****************/
 

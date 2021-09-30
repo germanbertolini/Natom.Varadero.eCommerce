@@ -283,7 +283,7 @@ namespace natom.varadero.ecomm.Controllers
                              select new object[] {
                                  c.Region.Descripcion,
                                  diasSemana[c.DiaDeLaSemana],
-                                 "$ " + c.MontoMinimo.ToString("#,##0.00"),
+                                 "$ " + c.MontoMinimo.ToString("F").Replace(".", ","),
                                  c.RegionMontoMinimoId
                             };
 
@@ -360,7 +360,7 @@ namespace natom.varadero.ecomm.Controllers
                              select new object[] {
                                  "# " + c.Numero,
                                  c.FechaHoraConfirmacion.Value.ToString("dd/MM/yyyy"),
-                                 "$ " + c.Total.ToString("#,##0.00"),
+                                 "$ " + c.Total.ToString("F").Replace(".", ","),
                                  CarritoManager.ObtenerEstadoPedido(c),
                                  (c.FechaHoraAnulacion ?? c.FechaHoraCompletado ?? c.FechaHoraPreparado ?? c.FechaHoraFinSincronizado ?? c.FechaHoraConfirmacion).Value.ToString("dd/MM/yyyy HH:mm") + " hs",
                                  c.PedidoId,

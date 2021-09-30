@@ -229,18 +229,18 @@ namespace natom.varadero.ecomm.Managers
                     cantidad = item.Cantidad.ToString().Replace(",", "."),
                     tienePVP = item.TienePVP,
                     tieneIVADisc = item.PorcentajeIVA > 0,
-                    precioUnitario = item.PrecioUnitario.HasValue ? String.Format("$ {0}", (item.PrecioUnitario.Value.ToString("#,##0.00"))) : null,
-                    precioUnitarioTotal = item.PrecioUnitario.HasValue ? String.Format("$ {0}", ((item.PrecioUnitario.Value * item.Cantidad).ToString("#,##0.00"))) : null,
-                    //precioUnitarioConDescuento = String.Format("$ {0}", ((item.PrecioUnitarioConDescuento).ToString("#,##0.00"))),
-                    //precioUnitarioConDescuentoTotal = String.Format("$ {0}", ((item.PrecioUnitarioConDescuento * item.Cantidad).ToString("#,##0.00"))),
-                    precioUnitarioConDescuento = String.Format("$ {0}", ((item.PrecioUnitarioConDescuentoNeto).ToString("#,##0.00"))),
-                    precioUnitarioConDescuentoTotal = String.Format("$ {0}", ((item.PrecioUnitarioConDescuentoNeto * item.Cantidad).ToString("#,##0.00"))),
+                    precioUnitario = item.PrecioUnitario.HasValue ? String.Format("$ {0}", (item.PrecioUnitario.Value.ToString("F").Replace(".", ","))) : null,
+                    precioUnitarioTotal = item.PrecioUnitario.HasValue ? String.Format("$ {0}", ((item.PrecioUnitario.Value * item.Cantidad).ToString("F").Replace(".", ","))) : null,
+                    //precioUnitarioConDescuento = String.Format("$ {0}", ((item.PrecioUnitarioConDescuento).ToString("F").Replace(".", ","))),
+                    //precioUnitarioConDescuentoTotal = String.Format("$ {0}", ((item.PrecioUnitarioConDescuento * item.Cantidad).ToString("F").Replace(".", ","))),
+                    precioUnitarioConDescuento = String.Format("$ {0}", ((item.PrecioUnitarioConDescuentoNeto).ToString("F").Replace(".", ","))),
+                    precioUnitarioConDescuentoTotal = String.Format("$ {0}", ((item.PrecioUnitarioConDescuentoNeto * item.Cantidad).ToString("F").Replace(".", ","))),
                     porcentajeDescuento = String.Format("% {0}", item.PorcentajeDescuento.ToString().Replace(".", ","))
                 },
-                subtotal = String.Format("$ {0}", pedido.Detalle.Sum(item => item.PrecioUnitarioConDescuentoNeto * item.Cantidad).ToString("#,##0.00")),
-                iva = String.Format("$ {0}", pedido.Detalle.Sum(item => (item.PrecioUnitarioConDescuento - item.PrecioUnitarioConDescuentoNeto) * item.Cantidad).ToString("#,##0.00")),
-                total = String.Format("$ {0}", pedido.Detalle.Sum(item => item.PrecioUnitarioConDescuento * item.Cantidad).ToString("#,##0.00")),
-                montoMinimo = montoMinimo != null && montoMinimo != 0 ? String.Format("$ {0}", montoMinimo.Value.ToString("#,##0.00")) : null,
+                subtotal = String.Format("$ {0}", pedido.Detalle.Sum(item => item.PrecioUnitarioConDescuentoNeto * item.Cantidad).ToString("F").Replace(".", ",")),
+                iva = String.Format("$ {0}", pedido.Detalle.Sum(item => (item.PrecioUnitarioConDescuento - item.PrecioUnitarioConDescuentoNeto) * item.Cantidad).ToString("F").Replace(".", ",")),
+                total = String.Format("$ {0}", pedido.Detalle.Sum(item => item.PrecioUnitarioConDescuento * item.Cantidad).ToString("F").Replace(".", ",")),
+                montoMinimo = montoMinimo != null && montoMinimo != 0 ? String.Format("$ {0}", montoMinimo.Value.ToString("F").Replace(".", ",")) : null,
                 montoMinimoEnRojo = pedido.Detalle.Sum(item => item.PrecioUnitarioConDescuentoNeto * item.Cantidad) < montoMinimo
             };
         }

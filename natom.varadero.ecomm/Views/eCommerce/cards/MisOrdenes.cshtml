@@ -44,7 +44,7 @@
                             <h6>@pedido.Fecha.ToString("dd/MM/yyyy")</h6>
                         </td>
                         <td>
-                            <h6>$ @pedido.Total.ToString("#,##0.00")</h6>
+                            <h6>$ @pedido.Total.ToString("F").Replace(".", ",")</h6>
                         </td>
                         <td class="text-right">
                             <a href="javascript:Carrito.Ver('@(pedido.PedidoId)')" class="btn btn-outline-primary"> Ver </a>

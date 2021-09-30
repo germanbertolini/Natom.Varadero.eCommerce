@@ -21,7 +21,7 @@
             <main class="col-lg-6 col-sm-6 col-xl-6">
                 <br/><br /><br />
                 <h2>¡Pedido #@(pedido.Numero.ToString().PadLeft(8, '0')) confirmado!</h2>
-                @*<h4>Se procesó correctamente el pago por $ @(pedido.Total.ToString("#,##0.00"))</h4>*@
+                @*<h4>Se procesó correctamente el pago por $ @(pedido.Total.ToString("F").Replace(".", ","))</h4>*@
                 <h4>Gracias por confiar en Drogueria Varadero</h4>
 
             </main> <!-- col.// -->

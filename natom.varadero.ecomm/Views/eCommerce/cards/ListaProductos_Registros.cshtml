@@ -37,7 +37,7 @@ else
             <td class="hiddenPrecioYDescuento">
                 <div class="price-wrap">
                     <var class="price tienePVP" style="display:none;" articuloId="@producto.Id">@producto.TienePVP.ToString().ToLower()</var>
-                    <var class="price precioUnitario" style="@(producto.TienePVP && !producto.TieneIVADiscriminado ? "" : "display:none;")" articuloId="@producto.Id">@(producto.EsDestacado ? "¡" : "")$ @producto.PrecioVentaPublico.ToString("#,##0.00")@(producto.EsDestacado ? "!" : "")</var>
+                    <var class="price precioUnitario" style="@(producto.TienePVP && !producto.TieneIVADiscriminado ? "" : "display:none;")" articuloId="@producto.Id">@(producto.EsDestacado ? "¡" : "")$ @producto.PrecioVentaPublico.ToString("F").Replace(".", ",")@(producto.EsDestacado ? "!" : "")</var>
                     
                 </div> <!-- price-wrap .// -->
             </td>
@@ -52,8 +52,8 @@ else
             </td>
             <td>
                 <div class="price-wrap">
-                    <var class="price precioUnitarioConDescuentoNeto" style="text-align:center; display:none;" articuloId="@producto.Id">$ @producto.PrecioConDescuentoNeto.ToString("#,##0.00")</var>
-                    <var class="price precioUnitarioConDescuento" style="text-align:center" articuloId="@producto.Id">@(producto.EsDestacado ? "¡" : "")$ @producto.PrecioConDescuentoBruto.ToString("#,##0.00")@(producto.EsDestacado ? "!" : "")</var>
+                    <var class="price precioUnitarioConDescuentoNeto" style="text-align:center; display:none;" articuloId="@producto.Id">$ @producto.PrecioConDescuentoNeto.ToString("F").Replace(".", ",")</var>
+                    <var class="price precioUnitarioConDescuento" style="text-align:center" articuloId="@producto.Id">@(producto.EsDestacado ? "¡" : "")$ @producto.PrecioConDescuentoBruto.ToString("F").Replace(".", ",")@(producto.EsDestacado ? "!" : "")</var>
                 </div> <!-- price-wrap .// -->
             </td>
             <td class="text-right">
