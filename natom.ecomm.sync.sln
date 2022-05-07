@@ -37,6 +37,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "natom.ecomm.sync.routine.pe
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "natom.varadero.entities", "natom.varadero.entities\natom.varadero.entities.csproj", "{509E4E75-41BE-4803-A26F-5449D4C09276}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "natom.ecomm.sync.apiendpoints", "natom.ecomm.sync.apiendpoints\natom.ecomm.sync.apiendpoints.csproj", "{0881EEFB-E7CA-445C-96A3-63A2C311508C}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -99,6 +101,10 @@ Global
 		{509E4E75-41BE-4803-A26F-5449D4C09276}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{509E4E75-41BE-4803-A26F-5449D4C09276}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{509E4E75-41BE-4803-A26F-5449D4C09276}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0881EEFB-E7CA-445C-96A3-63A2C311508C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0881EEFB-E7CA-445C-96A3-63A2C311508C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0881EEFB-E7CA-445C-96A3-63A2C311508C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0881EEFB-E7CA-445C-96A3-63A2C311508C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
