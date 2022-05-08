@@ -286,7 +286,7 @@ namespace natom.varadero.ecomm.Controllers
 
                 QuitarCookieCarrito();
 
-                clienteMgr.ReflejarPedidoEnSaldoCtaCte(cliente.PKClienteId, pedido.Total);
+                clienteMgr.ReflejarPedidoEnSaldoCtaCte(cliente.Codigo, pedido.Total);
 
                 return Json(new { success = true, pedidoId = pedido.PedidoId });
             }
@@ -296,7 +296,7 @@ namespace natom.varadero.ecomm.Controllers
             }
             catch (Exception ex)
             {
-                LogManager.Instance.LogException(null, "/eCommerce/ConfirmarPedido", new { clienteDireccionId, clienteId = cliente?.ClienteId, pedidoId = pedido?.PedidoId }, ex, Request);
+                LogManager.Instance.LogException(null, "/eCommerce/ConfirmarPedido", new { clienteDireccionId, clienteCodigo = cliente?.Codigo, pedidoId = pedido?.PedidoId }, ex, Request);
                 return Json(new { success = false, error = ex.Message });
             }
         }

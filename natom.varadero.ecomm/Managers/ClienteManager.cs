@@ -30,14 +30,10 @@ namespace natom.varadero.ecomm.Managers
         {
             List<ClienteDireccion> direcciones = new List<ClienteDireccion>();
             var dires = this.db.ClientesDirecciones
-                            .Where(c => c.PKClienteId == cliente.PKClienteId && c.PKSucursalId == cliente.PKSucursalId)
+                            .Where(c => c.ClienteCUIT == cliente.CUIT)
                             .GroupBy(k => new { k.Direccion, k.CodigoPostal, k.Telefono },
                                        (k, v) => new {
-                                            ClienteDireccionId = v.FirstOrDefault().ClienteDireccionId,
                                             EF_Id = v.FirstOrDefault().EF_Id,
-                                            PKClienteId = v.FirstOrDefault().PKClienteId,
-                                            PKDireccionId = v.FirstOrDefault().PKDireccionId,
-                                            PKSucursalId = v.FirstOrDefault().PKSucursalId,
                                             CodigoPostal = k.CodigoPostal,
                                             Direccion = k.Direccion,
                                             Telefono = k.Telefono
@@ -47,13 +43,9 @@ namespace natom.varadero.ecomm.Managers
             {
                 var dire = new ClienteDireccion()
                 {
-                    ClienteDireccionId = s.ClienteDireccionId,
+                    EF_Id = s.EF_Id,
                     CodigoPostal = s.CodigoPostal,
                     Direccion = s.Direccion,
-                    EF_Id = s.EF_Id,
-                    PKClienteId = s.PKClienteId,
-                    PKDireccionId = s.PKDireccionId,
-                    PKSucursalId = s.PKSucursalId,
                     Telefono = s.Telefono
                 };
                 direcciones.Add(dire);
@@ -66,9 +58,9 @@ namespace natom.varadero.ecomm.Managers
             return db.Regiones.Where(r => r.DeletedAt == null).ToList();
         }
 
-        public void ReflejarPedidoEnSaldoCtaCte(int clienteId, decimal montoTotalPedido)
+        public void ReflejarPedidoEnSaldoCtaCte(string clienteCodigo, decimal montoTotalPedido)
         {
-            Cliente cliente = db.Clientes.First(c => c.PKClienteId == clienteId);
+            Cliente cliente = db.Clientes.First(c => c.Codigo == clienteCodigo);
             db.Entry(cliente).State = System.Data.Entity.EntityState.Modified;
             cliente.SaldoEnCtaCte += montoTotalPedido;
             db.SaveChanges();

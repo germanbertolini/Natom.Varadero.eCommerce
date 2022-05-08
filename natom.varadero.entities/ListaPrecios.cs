@@ -6,8 +6,8 @@ namespace natom.varadero.entities
     public class ListaPrecios
     {
         public long EF_Id { get; set; }
-        public int PKListaDePreciosId { get; set; }
-        public int? PKArticuloId { get; set; }
-        public decimal? Variacion { get; set; }
+        public int ListaDePreciosId { get; set; }
+        public string CodigoArticulo { get; set; }
+        public decimal PrecioNeto { get; set; }
     }
 }

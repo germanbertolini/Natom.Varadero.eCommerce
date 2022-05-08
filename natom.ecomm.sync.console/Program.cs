@@ -57,15 +57,9 @@ namespace natom.ecomm.sync.console
             Console.WriteLine("                                                   ");
             Console.WriteLine("                                        PROX. SYNC.");
             Console.WriteLine("1)  Sync LISTA DE PRECIOS                 {0}hs", backgroundRunning ? GetNextExecutionTime("ListaPreciosRoutine") : "--:--");
-            Console.WriteLine("2)  Sync CONDICIONES DE VENTA             {0}hs", backgroundRunning ? GetNextExecutionTime("CondicionDeVentaRoutine") : "--:--");
-            Console.WriteLine("3)  Sync CLIENTES DIRECCIONES             {0}hs", backgroundRunning ? GetNextExecutionTime("ClienteDireccionRoutine") : "--:--");
-            Console.WriteLine("4)  Sync CLIENTES                         {0}hs", backgroundRunning ? GetNextExecutionTime("ClienteRoutine") : "--:--");
-            Console.WriteLine("5)  Sync ARTICULOS                        {0}hs", backgroundRunning ? GetNextExecutionTime("ArticuloRoutine") : "--:--");
-            Console.WriteLine("6)  Sync RUBROS                           {0}hs", backgroundRunning ? GetNextExecutionTime("RubroRoutine") : "--:--");
-            Console.WriteLine("7)  Sync SUBRUBROS                        {0}hs", backgroundRunning ? GetNextExecutionTime("SubRubroRoutine") : "--:--");
-            Console.WriteLine("8)  Sync GRUPOS                           {0}hs", backgroundRunning ? GetNextExecutionTime("ArticuloGrupoRoutine") : "--:--");
-            Console.WriteLine("9)  Sync MARCAS                           {0}hs", backgroundRunning ? GetNextExecutionTime("MarcaRoutine") : "--:--");
-            Console.WriteLine("10) Sync PEDIDOS                          {0}hs", backgroundRunning ? GetNextExecutionTime("PedidoRoutine") : "--:--");
+            Console.WriteLine("2)  Sync CLIENTES                         {0}hs", backgroundRunning ? GetNextExecutionTime("ClienteRoutine") : "--:--");
+            Console.WriteLine("3)  Sync ARTICULOS                        {0}hs", backgroundRunning ? GetNextExecutionTime("ArticuloRoutine") : "--:--");
+            Console.WriteLine("4)  Sync PEDIDOS                          {0}hs", backgroundRunning ? GetNextExecutionTime("PedidoRoutine") : "--:--");
             Console.WriteLine("                                                   ");
             Console.Write("Ingrese la opcion a syncronizar: ");
 
@@ -85,46 +79,16 @@ namespace natom.ecomm.sync.console
                     Console.WriteLine("FIN EJECUCIÓN ListaPreciosRoutine.");
                     break;
                 case 2:
-                    Console.WriteLine("SE LANZA EJECUCIÓN CondicionDeVentaRoutine.");
-                    Ejecutador.Ejecutar("console", Program.EjecucionId, "CondicionDeVentaRoutine");
-                    Console.WriteLine("FIN EJECUCIÓN CondicionDeVentaRoutine.");
-                    break;
-                case 3:
-                    Console.WriteLine("SE LANZA EJECUCIÓN ClienteDireccionRoutine.");
-                    Ejecutador.Ejecutar("console", Program.EjecucionId, "ClienteDireccionRoutine");
-                    Console.WriteLine("FIN EJECUCIÓN ClienteDireccionRoutine.");
-                    break;
-                case 4:
                     Console.WriteLine("SE LANZA EJECUCIÓN ClienteRoutine.");
                     Ejecutador.Ejecutar("console", Program.EjecucionId, "ClienteRoutine");
                     Console.WriteLine("FIN EJECUCIÓN ClienteRoutine.");
                     break;
-                case 5:
+                case 3:
                     Console.WriteLine("SE LANZA EJECUCIÓN ArticuloRoutine.");
                     Ejecutador.Ejecutar("console", Program.EjecucionId, "ArticuloRoutine");
                     Console.WriteLine("FIN EJECUCIÓN ArticuloRoutine.");
                     break;
-                case 6:
-                    Console.WriteLine("SE LANZA EJECUCIÓN RubroRoutine.");
-                    Ejecutador.Ejecutar("console", Program.EjecucionId, "RubroRoutine");
-                    Console.WriteLine("FIN EJECUCIÓN RubroRoutine.");
-                    break;
-                case 7:
-                    Console.WriteLine("SE LANZA EJECUCIÓN SubRubroRoutine.");
-                    Ejecutador.Ejecutar("console", Program.EjecucionId, "SubRubroRoutine");
-                    Console.WriteLine("FIN EJECUCIÓN SubRubroRoutine.");
-                    break;
-                case 8:
-                    Console.WriteLine("SE LANZA EJECUCIÓN ArticuloGrupoRoutine.");
-                    Ejecutador.Ejecutar("console", Program.EjecucionId, "ArticuloGrupoRoutine");
-                    Console.WriteLine("FIN EJECUCIÓN ArticuloGrupoRoutine.");
-                    break;
-                case 9:
-                    Console.WriteLine("SE LANZA EJECUCIÓN MarcaRoutine.");
-                    Ejecutador.Ejecutar("console", Program.EjecucionId, "MarcaRoutine");
-                    Console.WriteLine("FIN EJECUCIÓN MarcaRoutine.");
-                    break;
-                case 10:
+                case 4:
                     Console.WriteLine("SE LANZA EJECUCIÓN PedidoRoutine.");
                     Ejecutador.Ejecutar("console", Program.EjecucionId, "PedidoRoutine");
                     Console.WriteLine("FIN EJECUCIÓN PedidoRoutine.");

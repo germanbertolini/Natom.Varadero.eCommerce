@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -16,7 +17,7 @@ namespace natom.ecomm.sync.apiendpoints.Services
 {
     public class EndpointsServices
     {
-        public static async Task<TokenResponse> GetToken()
+        public static async Task<TokenResponse> GetToken(string apiAddress)
         {
             using (HttpClient client = new HttpClient())
             {
@@ -25,7 +26,7 @@ namespace natom.ecomm.sync.apiendpoints.Services
                 dict.Add("username", "DVaradero");
                 dict.Add("password", "V@r@De21");
                 dict.Add("client_id", "");
-                var req = new HttpRequestMessage(HttpMethod.Post, "https://sms-180ws.sms.com.ar/WSD_DVaradero_carrito/oauth/token") { Content = new FormUrlEncodedContent(dict) };
+                var req = new HttpRequestMessage(HttpMethod.Post, $"{apiAddress}/oauth/token") { Content = new FormUrlEncodedContent(dict) };
                 var res = await client.SendAsync(req);
 
                 var result = JsonConvert.DeserializeObject<TokenResponse>(res.Content.ReadAsStringAsync().Result);
@@ -33,9 +34,9 @@ namespace natom.ecomm.sync.apiendpoints.Services
             }
         }
 
-        public static async Task<List<EnviarClientesDto>> GetEnviarClientes()
+        public static async Task<List<EnviarClientesDto>> GetClientes(string apiAddress)
         {
-            var token = await GetToken();
+            var token = await GetToken(apiAddress);
 
             using (var client = new WebClient())
             {
@@ -43,7 +44,7 @@ namespace natom.ecomm.sync.apiendpoints.Services
                 client.Headers.Add("Content-Type", "application/json; charset=utf-8");
                 client.Headers.Add("Authorization", "Bearer " + token.access_token);
 
-                string response = client.DownloadString("https://sms-180ws.sms.com.ar/WSD_DVaradero_Carrito/api/wsd/ObtenerClientes");
+                string response = client.DownloadString($"{apiAddress}/api/wsd/ObtenerClientes");
 
                 var result = JsonConvert.DeserializeObject<List<EnviarClientesDto>>(response);
                 return result;
@@ -65,9 +66,9 @@ namespace natom.ecomm.sync.apiendpoints.Services
             //}
         }
 
-        public static async Task<List<EnviarArticulosDto>> GetEnviarArticulos()
+        public static async Task<List<EnviarArticulosDto>> GetArticulos(string apiAddress)
         {
-            var token = await GetToken();
+            var token = await GetToken(apiAddress);
 
             using (var client = new WebClient())
             {
@@ -75,39 +76,52 @@ namespace natom.ecomm.sync.apiendpoints.Services
                 client.Headers.Add("Content-Type", "application/json; charset=utf-8");
                 client.Headers.Add("Authorization", "Bearer " + token.access_token);
 
-                string response = client.DownloadString("https://sms-180ws.sms.com.ar/WSD_DVaradero_Carrito/api/wsd/EnviarArticulos");
+                string response = client.DownloadString($"{apiAddress}/api/wsd/EnviarArticulos");
 
                 var result = JsonConvert.DeserializeObject<List<EnviarArticulosDto>>(response);
                 return result;
             }
         }
 
-        public static async Task<List<EnviarListadePreciosDto>> GetEnviarListaDePrecios()
+        public static async Task<List<EnviarListadePreciosDto>> GetListaDePrecios(string apiAddress)
         {
-            var token = await GetToken();
+            var token = await GetToken(apiAddress);
 
-            using (var client = new ExtendedWebClient(new Uri("https://sms-180ws.sms.com.ar/WSD_DVaradero_Carrito/api/wsd/EnviarListasP")))
+            using (var client = new ExtendedWebClient(new Uri($"{apiAddress}/api/wsd/EnviarListasP")))
             {
                 client.Headers.Add("Accept", "application/json");
                 client.Headers.Add("Content-Type", "application/json; charset=utf-8");
                 client.Headers.Add("Authorization", "Bearer " + token.access_token);
 
-                string response = client.DownloadString("https://sms-180ws.sms.com.ar/WSD_DVaradero_Carrito/api/wsd/EnviarListasP");
+                string response = client.DownloadString($"{apiAddress}/api/wsd/EnviarListasP");
 
                 var result = JsonConvert.DeserializeObject<List<EnviarListadePreciosDto>>(response);
                 return result;
             }
         }
 
-        public static async Task PostRecibirPedidos(List<RecibirPedidosDto> pedidos)
+        public static async Task PostPedido(string apiAddress, RecibirPedidosDto pedido)
         {
+            var token = await GetToken(apiAddress);
+
             using (HttpClient client = new HttpClient())
             {
+                client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token.access_token);
+
                 HttpRequestMessage httpRequest = new HttpRequestMessage();
                 httpRequest.Method = HttpMethod.Post;
-                httpRequest.RequestUri = new Uri("https://sms-180ws.sms.com.ar/WSD_DVaradero_Carrito/api/wsd/AltaPed");
-                httpRequest.Content = new StringContent(JsonConvert.SerializeObject(pedidos), Encoding.UTF8, "application/json");
+                httpRequest.RequestUri = new Uri($"{apiAddress}/api/wsd/AltaPed");
+                httpRequest.Content = new StringContent(JsonConvert.SerializeObject(new List<RecibirPedidosDto> { pedido }), Encoding.UTF8, "application/json");
                 var res = await client.SendAsync(httpRequest);
+                if (res.StatusCode != HttpStatusCode.OK)
+                    throw new Exception($"El servidor respondio con error {res.StatusCode}");
+                else
+                {
+                    var responseContent = await res.Content.ReadAsStringAsync();
+                    var response = JsonConvert.DeserializeObject<ResponseRecibirPedidosDto[]>(responseContent).FirstOrDefault();
+                    if (!response.Mensaje.ToLower().Contains("se ha registrado correctamente"))
+                        throw new Exception($"Respuesta del servidor: " + response.Mensaje);
+                }
             }
         }
 

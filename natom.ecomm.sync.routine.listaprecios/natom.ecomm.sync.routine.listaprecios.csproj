@@ -64,6 +64,10 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\natom.ecomm.sync.apiendpoints\natom.ecomm.sync.apiendpoints.csproj">
+      <Project>{0881EEFB-E7CA-445C-96A3-63A2C311508C}</Project>
+      <Name>natom.ecomm.sync.apiendpoints</Name>
+    </ProjectReference>
     <ProjectReference Include="..\natom.ecomm.sync.kernel\natom.ecomm.sync.kernel.csproj">
       <Project>{209044e1-b15d-454a-b4b4-4a1b526e45c8}</Project>
       <Name>natom.ecomm.sync.kernel</Name>

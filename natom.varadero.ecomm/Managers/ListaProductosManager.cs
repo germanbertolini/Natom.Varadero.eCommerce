@@ -89,35 +89,35 @@ namespace natom.varadero.ecomm.Managers
             return db.Database.SqlQuery<ListaProductosResult>(query).ToListAsync();
         }
 
-        public void QuitarDestacado(int id)
+        public void QuitarDestacado(string articuloCodigo)
         {
-            var destacado = this.db.ArticulosDestacados.First(a => a.PKArticuloId.Equals(id));
+            var destacado = this.db.ArticulosDestacados.First(a => a.ArticuloCodigo.Equals(articuloCodigo));
             this.db.ArticulosDestacados.Remove(destacado);
             this.db.SaveChanges();
         }
 
-        public void AgregarDestacado(int id)
+        public void AgregarDestacado(string articuloCodigo)
         {
-            var existente = this.db.ArticulosDestacados.FirstOrDefault(a => a.PKArticuloId.Equals(id));
+            var existente = this.db.ArticulosDestacados.FirstOrDefault(a => a.ArticuloCodigo.Equals(articuloCodigo));
             if (existente != null)
                 throw new Exception("El artículo ya fue añadido el " + existente.Desde.ToString("dd/MM/yyyy"));
 
-            this.db.Database.ExecuteSqlCommand("CALL spArticuloDestacadoAgregar(" + id + ")");
+            this.db.Database.ExecuteSqlCommand("CALL spArticuloDestacadoAgregar(" + articuloCodigo + ")");
         }
 
         public int GetDestacadosCount()
         {
             return (from a in this.db.Articulos
-                    join d in this.db.ArticulosDestacados on a.PKArticuloId equals d.PKArticuloId
+                    join d in this.db.ArticulosDestacados on a.ArticuloCodigo equals d.ArticuloCodigo
                     select d).Count();
         }
 
         public IEnumerable<DestacadoResult> GetDestacados()
         {
             return from a in this.db.Articulos
-                   join d in this.db.ArticulosDestacados on a.PKArticuloId equals d.PKArticuloId
+                   join d in this.db.ArticulosDestacados on a.ArticuloCodigo equals d.ArticuloCodigo
                    select new DestacadoResult() {
-                        PKArticuloId = a.PKArticuloId,
+                        ArticuloCodigo = a.ArticuloCodigo,
                         Articulo = a.ArticuloNombre,
                         DesdeFecha = d.Desde
                    };

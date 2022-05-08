@@ -22,10 +22,33 @@ namespace natom.varadero.ecomm.Controllers
                 LogManager.Instance.LogInfo(null, "/SyncCliente/Post", "INICIO PERSISTENCIA DE DATOS", new ReceivedDataInfo().BuildInfo<Cliente>(data));
 
                 eCommStatusManager.Instance.RegisterStartedSync();
+
+                //PREPARAMOS LOS DATOS
+                var direcciones = new List<ClienteDireccion>();
+                foreach (var cliente in data)
+                {
+                    foreach (var direccion in cliente.Direcciones)
+                    {
+                        direcciones.Add(new ClienteDireccion
+                        {
+                            ClienteCUIT = cliente.CUIT,
+                            CodigoPostal = direccion.CodigoPostal,
+                            Direccion = direccion.Direccion,
+                            Telefono = direccion.Telefono
+                        });
+                    }
+                    cliente.Direcciones = null;
+                }
+
+                //INSERTAMOS EN LA BASE DE DATOS
                 using (var db = new DbEcommerceContext())
                 {
                     db.Clientes.RemoveRange(db.Clientes);
                     db.Clientes.AddRange(data);
+
+                    db.ClientesDirecciones.RemoveRange(db.ClientesDirecciones);
+                    db.ClientesDirecciones.AddRange(direcciones);
+
                     db.SaveChanges();
                 }
                 response.Success = true;

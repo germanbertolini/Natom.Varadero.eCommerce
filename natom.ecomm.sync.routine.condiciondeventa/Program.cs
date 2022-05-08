@@ -15,6 +15,7 @@ namespace natom.ecomm.sync.routine.condiciondeventa
         private static string _ejecucionId = "";
         private static string _endPointRelativeAddress = "/SyncCondicionDeVenta/Post";
         private static string _endPointRelativeAddressGetScript = "/SyncCondicionDeVenta/GetScriptSQL";
+        private static string _endPointRelativeAddressGetEndpoint = "/SyncCondicionDeVenta/GetAPIEndpoint";
 
         static void Main(string[] args)
         {
@@ -40,9 +41,17 @@ namespace natom.ecomm.sync.routine.condiciondeventa
 
             try
             {
-                Console.WriteLine("> Obteniendo Script SQL del servidor...");
-                LogManager.LogInfo("routine.condiciondeventa", _ejecucionId, "Program.Main", "OBTENIENDO SCRIPT SQL DEL SERVIDOR");
-                var taskPost = ServiceAccess.DoPost<string>(_endPointRelativeAddressGetScript, new { });
+                //Console.WriteLine("> Obteniendo Script SQL del servidor...");
+                //LogManager.LogInfo("routine.condiciondeventa", _ejecucionId, "Program.Main", "OBTENIENDO SCRIPT SQL DEL SERVIDOR");
+                //var taskPost = ServiceAccess.DoPost<string>(_endPointRelativeAddressGetScript, new { });
+                //Task.WaitAll(taskPost);
+                //if (!taskPost.Result.Success)
+                //{
+                //    throw new Exception("SE HA PRODUCIDO UN ERROR DEL LADO DEL SERVIDOR: " + taskPost.Result.ErrorMessage);
+                //}
+                Console.WriteLine("> Obteniendo Varadero API Url del servidor...");
+                LogManager.LogInfo("routine.condiciondeventa", _ejecucionId, "Program.Main", "OBTENIENDO DEL SERVIDOR LA URL DE 'VARADERO API'");
+                var taskPost = ServiceAccess.DoPost<string>(_endPointRelativeAddressGetEndpoint, new { });
                 Task.WaitAll(taskPost);
                 if (!taskPost.Result.Success)
                 {

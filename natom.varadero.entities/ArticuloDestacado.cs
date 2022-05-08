@@ -4,7 +4,7 @@ namespace natom.varadero.entities
 {
     public class ArticuloDestacado
     {
-        public int PKArticuloId { get; set; }
+        public string ArticuloCodigo { get; set; }
         public DateTime Desde { get; set; }
     }
 }

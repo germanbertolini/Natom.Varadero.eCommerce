@@ -51,6 +51,7 @@
     <Compile Include="Models\GetToken\TokenResponse.cs" />
     <Compile Include="Models\RecibirPedidos\DetalleDto.cs" />
     <Compile Include="Models\RecibirPedidos\RecibirPedidosDto.cs" />
+    <Compile Include="Models\RecibirPedidos\ResponseRecibirPedidosDto.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Services\EndpointsServices.cs" />
   </ItemGroup>

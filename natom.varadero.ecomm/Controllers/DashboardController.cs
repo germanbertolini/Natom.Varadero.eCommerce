@@ -58,7 +58,7 @@ namespace natom.varadero.ecomm.Controllers
             {
                 var manager = new CarritoManager();
                 var pedido = manager.ObtenerPedido(pedidoId);
-                var cliente = manager.ObtenerCliente(pedido.ClienteId);
+                var cliente = manager.ObtenerClientePorCodigo(pedido.ClienteCodigo);
                 manager.MarcarComoPreparado(pedidoId);
 
                 var htmlPath = System.Web.HttpContext.Current.Server.MapPath("~/Emails/PedidoListoParaDespachar.html");
@@ -508,7 +508,7 @@ namespace natom.varadero.ecomm.Controllers
             var pedido = carritoMgr.ObtenerPedido(id);
             ViewBag.Cliente = clienteMgr.ObtenerParaDashboard();
             ViewBag.Pedido = pedido;
-            ViewBag.ClientePedido = carritoMgr.ObtenerCliente(pedido.ClienteId);
+            ViewBag.ClientePedido = carritoMgr.ObtenerClientePorCodigo(pedido.ClienteCodigo);
 
             return View();
         }

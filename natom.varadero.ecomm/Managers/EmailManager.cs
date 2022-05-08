@@ -63,7 +63,7 @@ namespace natom.varadero.ecomm.Managers
                                         .ToList();
                     foreach (var pedido in pedidos)
                     {
-                        var cliente = db.Clientes.First(c => c.PKClienteId.Equals(pedido.ClienteId));
+                        var cliente = db.Clientes.First(c => c.Codigo.Equals(pedido.ClienteCodigo));
                         EnviarCorreoConfirmacionPedido(htmlPath, cliente, pedido);
                     }
                 }

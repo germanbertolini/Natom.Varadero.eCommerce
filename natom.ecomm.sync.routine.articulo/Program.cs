@@ -1,4 +1,5 @@
-﻿using natom.ecomm.sync.kernel;
+﻿using natom.ecomm.sync.apiendpoints.Services;
+using natom.ecomm.sync.kernel;
 using natom.varadero.entities;
 using System;
 using System.Collections.Generic;
@@ -15,6 +16,7 @@ namespace natom.ecomm.sync.routine.articulo
         private static string _ejecucionId = "";
         private static string _endPointRelativeAddress = "/SyncArticulo/Post";
         private static string _endPointRelativeAddressGetScript = "/SyncArticulo/GetScriptSQL";
+        private static string _endPointRelativeAddressGetEndpoint = "/SyncArticulo/GetAPIEndpoint";
 
 
         static void Main(string[] args)
@@ -41,32 +43,58 @@ namespace natom.ecomm.sync.routine.articulo
 
             try
             {
-                Console.WriteLine("> Obteniendo Script SQL del servidor...");
-                LogManager.LogInfo("routine.articulo", _ejecucionId, "Program.Main", "OBTENIENDO SCRIPT SQL DEL SERVIDOR");
-                var taskPost = ServiceAccess.DoPost<string>(_endPointRelativeAddressGetScript, new { });
+                //Console.WriteLine("> Obteniendo Script SQL del servidor...");
+                //LogManager.LogInfo("routine.articulo", _ejecucionId, "Program.Main", "OBTENIENDO SCRIPT SQL DEL SERVIDOR");
+                //var taskPost = ServiceAccess.DoPost<string>(_endPointRelativeAddressGetScript, new { });
+                //Task.WaitAll(taskPost);
+                //if (!taskPost.Result.Success)
+                //{
+                //    throw new Exception("SE HA PRODUCIDO UN ERROR DEL LADO DEL SERVIDOR: " + taskPost.Result.ErrorMessage);
+                //}
+                Console.WriteLine("> Obteniendo Varadero API Url del servidor...");
+                LogManager.LogInfo("routine.articulo", _ejecucionId, "Program.Main", "OBTENIENDO DEL SERVIDOR LA URL DE 'VARADERO API'");
+                var taskPost = ServiceAccess.DoPost<string>(_endPointRelativeAddressGetEndpoint, new { });
                 Task.WaitAll(taskPost);
                 if (!taskPost.Result.Success)
                 {
                     throw new Exception("SE HA PRODUCIDO UN ERROR DEL LADO DEL SERVIDOR: " + taskPost.Result.ErrorMessage);
                 }
 
-                Console.WriteLine("> Ejecutando sentencia SQL para obtener datos...");
-                LogManager.LogInfo("routine.articulo", _ejecucionId, "Program.Main", "EJECUTANDO SENTENCIA SQL PARA OBTENER DATOS...");
+                //Console.WriteLine("> Ejecutando sentencia SQL para obtener datos...");
+                //LogManager.LogInfo("routine.articulo", _ejecucionId, "Program.Main", "EJECUTANDO SENTENCIA SQL PARA OBTENER DATOS...");
 
-                string query = taskPost.Result.Data;
-                List<Articulo> dataToSync = new List<Articulo>();
-                using (var db = new DbVaraderoContext())
+                //string query = taskPost.Result.Data;
+                //List<Articulo> dataToSync = new List<Articulo>();
+                //using (var db = new DbVaraderoContext())
+                //{
+                //    while (true)
+                //    {
+                //        int reqfrom = dataToSync.Count;
+                //        string _query = query + String.Format("\nLIMIT {0}, 1000", reqfrom.ToString());
+                //        var data = db.Database.SqlQuery<Articulo>(_query).ToList();
+                //        if (data.Count == 0)
+                //            break;
+                //        dataToSync.AddRange(data);
+                //    }
+                //}
+                Console.WriteLine("> LLamando a la API Varadero para obtener datos...");
+                LogManager.LogInfo("routine.articulo", _ejecucionId, "Program.Main", "LLAMANDO A 'VARADERO API' PARA OBTENER DATOS...");
+
+                var articulos = EndpointsServices.GetArticulos(apiAddress: taskPost.Result.Data).GetAwaiter().GetResult();
+                List<Articulo> dataToSync = articulos.Select(dto => new Articulo
                 {
-                    while (true)
-                    {
-                        int reqfrom = dataToSync.Count;
-                        string _query = query + String.Format("\nLIMIT {0}, 1000", reqfrom.ToString());
-                        var data = db.Database.SqlQuery<Articulo>(_query).ToList();
-                        if (data.Count == 0)
-                            break;
-                        dataToSync.AddRange(data);
-                    }
-                }
+                    ArticuloCodigo = dto.codigo,
+                    ArticuloNombre = dto.Nombre,
+                    ArticuloDescripcion = dto.Descripcion,
+                    ArticuloDescripcionAbreviada = dto.Descripcion_abreviada,
+                    ArticuloStock = dto.Stock,
+                    ArticuloActivo = dto.Activo.Equals("SI"),
+                    Marca = dto.Marca,
+                    Rubro = dto.Rubro,
+                    SubRubro = dto.SubRubro,
+                    PrecioVentaPublico = dto.precio_venta_publico,
+                    PorcentajeIVA = dto.porcentaje_iva
+                }).ToList();
 
                 Console.WriteLine("> Sincronizando datos al servidor eCommerce...");
                 LogManager.LogInfo("routine.articulo", _ejecucionId, "Program.Main", "SINCRONIZANDO DATOS AL SERVIDOR ECOMMERCE...");

@@ -180,15 +180,9 @@
     <Compile Include="Controllers\eCommerceController.cs" />
     <Compile Include="Controllers\ListaProductosController.cs" />
     <Compile Include="Controllers\SyncPedidoController.cs" />
-    <Compile Include="Controllers\SyncRubroController.cs" />
-    <Compile Include="Controllers\SyncSubRubroController.cs" />
-    <Compile Include="Controllers\SyncMarcaController.cs" />
     <Compile Include="Controllers\SyncListaPreciosController.cs" />
-    <Compile Include="Controllers\SyncCondicionDeVentaController.cs" />
     <Compile Include="Controllers\SyncClienteController.cs" />
     <Compile Include="Controllers\SyncArticuloController.cs" />
-    <Compile Include="Controllers\SyncClienteDireccionController.cs" />
-    <Compile Include="Controllers\SyncArticuloGrupoController.cs" />
     <Compile Include="Controllers\SyncLogController.cs" />
     <Compile Include="Controllers\SyncScheduleController.cs" />
     <Compile Include="DbEcommerceContext.cs" />

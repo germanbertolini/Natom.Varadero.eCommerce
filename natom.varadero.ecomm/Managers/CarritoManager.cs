@@ -21,15 +21,11 @@ namespace natom.varadero.ecomm.Managers
             {
                 pedido = new Pedido();
                 pedido.Numero = ((db.Pedidos.Max(p => (int?)p.Numero)) ?? 250000) + 1;
-                pedido.ClienteId = cliente.PKClienteId;
-                pedido.SucursalId = cliente.PKSucursalId;
-                pedido.ResponsableId = cliente.ResponsableId;
+                pedido.ClienteCodigo = cliente.Codigo;
                 pedido.Fecha = DateTime.Now;
                 pedido.FechaHoraCreacion = DateTime.Now;
                 pedido.PuntoDeVenta = 9999;
-                pedido.CondVtaId = cliente.CondVtaId;
                 pedido.ListaPreciosId = cliente.ListaPreciosId;
-                pedido.PorcentajeIIBB = cliente.PorcentajeIIBB;
                 db.Pedidos.Add(pedido);
                 db.SaveChanges();
             }
@@ -77,26 +73,20 @@ namespace natom.varadero.ecomm.Managers
             this.db.SaveChanges();
         }
 
-        public Cliente ObtenerCliente(int clienteId)
+        public Cliente ObtenerClientePorCodigo(string codigoCliente)
         {
-            return db.Clientes.First(c => c.PKClienteId.Equals(clienteId));
+            return db.Clientes.First(c => c.Codigo.Equals(codigoCliente));
         }
 
-        public PedidoDetalle AgregarItem(int pedidoId, int articuloId, decimal cantidad, bool tienePVP, decimal? pu, decimal porcDesc, decimal puConDesc, decimal porcIVA, decimal puConDescNeto)
+        public PedidoDetalle AgregarItem(int pedidoId, string articuloCodigo, decimal cantidad, bool tienePVP, decimal? pu, decimal porcDesc, decimal puConDesc, decimal porcIVA, decimal puConDescNeto)
         {
-            Articulo articulo = this.db.Articulos.FirstOrDefault(a => a.PKArticuloId == articuloId);   
+            Articulo articulo = this.db.Articulos.FirstOrDefault(a => a.ArticuloCodigo == articuloCodigo);   
             if (articulo == null)
             {
                 throw new HandledException("No se encontró el artículo");
             }
 
-            Marca articuloMarca = this.db.Marcas.FirstOrDefault(m => m.PKMarcaId.Equals(articulo.MarcaId));
-            if (articuloMarca == null)
-            {
-                throw new HandledException("No se encontró la marca del artículo");
-            }
-
-            PedidoDetalle item = this.db.PedidosDetalles.FirstOrDefault(p => p.PedidoId == pedidoId && p.ArticuloId == articuloId);
+            PedidoDetalle item = this.db.PedidosDetalles.FirstOrDefault(p => p.PedidoId == pedidoId && p.Codigo == articuloCodigo);
             if (item == null)
             {
                 item = new PedidoDetalle();
@@ -118,10 +108,9 @@ namespace natom.varadero.ecomm.Managers
             }
             item.PedidoId = pedidoId;
 
-            item.ArticuloId = articuloId;
-            item.Marca = articuloMarca.PKMarcaId;
+            item.Codigo = articuloCodigo;
+            item.Marca = articulo.Marca;
 
-            item.ArticuloUnidMin = articulo.UnidMin ?? 1;
 
             item.TienePVP = tienePVP;
             item.PorcentajeDescuento = porcDesc;
@@ -129,7 +118,6 @@ namespace natom.varadero.ecomm.Managers
             item.PorcentajeIVA = porcIVA;
 
             item.CostoUnitario = articulo.PrecioUnitario ?? 0;
-            item.NroAlicIVA = articulo.NroAlicIVA.Value;
 
             //item.PrecioUnitario = pu;
             //item.PrecioUnitarioConDescuento = puConDesc;
@@ -210,7 +198,7 @@ namespace natom.varadero.ecomm.Managers
         public object ObtenerTotalesPedido(int pedidoId)
         {
             Pedido pedido = this.ObtenerPedido(pedidoId);
-            Cliente cliente = new CarritoManager().ObtenerCliente(pedido.ClienteId);
+            Cliente cliente = new CarritoManager().ObtenerClientePorCodigo(pedido.ClienteCodigo);
 
             //OBTENEMOS MONTO MINIMO PARA EL PEDIDO
             decimal? montoMinimo = 0;
@@ -249,15 +237,14 @@ namespace natom.varadero.ecomm.Managers
         {
             return this.db.Pedidos
                             .Include(p => p.Detalle)
-                            .FirstOrDefault(c => c.ClienteId == cliente.PKClienteId && c.SucursalId == cliente.PKSucursalId
+                            .FirstOrDefault(c => c.ClienteCodigo == cliente.Codigo
                                                     && !c.FechaHoraAnulacion.HasValue && !c.FechaHoraConfirmacion.HasValue);
         }
 
         public Pedido AnularPedido(int pedidoId, Cliente cliente)
         {
             Pedido pedido = this.db.Pedidos.FirstOrDefault(p => p.PedidoId == pedidoId
-                                                                && p.ClienteId == cliente.PKClienteId
-                                                                && p.SucursalId == cliente.PKSucursalId);
+                                                                && p.ClienteCodigo == cliente.Codigo);
             if (pedido == null)
             {
                 throw new HandledException("El pedido no existe");
@@ -284,15 +271,15 @@ namespace natom.varadero.ecomm.Managers
         {
             return this.db.Pedidos
                             .Include(p => p.Detalle)
-                            .Where(c => c.ClienteId == cliente.PKClienteId && c.SucursalId == cliente.PKSucursalId)
+                            .Where(c => c.ClienteCodigo == cliente.Codigo)
                             .OrderByDescending(c => c.PedidoId)
                             .Take(10)
                             .ToList();
         }
 
-        public Pedido ConfirmarPedidoAbierto(Cliente cliente, decimal? clienteDireccionId)
+        public Pedido ConfirmarPedidoAbierto(Cliente cliente, long? clienteDireccionId)
         {
-            ClienteDireccion direccion = clienteDireccionId.HasValue ? this.db.ClientesDirecciones.FirstOrDefault(c => c.ClienteDireccionId == clienteDireccionId.Value) : null;
+            ClienteDireccion direccion = clienteDireccionId.HasValue ? this.db.ClientesDirecciones.FirstOrDefault(c => c.EF_Id == clienteDireccionId) : null;
             Pedido pedido = this.ObtenerPedidoAbierto(cliente);
             if (pedido == null)
             {

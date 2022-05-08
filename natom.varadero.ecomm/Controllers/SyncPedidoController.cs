@@ -20,20 +20,35 @@ namespace natom.varadero.ecomm.Controllers
         [HttpPost]
         public ActionResult Get()
         {
-            var response = new EndpointResponse<List<Pedido>>();
+            var response = new EndpointResponse<List<PedidoSync>>();
             try
             {
                 LogManager.Instance.LogInfo(null, "/SyncPedido/Get", "INICIO OBTENCIÓN DE DATOS");
                 
                 using (var db = new DbEcommerceContext())
                 {
-                    response.Data = db.Pedidos
+                    var pedidos = db.Pedidos
                                         .Include(p => p.Detalle)
                                         .Where(p => !p.FechaHoraAnulacion.HasValue
                                                         && p.FechaHoraConfirmacion.HasValue
                                                         && !p.FechaHoraFinSincronizado.HasValue)
                                         .ToList();
-                    string _ids = String.Join(",", response.Data.Select(d => d.PedidoId));
+
+                    response.Data = pedidos.Select(p => new PedidoSync
+                    {
+                        IDPedidoExterno = p.PedidoId,
+                        Cliente = p.ClienteCodigo,
+                        Cotizacion = p.Cotizacion ?? 1,
+                        MonedaPedido = p.Moneda ?? 1,
+                        Detalle = p.Detalle.Select(d => new PedidoDetalleSync
+                        {
+                            ArticuloCodigo = d.Codigo,
+                            CantidadPedido = d.Cantidad,
+                            PrecioUnitario = d.PrecioUnitario ?? 0
+                        }).ToList()
+                    }).ToList();
+
+                    string _ids = String.Join(",", pedidos.Select(d => d.PedidoId));
                     db.Database.ExecuteSqlCommandAsync(String.Format("UPDATE pedido SET FechaHoraInicioSincronizado = NOW() WHERE PedidoId IN ({0});", _ids));
                 }
                 response.Success = true;
