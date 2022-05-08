@@ -2,6 +2,7 @@
 using natom.varadero.entities;
 using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Data.Entity.Core;
 using System.Data.Entity.Core.Objects;
 using System.Linq;
@@ -63,6 +64,24 @@ namespace natom.varadero.ecomm.Controllers
             catch (Exception ex)
             {
                 LogManager.Instance.LogException(null, "/SyncSchedule/GetScriptSQL", new { schedule = schedule }, ex, Request);
+            }
+            return Json(response);
+        }
+
+        [HttpPost]
+        public ActionResult GetAPIEndpoint()
+        {
+            var response = new EndpointResponse<string>();
+            string schedule = "SubRubroRoutine";
+            var config = ConfigurationManager.AppSettings["Varadero.API.Endpoint.URL"]?.ToString();
+            try
+            {
+                response.Data = config;
+                response.Success = true;
+            }
+            catch (Exception ex)
+            {
+                LogManager.Instance.LogException(null, "/SyncSchedule/GetAPIEndpoint", new { schedule = schedule }, ex, Request);
             }
             return Json(response);
         }

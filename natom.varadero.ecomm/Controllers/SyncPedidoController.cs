@@ -11,6 +11,7 @@ using System.Data.Entity;
 using System.Web.Mvc;
 using Newtonsoft.Json;
 using System.Threading.Tasks;
+using System.Configuration;
 
 namespace natom.varadero.ecomm.Controllers
 {
@@ -106,6 +107,24 @@ namespace natom.varadero.ecomm.Controllers
             catch (Exception ex)
             {
                 LogManager.Instance.LogException(null, "/SyncSchedule/GetScriptSQL", new { schedule = schedule }, ex, Request);
+            }
+            return Json(response);
+        }
+
+        [HttpPost]
+        public ActionResult GetAPIEndpoint()
+        {
+            var response = new EndpointResponse<string>();
+            string schedule = "SubRubroRoutine";
+            var config = ConfigurationManager.AppSettings["Varadero.API.Endpoint.URL"]?.ToString();
+            try
+            {
+                response.Data = config;
+                response.Success = true;
+            }
+            catch (Exception ex)
+            {
+                LogManager.Instance.LogException(null, "/SyncSchedule/GetAPIEndpoint", new { schedule = schedule }, ex, Request);
             }
             return Json(response);
         }
