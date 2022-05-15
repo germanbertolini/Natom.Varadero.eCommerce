@@ -10,20 +10,23 @@ namespace natom.varadero.ecomm.Managers
     {
         private DbEcommerceContext db = new DbEcommerceContext();
 
-        public Cliente ObtenerPorToken(string sesionToken)
+        public Usuario ObtenerPorToken(string sesionToken)
         {
-            return db.Clientes.FirstOrDefault(c => c.SesionToken.Equals(sesionToken));
+            return db.Usuarios.FirstOrDefault(c => c.SesionToken.Equals(sesionToken));
         }
 
         public Cliente ObtenerParaDashboard()
         {
             return new Cliente
             {
-                ClienteId = -1,
                 RazonSocial = "Varadero",
                 NombreFantasia = "Varadero",
-                UsuarioAlias = "Admin"
             };
+        }
+
+        public Cliente ObtenerClientePorCUIT(string CUIT)
+        {
+            return this.db.Clientes.FirstOrDefault(x => x.CUIT == CUIT && x.Activo == true);
         }
 
         public List<ClienteDireccion> ObtenerDirecciones(Cliente cliente)
@@ -64,6 +67,11 @@ namespace natom.varadero.ecomm.Managers
             db.Entry(cliente).State = System.Data.Entity.EntityState.Modified;
             cliente.SaldoEnCtaCte += montoTotalPedido;
             db.SaveChanges();
+        }
+
+        public List<Cliente> ObtenerClientes()
+        {
+            return this.db.Clientes.ToList();
         }
     }
 }

@@ -26,8 +26,10 @@ namespace natom.varadero.ecomm.Controllers
             try
             {
                 SesionManager sesionMgr = new SesionManager();
-                Cliente cliente = sesionMgr.ObtenerCliente(this.SesionToken);
-                if (cliente == null)
+                Usuario usuario = sesionMgr.ObtenerCliente(this.SesionToken);
+                Cliente cliente = new ClienteManager().ObtenerClientePorCUIT(usuario.ClienteCUIT);
+
+                if (usuario == null)
                 {
                     return Content("SESION_FINALIZADA");
                 }

@@ -27,8 +27,8 @@ namespace natom.varadero.ecomm.Controllers
                 CarritoManager carritoMgr = new CarritoManager();
                 SesionManager sesionMgr = new SesionManager();
 
-                Cliente cliente = sesionMgr.ObtenerCliente(this.SesionToken);
-                Pedido pedido = carritoMgr.NuevoPedido(cliente);
+                Usuario usuario = sesionMgr.ObtenerCliente(this.SesionToken);
+                Pedido pedido = carritoMgr.NuevoPedido(usuario);
 
                 HttpCookie myCookie = new HttpCookie("c");
                 myCookie.Value = pedido.PedidoId.ToString();
@@ -47,20 +47,20 @@ namespace natom.varadero.ecomm.Controllers
         }
 
         [HttpPost]
-        public ActionResult AgregarItem(int articuloId, decimal cantidad, bool tienePVP, decimal? pu, decimal porcDesc, decimal puConDesc, decimal porcIVA, decimal puConDescNeto)
+        public ActionResult AgregarItem(string articuloCodigo, decimal cantidad, bool tienePVP, decimal? pu, decimal porcDesc, decimal puConDesc, decimal porcIVA, decimal puConDescNeto)
         {
             try
             {
                 StockManager stockMgr = new StockManager();
                 CarritoManager carritoMgr = new CarritoManager();
-
-                decimal cantidadDisponible = stockMgr.ConsultarStockDisponible(Server, articuloId);
+                
+                decimal cantidadDisponible = stockMgr.ConsultarStockDisponible(Server, articuloCodigo);
                 if (cantidadDisponible < cantidad)
                 {
                     throw new HandledException(String.Format("No alcanza el stock: Hay disponible {0}", Convert.ToInt32(cantidadDisponible)));
                 }
                 
-                PedidoDetalle item = carritoMgr.AgregarItem(this.PedidoId.Value, articuloId, cantidad, tienePVP, pu, porcDesc, puConDesc, porcIVA, puConDescNeto);
+                PedidoDetalle item = carritoMgr.AgregarItem(this.PedidoId.Value, articuloCodigo, cantidad, tienePVP, pu, porcDesc, puConDesc, porcIVA, puConDescNeto);
                 return Json(new
                 {
                     success = true,
@@ -77,7 +77,7 @@ namespace natom.varadero.ecomm.Controllers
             }
             catch (Exception ex)
             {
-                LogManager.Instance.LogException(null, "/eCommerce/AgregarItem", new { SesionToken, this.PedidoId, articuloId, cantidad, pu }, ex, Request);
+                LogManager.Instance.LogException(null, "/eCommerce/AgregarItem", new { SesionToken, this.PedidoId, articuloCodigo, cantidad, pu }, ex, Request);
                 return Json(new { success = false, error = ex.Message });
             }
         }
@@ -90,7 +90,7 @@ namespace natom.varadero.ecomm.Controllers
                 StockManager stockMgr = new StockManager();
                 CarritoManager carritoMgr = new CarritoManager();
                 PedidoDetalle item = carritoMgr.ObtenerPedidoDetalle(pedidoDetalleId);
-                decimal cantidadDisponible = stockMgr.ConsultarStockDisponible(Server, item.ArticuloId);
+                decimal cantidadDisponible = 2000;//???stockMgr.ConsultarStockDisponible(Server, item.art);
                 if (cantidadDisponible < cantidad)
                 {
                     throw new HandledException(String.Format("No alcanza el stock: Hay disponible {0}", Convert.ToInt32(cantidadDisponible)));
@@ -174,9 +174,9 @@ namespace natom.varadero.ecomm.Controllers
         {
             try
             {
-                ClienteManager clienteMgr = new ClienteManager();
+                Usuario usuario = new UsuarioManager().ObtenerPorToken(this.SesionToken);
+                Cliente cliente = new ClienteManager().ObtenerClientePorCUIT(usuario.ClienteCUIT);
                 CarritoManager carritoMgr = new CarritoManager();
-                Cliente cliente = clienteMgr.ObtenerPorToken(this.SesionToken);
                 Pedido pedido = carritoMgr.AnularPedido(pedidoId, cliente);
                 return Json(new { success = true, pedidoId = pedido.PedidoId });
             }
@@ -193,10 +193,11 @@ namespace natom.varadero.ecomm.Controllers
 
         public ActionResult PedidoConfirmado(int id)
         {
-            ClienteManager clienteMgr = new ClienteManager();
+            Usuario usuario = new UsuarioManager().ObtenerPorToken(this.SesionToken);
+            Cliente clienteMgr = new ClienteManager().ObtenerClientePorCUIT(usuario.ClienteCUIT);
             CarritoManager carritoMgr = new CarritoManager();
 
-            ViewBag.Cliente = clienteMgr.ObtenerPorToken(this.SesionToken);
+            ViewBag.Cliente = clienteMgr;
             ViewBag.Pedido = carritoMgr.ObtenerPedido(id);
             ViewBag.PedidoItemsCount = 0;
             ViewBag.PedidoId = null;
@@ -207,14 +208,15 @@ namespace natom.varadero.ecomm.Controllers
 
         public ActionResult Principal()
         {
-            ClienteManager clienteMgr = new ClienteManager();
+            Usuario usuario = new UsuarioManager().ObtenerPorToken(this.SesionToken);
+            Cliente cliente = new ClienteManager().ObtenerClientePorCUIT(usuario.ClienteCUIT);
             CarritoManager carritoMgr = new CarritoManager();
             eCommStatusManager mgr = new eCommStatusManager();
             if (mgr.IsRunnningSyncRoutine())
             {
                 return PartialView("~/Views/eCommerce/Mantenimiento.cshtml");
             }
-            ViewBag.Cliente = clienteMgr.ObtenerPorToken(this.SesionToken);
+            ViewBag.Cliente = cliente;
             ViewBag.PedidoAbierto = carritoMgr.ObtenerPedidoAbierto((Cliente)ViewBag.Cliente);
             ViewBag.PedidoItemsCount = ViewBag.PedidoAbierto != null ? ((Pedido)ViewBag.PedidoAbierto).Detalle.Count : 0;
             ViewBag.MisPedidos = carritoMgr.ObtenerPedidos((Cliente)ViewBag.Cliente);
@@ -227,6 +229,7 @@ namespace natom.varadero.ecomm.Controllers
 
         public ActionResult Catalogo(bool destacados = false, bool? filtroDestacados = null)
         {
+            UsuarioManager usuarioMgr = new UsuarioManager();
             ClienteManager clienteMgr = new ClienteManager();
             CarritoManager carritoMgr = new CarritoManager();
             eCommStatusManager mgr = new eCommStatusManager();
@@ -234,7 +237,7 @@ namespace natom.varadero.ecomm.Controllers
             {
                 return PartialView("~/Views/eCommerce/Mantenimiento.cshtml");
             }
-            ViewBag.Cliente = clienteMgr.ObtenerPorToken(this.SesionToken);
+            ViewBag.Cliente = clienteMgr.ObtenerClientePorCUIT(usuarioMgr.ObtenerPorToken(this.SesionToken).ClienteCUIT);
             ViewBag.PedidoAbierto = carritoMgr.ObtenerPedidoAbierto((Cliente)ViewBag.Cliente);
             ViewBag.PedidoItemsCount = ViewBag.PedidoAbierto != null ? ((Pedido)ViewBag.PedidoAbierto).Detalle.Count : 0;
             ViewBag.PedidoId = ViewBag.PedidoAbierto == null ? (int?)null : ((Pedido)ViewBag.PedidoAbierto).PedidoId;
@@ -249,14 +252,15 @@ namespace natom.varadero.ecomm.Controllers
 
         public ActionResult Gondola()
         {
-            ClienteManager clienteMgr = new ClienteManager();
+            Usuario usuario = new UsuarioManager().ObtenerPorToken(this.SesionToken);
+            Cliente cliente = new ClienteManager().ObtenerClientePorCUIT(usuario.ClienteCUIT);
             CarritoManager carritoMgr = new CarritoManager();
             eCommStatusManager mgr = new eCommStatusManager();
             if (mgr.IsRunnningSyncRoutine())
             {
                 return PartialView("~/Views/eCommerce/Mantenimiento.cshtml");
             }
-            ViewBag.Cliente = clienteMgr.ObtenerPorToken(this.SesionToken);
+            ViewBag.Cliente = cliente;
             ViewBag.PedidoAbierto = carritoMgr.ObtenerPedidoAbierto((Cliente)ViewBag.Cliente);
             ViewBag.PedidoItemsCount = ViewBag.PedidoAbierto != null ? ((Pedido)ViewBag.PedidoAbierto).Detalle.Count : 0;
             ViewBag.PedidoId = ViewBag.PedidoAbierto == null ? (int?)null : ((Pedido)ViewBag.PedidoAbierto).PedidoId;
@@ -268,7 +272,7 @@ namespace natom.varadero.ecomm.Controllers
         }
 
         [HttpPost]
-        public ActionResult ConfirmarPedido(decimal? clienteDireccionId)
+        public ActionResult ConfirmarPedido(long? clienteDireccionId)
         {
             Cliente cliente = null;
             Pedido pedido = null;
@@ -281,7 +285,8 @@ namespace natom.varadero.ecomm.Controllers
                 {
                     return PartialView("~/Views/eCommerce/Mantenimiento.cshtml");
                 }
-                cliente = clienteMgr.ObtenerPorToken(this.SesionToken);
+                Usuario usuario = new UsuarioManager().ObtenerPorToken(this.SesionToken);
+                cliente = new ClienteManager().ObtenerClientePorCUIT(usuario.ClienteCUIT);
                 pedido = carritoMgr.ConfirmarPedidoAbierto(cliente, clienteDireccionId);
 
                 QuitarCookieCarrito();
@@ -303,6 +308,8 @@ namespace natom.varadero.ecomm.Controllers
 
         public ActionResult VerPedidoAbierto()
         {
+            Usuario usuario = new UsuarioManager().ObtenerPorToken(this.SesionToken);
+            Cliente cliente = new ClienteManager().ObtenerClientePorCUIT(usuario.ClienteCUIT);
             ClienteManager clienteMgr = new ClienteManager();
             CarritoManager carritoMgr = new CarritoManager();
             eCommStatusManager mgr = new eCommStatusManager();
@@ -310,7 +317,7 @@ namespace natom.varadero.ecomm.Controllers
             {
                 return PartialView("~/Views/eCommerce/Mantenimiento.cshtml");
             }
-            ViewBag.Cliente = clienteMgr.ObtenerPorToken(this.SesionToken);
+            ViewBag.Cliente = cliente;
             ViewBag.PedidoAbierto = carritoMgr.ObtenerPedidoAbierto((Cliente)ViewBag.Cliente);
             ViewBag.PedidoItemsCount = ViewBag.PedidoAbierto != null ? ((Pedido)ViewBag.PedidoAbierto).Detalle.Count : 0;
             ViewBag.PedidoId = ViewBag.PedidoAbierto == null ? (int?)null : ((Pedido)ViewBag.PedidoAbierto).PedidoId;
@@ -342,6 +349,8 @@ namespace natom.varadero.ecomm.Controllers
 
         public ActionResult VerPedido(int id)
         {
+            Usuario usuario = new UsuarioManager().ObtenerPorToken(this.SesionToken);
+            Cliente cliente = new ClienteManager().ObtenerClientePorCUIT(usuario.ClienteCUIT);
             ClienteManager clienteMgr = new ClienteManager();
             CarritoManager carritoMgr = new CarritoManager();
             eCommStatusManager mgr = new eCommStatusManager();
@@ -349,7 +358,7 @@ namespace natom.varadero.ecomm.Controllers
             {
                 return PartialView("~/Views/eCommerce/Mantenimiento.cshtml");
             }
-            ViewBag.Cliente = clienteMgr.ObtenerPorToken(this.SesionToken);
+            ViewBag.Cliente = cliente;
             ViewBag.PedidoAbierto = carritoMgr.ObtenerPedidoAbierto((Cliente)ViewBag.Cliente);
 
             if (ViewBag.PedidoAbierto != null && ((Pedido)ViewBag.PedidoAbierto).PedidoId == id)
@@ -385,7 +394,8 @@ namespace natom.varadero.ecomm.Controllers
             if (new eCommStatusManager().IsRunnningSyncRoutine())
                 return PartialView("~/Views/eCommerce/Mantenimiento.cshtml");
 
-            var cliente = clienteMgr.ObtenerPorToken(this.SesionToken);
+            Usuario usuario = new UsuarioManager().ObtenerPorToken(this.SesionToken);
+            Cliente cliente = new ClienteManager().ObtenerClientePorCUIT(usuario.ClienteCUIT); 
 
             /** OBTIENE PRECIOS **/
             long rowsCount = 0;
@@ -427,12 +437,13 @@ namespace natom.varadero.ecomm.Controllers
             try
             {
                 SesionManager mgr = new SesionManager();
-                Cliente cliente = mgr.ValidarLogin(data.Usuario, data.Clave, Request);
+                Usuario usuario = mgr.ValidarLogin(data.Usuario, data.Clave, Request);
                 HttpCookie myCookie = new HttpCookie("t");
-                myCookie.Value = cliente.SesionToken.ToString();
+                myCookie.Value = usuario.SesionToken.ToString();
                 Response.Cookies.Add(myCookie);
 
                 CarritoManager carritoMgr = new CarritoManager();
+                Cliente cliente = new ClienteManager().ObtenerClientePorCUIT(usuario.ClienteCUIT);
                 Pedido pedidoAbierto = carritoMgr.ObtenerPedidoAbierto(cliente);
                 if (pedidoAbierto != null)
                 {
@@ -462,6 +473,25 @@ namespace natom.varadero.ecomm.Controllers
                 LogManager.Instance.LogException(null, "/eCommerce/Login", new { data }, ex, Request);
                 return RedirectToAction("Login", "eCommerce", new { @error = ex.Message });
             }
+        }
+
+        public ActionResult Crear_clave(string secretConfirmacionEmail)
+        {
+            Usuario usuario = new UsuarioManager().ObtenerUsuarioPorSecretConfirmationEmail(secretConfirmacionEmail);
+            if (usuario == null)
+                usuario = new UsuarioManager().ObtenerPorToken(this.SesionToken);
+            Cliente cliente = new ClienteManager().ObtenerClientePorCUIT(usuario.ClienteCUIT);
+            ViewBag.Cliente = cliente;
+            ViewBag.Usuario = usuario;
+            return View();
+        }
+
+        [HttpPost]
+        public ActionResult Crear_clave(string secretConfirmacionEmail, string contrasena)
+        {
+            new UsuarioManager().ModificarClaveUsuarioPorSecretConfirmationEmail(contrasena, secretConfirmacionEmail);
+
+            return RedirectToAction("Login", "eCommerce");
         }
 
         private void QuitarCookieCarrito()

@@ -1,0 +1,305 @@
+﻿@using natom.varadero.entities
+<link href="/Resources/css/varadero/dashboard/principal.ui.css" rel="stylesheet" type="text/css">
+<link href="/Resources/css/varadero/dashboard/principal.responsive.css" rel="stylesheet" media="only screen and (max-width: 1200px)">
+<script src="~/Resources/components/bootstrap-3-typeahead/bootstrap3-typeahead.min.js"></script>
+@{
+    ViewBag.Title = "ListadoUsuarios";
+    Layout = "~/Views/Shared/_LayoutDashboard.cshtml";
+    
+}
+
+<section class="section-main bg padding-top-sm">
+    <div class="container-fluid">
+
+        <div class="row row-sm">
+            <aside class="col-md-3">
+                <div class="card">
+                    <ul class="menu-category">
+                        <li class="active"> <a href="/Dashboard/Ordenes">Ordenes</a></li>
+                        <li> <a href="/Dashboard/Destacados">Productos destacados</a></li>
+                        <li> <a href="/Dashboard/Promocionales">Promocionales</a></li>
+                        <li> <a href="/Dashboard/MontosMinimosPorRegion">Montos mínimos por región</a></li>
+                        <li class="active"> <a href="/Dashboard/ListadoUsuarios">Usuarios</a></li>
+                    </ul>
+                </div> <!-- card.// -->
+                <button class="btn btn-sm btn-success" style="float:right; margin-top:10px;" onclick="MostrarModalAgregarNuevo()">[+] Agregar nuevo Usuario</button>
+            </aside> <!-- col.// -->
+            <div class="col-md-9">
+                @*<div class="row mt-2">
+                    <div class="col-md-3" style="position: absolute; right: 260px; margin-top: -4px; z-index:1">
+                        <select class="form-control" id="filtroEstado" style="width:250px;">
+                            <option selected value="0">[SIN FILTRO] VER TODOS</option>
+                            <option value="1">PEND. SINCRONIZACIÓN</option>
+                            <option value="2">CONFIRMADO</option>
+                            <option value="3">PREPARADO</option>
+                            <option value="4">COMPLETADO</option>
+                        </select>
+                    </div>
+                </div>*@
+
+                <table class="table table-striped table-bordered dt-responsive nowrap" id="tblIndex" style="width:100%;">
+                    <thead>
+                        <tr>
+                            <th>Usuario</th>
+                            <th>Cliente CUIT</th>
+                            <th>Fecha de registro</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                </table>
+            </div>
+            <!-- col./
+            / -->
+            <!-- card.// -->
+        </div>
+
+        <br />
+        <br />
+
+    </div> <!-- container .//  -->
+</section>
+
+<div class="modal" id="modalAgregarNuevo">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <!-- Modal Header -->
+            <div class="modal-header">
+                <h4 class="modal-title">Nuevo Usuario</h4>
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+            </div>
+            @Html.Hidden("EF_Id")
+            @Html.Hidden("Id")
+            <!-- Modal body -->
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="form-group">
+                            <label class="font-weight-bold">Cliente</label>
+                            <select class="form-control" id="selectCliente" style="width:100%;">
+                                <option selected value="-1">Seleccione...</option>
+                                @foreach (var cliente in ViewBag.ListadoClientes as List<Cliente>)
+                                {
+                                    <option value="@cliente.CUIT">@cliente.NombreFantasia</option>
+                                }
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-md-12">
+                        <div class="form-group">
+                            <label class="font-weight-bold">Email</label>
+                            <input id="inputEmail" autocomplete="off" class="form-control" type="email" placeholder="Ingrese un email" />
+                        </div>
+                    </div>
+                    <div class="col-md-12">
+                        <div class="form-group">
+                            <label class="font-weight-bold">Contraseña</label>
+                            <input id="inputContrasena" autocomplete="off" class="form-control" type="password" placeholder="Ingrese la contraseña" />
+                        </div>
+                    </div>
+                    <div class="col-md-12">
+                        <div class="form-group">
+                            <label class="font-weight-bold">Repita contraseña</label>
+                            <input id="inputRepitaContrasena" autocomplete="off" class="form-control" type="password" placeholder="Repita la contraseña" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Modal footer -->
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" style="float:left;" data-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn btn-primary" onclick="AgregarMontoMinimo()">Grabar</button>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<div class="modal" id="modalEditar">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <!-- Modal Header -->
+            <div class="modal-header">
+                <h4 class="modal-title">Nuevo Usuario</h4>
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+            </div>
+            <input type="hidden" id="EF_IdEditar" name="EF_IdEditar" />
+            <!-- Modal body -->
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="form-group">
+                            <label class="font-weight-bold">Cliente</label>
+                            <select class="form-control" id="selectClienteEditar" style="width:100%;">
+                                <option selected value="-1">Seleccione...</option>
+                                @foreach (var cliente in ViewBag.ListadoClientes as List<Cliente>)
+                                {
+                                    <option value="@cliente.CUIT">@cliente.NombreFantasia</option>
+                                }
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-md-12">
+                        <div class="form-group">
+                            <label class="font-weight-bold">Email</label>
+                            <input id="inputEmailEditar" autocomplete="off" class="form-control" type="email" placeholder="Ingrese un email" />
+                        </div>
+                    </div>
+                    <div class="col-md-12">
+                        <div class="form-group">
+                            <label class="font-weight-bold">Contraseña</label>
+                            <input id="inputContrasenaEditar" autocomplete="off" class="form-control" type="password" placeholder="Ingrese la contraseña" />
+                        </div>
+                    </div>
+                    <div class="col-md-12">
+                        <div class="form-group">
+                            <label class="font-weight-bold">Repita contraseña</label>
+                            <input id="inputRepitaContrasenaEditar" autocomplete="off" class="form-control" type="password" placeholder="Repita la contraseña" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Modal footer -->
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" style="float:left;" data-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn btn-primary" onclick="AgregarMontoMinimo()">Grabar</button>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        $("#cliente").chosen();
+
+        var oTable = $('#tblIndex').DataTable({
+            "responsive": true,
+            "bProcessing": true,
+            "bServerSide": true,
+            "sAjaxSource": "/Dashboard/GetUsuariosTableData",
+            "bLengthChange": true,
+            "bFilter": true,
+            "bSort": true,
+            "bInfo": true,
+            "scrollY": "305px",
+            "aaSorting": [[0, "asc"]],
+            "bDeferRender": true,
+            "aoColumns": [
+                { "bSortable": true, "sWidth": '45%', "sClass": "bolded" },
+                { "bSortable": true, "sWidth": '20%' },
+                { "bSortable": true, "sWidth": '20%' },
+                {
+                    "bSortable": false,
+                    "bSearchable": false,
+                    "sWidth": '15%',
+                    "mRender": function (data, type, full) {
+                        var html = "";
+                        html += '&nbsp;<a class="btn btn-primary btn-sm edit-smt-btn" id="' + full[0] + '">Editar</a>';
+                        html += '&nbsp;<a class="btn btn-danger btn-sm baja-smt-btn" id="' + full[0] + '">Quitar</a>';
+
+                        return html;
+                    }
+                }
+            ]
+        });
+
+        $('#tblIndex').on('click', '.editar-smt-btn', function (e) {
+            var email = e.currentTarget.id;
+            eCommerce.DoPOST("Dashboard", "EditarUsuario?email=" + email, {}, function (response) {
+                if (response.success) {
+                    $(".modal-title").html("Editar Monto mínimo");
+                    $("#RegionMontoMinimoId").val(id);
+                    $("#region").val(response.data.RegionId).trigger("chosen:updated");
+                    $("#aplica").val(response.data.DiaDeLaSemana).trigger("chosen:updated");
+                    $("#montoMinimo").val(response.data.MontoMinimo);
+                    $("#modalAgregarNuevo").modal("show");
+                }
+                else {
+                    Mensajes.MostrarError(response.error);
+                }
+                eCommerce.OcultarProcesando();
+            }, false);
+        });
+
+        $('#tblIndex').on('click', '.baja-smt-btn', function (e) {
+            var email = e.currentTarget.id;
+            Mensajes.MostrarSiNo("¿Desea eliminar el usuario?", function () {
+                eCommerce.DoPOST("Dashboard", "EliminarUsuario?email=" + email, {}, function (response) {
+                    if (response.success) {
+                        $('#tblIndex').DataTable().ajax.reload();
+                    }
+                    else {
+                        Mensajes.MostrarError(response.error);
+                    }
+                    eCommerce.OcultarProcesando();
+                }, false);
+            });
+        });
+    });
+
+    function MostrarModalAgregarNuevo() {
+        $("#cliente").val("0").trigger("chosen:updated");
+        $("#modalAgregarNuevo").modal("show");
+    }
+
+    function MostrarModalEditar() {
+        $("#cliente").val("0").trigger("chosen:updated");
+        $("#selectClienteEditar").filter(function () {
+            //may want to use $.trim in here
+            return $(this).val() == text1;
+        }).prop('selected', true);
+        $("#modalEditar").modal("show");
+    }
+
+    function AgregarMontoMinimo() {
+        const contrasena = $("#inputContrasena").val();
+        const repitaContrasena = $("#inputRepitaContrasena").val();
+
+        var obj = {
+            Id: $("#Id").val(),
+            EF_Id: $("#EF_Id").val(),
+            ClienteCUIT: $("#selectCliente").val(),
+            Email: $("#inputEmail").val(),
+            Clave: contrasena,
+        };
+
+        if (isNaN(obj.ClienteCUIT) || obj.ClienteCUIT == -1) {
+            Mensajes.MostrarError("Debe seleccionar 'Cliente'");
+            return;
+        }
+        
+        if (obj.Email.length == 0) {
+            Mensajes.MostrarError("Debe ingresar 'Email'");
+            return;
+        }
+
+        if (contrasena != repitaContrasena) {
+            Mensajes.MostrarError("Las constraseñas no coinciden");
+            return;
+        }
+
+        if (contrasena.length == 0) {
+            Mensajes.MostrarError("Debe ingresar 'Contraseña'");
+            return;
+        }
+
+        if (contrasena.length <= 5) {
+            Mensajes.MostrarError("Debe ingresar una contraseña de al menos 5 digitos.");
+            return;
+        }
+
+        eCommerce.DoPOST("Dashboard", "AgregarNuevoUsuario", { usuario: obj }, function (response) {
+            if (response.success) {
+                $("#modalAgregarNuevo").modal("hide");
+                $('#tblIndex').DataTable().ajax.reload();
+            }
+            else {
+                Mensajes.MostrarError(response.error);
+            }
+            eCommerce.OcultarProcesando();
+        }, false);
+    }
+
+</script>

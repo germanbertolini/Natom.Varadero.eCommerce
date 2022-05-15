@@ -14,18 +14,26 @@ namespace natom.varadero.ecomm.Controllers
     public class SyncListaPreciosController : BaseController
     {
         [HttpPost]
-        public ActionResult Post(List<ListaPrecios> data)
+        public ActionResult Post(SyncListaPrecio data)
         {
             var response = new EndpointResponse<string>();
             try
             {
-                LogManager.Instance.LogInfo(null, "/SyncListaPrecios/Post", "INICIO PERSISTENCIA DE DATOS", new ReceivedDataInfo().BuildInfo<ListaPrecios>(data));
+                LogManager.Instance.LogInfo(null, "/SyncListaPrecios/Post", "INICIO PERSISTENCIA DE DATOS", new ReceivedDataInfo().BuildInfo<ListaPrecios>(data.ListaPrecios));
 
                 eCommStatusManager.Instance.RegisterStartedSync();
+
+                if (data.EsPrimero)
+                {
+                    using (var db = new DbEcommerceContext())
+                    {
+                        db.Database.ExecuteSqlCommand("TRUNCATE TABLE ListaPrecios");
+                    }
+                }
+
                 using (var db = new DbEcommerceContext())
                 {
-                    db.Database.ExecuteSqlCommand("DELETE FROM ListaPrecios WHERE EF_Id > 0;");
-                    db.ListasDePrecios.AddRange(data);
+                    db.ListasDePrecios.AddRange(data.ListaPrecios);
                     db.SaveChanges();
                 }
                 response.Success = true;

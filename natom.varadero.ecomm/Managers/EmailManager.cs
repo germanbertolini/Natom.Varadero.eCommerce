@@ -64,7 +64,8 @@ namespace natom.varadero.ecomm.Managers
                     foreach (var pedido in pedidos)
                     {
                         var cliente = db.Clientes.First(c => c.Codigo.Equals(pedido.ClienteCodigo));
-                        EnviarCorreoConfirmacionPedido(htmlPath, cliente, pedido);
+                        Usuario usuario = new UsuarioManager().ObtenerUsuarioPorClienteCUIT(cliente.CUIT);
+                        EnviarCorreoConfirmacionPedido(htmlPath, usuario, pedido);
                     }
                 }
             }
@@ -74,22 +75,22 @@ namespace natom.varadero.ecomm.Managers
             }
         }
 
-        private static void EnviarCorreoConfirmacionPedido(string htmlPath, Cliente cliente, Pedido pedido)
+        private static void EnviarCorreoConfirmacionPedido(string htmlPath, Usuario usuario, Pedido pedido)
         {
             var html = System.IO.File.ReadAllText(htmlPath);
             var content = html.Replace("{{PEDIDO_NUMERO}}", pedido.Numero.ToString());
-            var dest = new List<System.Net.Mail.MailAddress>() { new System.Net.Mail.MailAddress(cliente.UsuarioEmail) };
+            var dest = new List<System.Net.Mail.MailAddress>() { new System.Net.Mail.MailAddress(usuario.Email) };
 
             EmailManager.Enviar("Droguería Varadero | Confirmación de pedido", content, dest);
         }
 
-        public static void EnviarCorreoPedidoListoParaDespachar(string htmlPath, Cliente cliente, Pedido pedido)
+        public static void EnviarCorreoPedidoListoParaDespachar(string htmlPath, Usuario usuario, Pedido pedido)
         {
             try
             {
                 var html = System.IO.File.ReadAllText(htmlPath);
                 var content = html.Replace("{{PEDIDO_NUMERO}}", pedido.Numero.ToString());
-                var dest = new List<System.Net.Mail.MailAddress>() { new System.Net.Mail.MailAddress(cliente.UsuarioEmail) };
+                var dest = new List<System.Net.Mail.MailAddress>() { new System.Net.Mail.MailAddress(usuario.Email) };
                 EmailManager.Enviar("Droguería Varadero | Pedido preparado", content, dest);
             }
             catch (Exception ex)

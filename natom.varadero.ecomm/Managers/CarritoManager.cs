@@ -13,9 +13,10 @@ namespace natom.varadero.ecomm.Managers
     {
         private DbEcommerceContext db = new DbEcommerceContext();
 
-        public Pedido NuevoPedido(Cliente cliente)
+        public Pedido NuevoPedido(Usuario usuario)
         {
             Pedido pedido = null;
+            Cliente cliente = new ClienteManager().ObtenerClientePorCUIT(usuario.ClienteCUIT);
             object lockNuevoPedido = new object();
             lock (lockNuevoPedido)
             {

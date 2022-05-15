@@ -6,6 +6,7 @@ using System.Configuration;
 using System.Data.Entity.Core;
 using System.Data.Entity.Core.Objects;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
 
@@ -14,20 +15,21 @@ namespace natom.varadero.ecomm.Controllers
     public class SyncClienteController : BaseController
     {
         [HttpPost]
-        public ActionResult Post(List<Cliente> data)
+        public ActionResult Post(SyncCliente data)
         {
             var response = new EndpointResponse<string>();
             try
             {
-                LogManager.Instance.LogInfo(null, "/SyncCliente/Post", "INICIO PERSISTENCIA DE DATOS", new ReceivedDataInfo().BuildInfo<Cliente>(data));
+                LogManager.Instance.LogInfo(null, "/SyncCliente/Post", "INICIO PERSISTENCIA DE DATOS", new ReceivedDataInfo().BuildInfo<Cliente>(data.Clientes));
 
                 eCommStatusManager.Instance.RegisterStartedSync();
 
                 //PREPARAMOS LOS DATOS
                 var direcciones = new List<ClienteDireccion>();
-                foreach (var cliente in data)
+                foreach (var cliente in data.Clientes)
                 {
-                    foreach (var direccion in cliente.Direcciones)
+                    List<ClienteDireccion> direcciones2 = data.clienteDirecciones.Where(x => x.ClienteCUIT == cliente.CUIT).ToList();
+                    foreach (var direccion in direcciones2)
                     {
                         direcciones.Add(new ClienteDireccion
                         {
@@ -37,16 +39,18 @@ namespace natom.varadero.ecomm.Controllers
                             Telefono = direccion.Telefono
                         });
                     }
-                    cliente.Direcciones = null;
                 }
 
                 //INSERTAMOS EN LA BASE DE DATOS
                 using (var db = new DbEcommerceContext())
                 {
-                    db.Clientes.RemoveRange(db.Clientes);
-                    db.Clientes.AddRange(data);
+                    db.Database.ExecuteSqlCommand("TRUNCATE TABLE clientedireccion;");
+                    db.Database.ExecuteSqlCommand("TRUNCATE TABLE cliente;");
+                }
 
-                    db.ClientesDirecciones.RemoveRange(db.ClientesDirecciones);
+                using (var db = new DbEcommerceContext())
+                {
+                    db.Clientes.AddRange(data.Clientes);
                     db.ClientesDirecciones.AddRange(direcciones);
 
                     db.SaveChanges();

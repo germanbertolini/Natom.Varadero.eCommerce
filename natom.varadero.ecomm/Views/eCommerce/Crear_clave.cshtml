@@ -1,0 +1,62 @@
+﻿@using natom.varadero.entities
+<link href="~/Resources/css/custom.crear_clave.css" rel="stylesheet" type="text/css">
+@{
+    ViewBag.Title = "Establecer nueva contraseña";
+    Cliente cliente = (Cliente)ViewBag.Cliente;
+    Usuario usuario = (Usuario)ViewBag.Usuario;
+}
+
+<section class="section-main bg padding-top-sm">
+    <div class="container">
+
+        <div class="row offset-sm-2">
+            <h2>Establecer nueva contraseña</h2>
+        </div>
+        <div class="row">
+            <div class="offset-sm-2 col-sm-4">
+                <div class="row">
+                    <h6>Informacion de cliente</h6>
+                </div>
+                <div class="row">
+                    <label class="font-weight-bold">Cliente</label>
+                    <input class="form-control" readonly type="text" value=@cliente.NombreFantasia />
+                </div>
+                <div class="row mt-1">
+                    <label class="font-weight-bold">CUIT</label>
+                    <input class="form-control" readonly type="text" value=@cliente.CUIT />
+                </div>
+                <div class="row mt-1">
+                    <label class="font-weight-bold">Email</label>
+                    <input class="form-control" readonly type="text" value=@usuario.Email />
+                </div>
+            </div>
+            <div style="border:1px lightgray solid;margin-left:20px;margin-right:20px"></div>
+            <form method="post">
+            </form>
+            <div class="col-sm-3">
+                <div class="row">
+                    <h6>Nueva contraseña</h6>
+                </div>
+                @using (Html.BeginForm("Crear_clave", "eCommerce", FormMethod.Post))
+                {
+                    <input type="hidden" name="secretConfirmacionEmail" id="secretConfirmacionEmail" value=@usuario.SecretConfirmacionEmail />
+                    <div class="row">
+                        <label class="font-weight-bold">Contraseña</label>
+                        <input id="inputContrasena" class="form-control" required name="contrasena" type="text" placeholder="Ingrese su contraseña" />
+                    </div>
+                    <div class="row mt-3">
+                        <label class="font-weight-bold">Repita contraseña</label>
+                        <input id="inputRepitaContrasena" class="form-control" required name="repitaContrasena" type="text" placeholder="Repita su contraseña" />
+                    </div>
+                    <div class="row mt-4">
+                        <input type="submit" class="btn btn-primary" value="Cambiar contraseña" />
+                    </div>
+                }
+            </div>
+        </div>
+
+        <br />
+        <br />
+
+    </div>
+</section>

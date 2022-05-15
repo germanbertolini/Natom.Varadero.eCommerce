@@ -77,26 +77,31 @@ namespace natom.ecomm.sync.routine.cliente
                     Codigo = dto.cliente_id,
                     CUIT = dto.CUIT,
                     RazonSocial = dto.razon_social,
-                    NombreFantasia = dto.nombre_fantasia,
-                    CodigoProvincia = dto.provincia_id,
+                    NombreFantasia = string.IsNullOrEmpty(dto.nombre_fantasia) ? dto.razon_social : dto.nombre_fantasia,
                     ListaPreciosId = dto.lista_precios_id,
-                    RegionId = Convert.ToInt32(dto.region_id),
+                    RegionId = string.IsNullOrEmpty(dto.region_id) ? 0 : Convert.ToInt32(dto.region_id),
                     LimiteDeCredito = dto.limite_de_credito,
                     SaldoEnCtaCte = dto.saldo_cta_cte,
-                    Activo = dto.Activo.Equals("SI"),
-                    Direcciones = dto.Domicilios.Select(dom => new ClienteDireccion
-                    {
-                        ClienteCUIT = dto.cliente_id,
-                        CodigoPostal = dom.codigo_postal,
-                        Direccion = dom.direccion,
-                        Telefono = dom.telefono
-                    }).ToList()
+                    Activo = string.IsNullOrEmpty(dto.Activo) ? false : dto.Activo.Equals("SI"),
+
                 }).ToList();
+
+                var direcciones = new List<ClienteDireccion>();
+                clientes.ForEach(cliente =>
+                {
+                    direcciones.AddRange(cliente.Domicilios.Select(dom => new ClienteDireccion
+                    {
+                        ClienteCUIT = cliente.CUIT,
+                        CodigoPostal = dom.codigo_postal,
+                        Direccion = string.IsNullOrEmpty(dom.direccion) ? "Sin especificar" : dom.direccion,
+                        Telefono = string.IsNullOrEmpty(dom.telefono) ? "Sin especificar" : dom.telefono
+                    }).ToList());
+                });
 
                 Console.WriteLine("> Sincronizando datos al servidor eCommerce...");
                 LogManager.LogInfo("routine.cliente", _ejecucionId, "Program.Main", "SINCRONIZANDO DATOS AL SERVIDOR ECOMMERCE...");
 
-                var task = ServiceAccess.DoPost<string>(_endPointRelativeAddress, dataToSync);
+                var task = ServiceAccess.DoPost<string>(_endPointRelativeAddress, new SyncCliente() { Clientes = dataToSync, clienteDirecciones = direcciones });
                 Task.WaitAll(task);
 
                 if (task.IsCompleted && task.Result.Success)

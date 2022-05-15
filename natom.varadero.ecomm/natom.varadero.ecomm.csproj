@@ -190,6 +190,7 @@
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
+    <Compile Include="Managers\ArticuloManager.cs" />
     <Compile Include="Managers\BackgroundManager.cs" />
     <Compile Include="Managers\CarritoManager.cs" />
     <Compile Include="Managers\ClienteManager.cs" />
@@ -201,6 +202,7 @@
     <Compile Include="Managers\RegionMontosMinimosManager.cs" />
     <Compile Include="Managers\SesionManager.cs" />
     <Compile Include="Managers\StockManager.cs" />
+    <Compile Include="Managers\UsuarioManager.cs" />
     <Compile Include="Models\DataTable\CountResult.cs" />
     <Compile Include="Models\DataTable\JQueryDataTableParamModel.cs" />
     <Compile Include="Models\DataTable\ListaProductosResult.cs" />
@@ -1922,6 +1924,7 @@
     <Content Include="Resources\css\custom.buy_confirm.ui.css" />
     <Content Include="Resources\css\custom.login.mobile.css" />
     <Content Include="Resources\css\custom.login.css" />
+    <Content Include="Resources\css\custom.crear_clave.css" />
     <Content Include="Resources\css\varadero\dashboard\principal.responsive.css" />
     <Content Include="Resources\css\varadero\dashboard\principal.ui.css" />
     <Content Include="Resources\css\varadero\principal.responsive.css" />
@@ -2125,6 +2128,8 @@
     <Content Include="Views\Dashboard\VerPedido.cshtml" />
     <Content Include="Views\Dashboard\Promocionales.cshtml" />
     <Content Include="Views\Dashboard\MontosMinimosPorRegion.cshtml" />
+    <Content Include="Views\eCommerce\Crear_clave.cshtml" />
+    <Content Include="Views\Dashboard\ListadoUsuarios.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\natom.varadero.entities\natom.varadero.entities.csproj">

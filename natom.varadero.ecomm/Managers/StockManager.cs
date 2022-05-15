@@ -13,7 +13,7 @@ namespace natom.varadero.ecomm.Managers
         private static string _queryGetDisp = null;
         private DbEcommerceContext db = new DbEcommerceContext();
         
-        public decimal ConsultarStockDisponible(HttpServerUtilityBase server, int articuloId)
+        public decimal ConsultarStockDisponible(HttpServerUtilityBase server, string articuloCodigo)
         {
             //QUERY
             if (_queryGetDisp == null)
@@ -27,7 +27,7 @@ namespace natom.varadero.ecomm.Managers
 
             //WHERE
             string whereStatement = "";
-            whereStatement = String.Format(" AND A.PKArticuloId = {0}", articuloId);
+            whereStatement = String.Format(" AND A.ArticuloCodigo = {0}", articuloCodigo);
 
             query = query.Replace("/**[[-WHERE_SENTENCIES-]]**/", whereStatement);
 

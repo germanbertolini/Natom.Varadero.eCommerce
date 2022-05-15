@@ -33,9 +33,9 @@ namespace natom.varadero.ecomm.Controllers
             try
             {
                 SesionManager mgr = new SesionManager();
-                Cliente cliente = mgr.ValidarLoginDashboard(data.Usuario, data.Clave, Request);
+                Usuario usuario = mgr.ValidarLoginDashboard(data.Usuario, data.Clave, Request);
                 HttpCookie myCookie = new HttpCookie("d");
-                myCookie.Value = cliente.SesionToken.ToString();
+                myCookie.Value = usuario.SesionToken.ToString();
                 Response.Cookies.Add(myCookie);
 
                 return RedirectToAction("Index", "Dashboard");
@@ -59,10 +59,11 @@ namespace natom.varadero.ecomm.Controllers
                 var manager = new CarritoManager();
                 var pedido = manager.ObtenerPedido(pedidoId);
                 var cliente = manager.ObtenerClientePorCodigo(pedido.ClienteCodigo);
+                Usuario usuario = new UsuarioManager().ObtenerUsuarioPorClienteCUIT(cliente.CUIT);
                 manager.MarcarComoPreparado(pedidoId);
 
                 var htmlPath = System.Web.HttpContext.Current.Server.MapPath("~/Emails/PedidoListoParaDespachar.html");
-                EmailManager.EnviarCorreoPedidoListoParaDespachar(htmlPath, cliente, pedido);
+                EmailManager.EnviarCorreoPedidoListoParaDespachar(htmlPath, usuario, pedido);
 
                 return Json(new { success = true });
             }
@@ -79,6 +80,38 @@ namespace natom.varadero.ecomm.Controllers
             {
                 var manager = new CarritoManager();
                 manager.MarcarComoCompletado(pedidoId);
+
+                return Json(new { success = true });
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false, error = ex.Message });
+            }
+        }
+
+        [HttpPost]
+        public ActionResult AgregarNuevoUsuario(Usuario usuario)
+        {
+            try
+            {
+                var manager = new UsuarioManager();
+                manager.Grabar(usuario);
+
+                return Json(new { success = true });
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false, error = ex.Message });
+            }
+        }
+
+        [HttpPost]
+        public ActionResult EditarUsuario(Usuario usuario)
+        {
+            try
+            {
+                var manager = new UsuarioManager();
+                manager.Editar(usuario);
 
                 return Json(new { success = true });
             }
@@ -111,9 +144,10 @@ namespace natom.varadero.ecomm.Controllers
 
         public ActionResult Ordenes()
         {
+            Usuario usuario = new UsuarioManager().ObtenerPorToken(this.SesionToken);
             ClienteManager clienteMgr = new ClienteManager();
             eCommStatusManager mgr = new eCommStatusManager();
-            
+
             if (mgr.IsRunnningSyncRoutine())
                 return PartialView("~/Views/eCommerce/Mantenimiento.cshtml");
 
@@ -121,15 +155,17 @@ namespace natom.varadero.ecomm.Controllers
                 return RedirectToAction("Login");
 
             ViewBag.Cliente = clienteMgr.ObtenerParaDashboard();
+            ViewBag.Usuario = usuario;
 
             return View();
         }
 
         public ActionResult Destacados()
         {
+            Usuario usuario = new UsuarioManager().ObtenerPorToken(this.SesionToken);
             ClienteManager clienteMgr = new ClienteManager();
             eCommStatusManager mgr = new eCommStatusManager();
-            
+
             if (mgr.IsRunnningSyncRoutine())
                 return PartialView("~/Views/eCommerce/Mantenimiento.cshtml");
 
@@ -137,12 +173,14 @@ namespace natom.varadero.ecomm.Controllers
                 return RedirectToAction("Login");
 
             ViewBag.Cliente = clienteMgr.ObtenerParaDashboard();
+            ViewBag.Usuario = usuario;
 
             return View();
         }
 
         public ActionResult MontosMinimosPorRegion()
         {
+            Usuario usuario = new UsuarioManager().ObtenerPorToken(this.SesionToken);
             ClienteManager clienteMgr = new ClienteManager();
             eCommStatusManager mgr = new eCommStatusManager();
 
@@ -153,6 +191,7 @@ namespace natom.varadero.ecomm.Controllers
                 return RedirectToAction("Login");
 
             ViewBag.Cliente = clienteMgr.ObtenerParaDashboard();
+            ViewBag.Usuario = usuario;
             ViewBag.Regiones = clienteMgr.ObtenerRegiones();
 
             return View();
@@ -160,6 +199,7 @@ namespace natom.varadero.ecomm.Controllers
 
         public ActionResult Promocionales()
         {
+            Usuario usuario = new UsuarioManager().ObtenerPorToken(this.SesionToken);
             ClienteManager clienteMgr = new ClienteManager();
             eCommStatusManager mgr = new eCommStatusManager();
 
@@ -170,8 +210,28 @@ namespace natom.varadero.ecomm.Controllers
                 return RedirectToAction("Login");
 
             ViewBag.Cliente = clienteMgr.ObtenerParaDashboard();
+            ViewBag.Usuario = usuario;
             ViewBag.VistaPreviaCargada = GetPromocionalVistaPreviaPath() != null;
             ViewBag.ContenidoCargado = GetPromocionalContenidoPath() != null;
+
+            return View();
+        }
+
+        public ActionResult ListadoUsuarios()
+        {
+            Usuario usuario = new UsuarioManager().ObtenerPorToken(this.SesionToken);
+            ClienteManager clienteMgr = new ClienteManager();
+            eCommStatusManager mgr = new eCommStatusManager();
+
+            if (mgr.IsRunnningSyncRoutine())
+                return PartialView("~/Views/eCommerce/Promocionales.cshtml");
+
+            if (!new SesionManager().SesionTokenDashboardValido(this.SesionTokenDashboard))
+                return RedirectToAction("Login");
+
+            ViewBag.Cliente = clienteMgr.ObtenerParaDashboard();
+            ViewBag.ListadoClientes = clienteMgr.ObtenerClientes();
+            ViewBag.Usuario = usuario;
 
             return View();
         }
@@ -216,6 +276,21 @@ namespace natom.varadero.ecomm.Controllers
                 var manager = new RegionMontosMinimosManager();
                 var montoMinimo = manager.GetMontoMinimo(id);
                 return Json(new { success = true, data = montoMinimo });
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false, error = ex.Message });
+            }
+        }
+
+        [HttpPost]
+        public async Task<ActionResult> EliminarUsuario(string email)
+        {
+            try
+            {
+                var manager = new UsuarioManager();
+                manager.EliminarUsuario(email);
+                return Json(new { success = true });
             }
             catch (Exception ex)
             {
@@ -302,6 +377,73 @@ namespace natom.varadero.ecomm.Controllers
         }
 
         [HttpGet]
+        public ActionResult GetUsuariosTableData(JQueryDataTableParamModel param)
+        {
+            try
+            {
+                UsuarioManager manager = new UsuarioManager();
+                int cantidadRegistros = manager.GetUsuariosCount();
+                IEnumerable<Usuario> queryData = manager.GetUsuarios();
+
+                //if (filtro != 0)
+                //{
+                //    if (filtro == 1) /* PEND.SINCRONIZACIÓN */
+                //        queryData = queryData.Where(p => p.FechaHoraConfirmacion.Value >= limite && !p.FechaHoraFinSincronizado.HasValue);
+                //    else if (filtro == 2) /* CONFIRMADO */
+                //        queryData = queryData.Where(p => p.FechaHoraConfirmacion.Value >= limite && p.FechaHoraFinSincronizado.HasValue && !p.FechaHoraPreparado.HasValue);
+                //    else if (filtro == 3) /* PREPARADO */
+                //        queryData = queryData.Where(p => p.FechaHoraConfirmacion.Value >= limite && p.FechaHoraFinSincronizado.HasValue && p.FechaHoraPreparado.HasValue && !p.FechaHoraCompletado.HasValue);
+                //    else if (filtro == 4) /* COMPLETADO */
+                //        queryData = queryData.Where(p => p.FechaHoraConfirmacion.Value < limite || p.FechaHoraCompletado.HasValue);
+                //}
+
+
+                var sSearch = Request.QueryString["sSearch"].ToString();
+                var sortColumnIndex = Convert.ToInt32(Request.QueryString["iSortCol_0"].ToString());
+                Func<Usuario, string> orderingFunction =
+                    (c => sortColumnIndex == 0 ? c.ClienteCUIT.ToString() : "");
+
+
+                if (!string.IsNullOrEmpty(sSearch))
+                {
+                    sSearch = sSearch.ToLower();
+
+                    queryData = queryData.Where(q => q.Email.ToLower().Contains(sSearch));
+                }
+
+                var sortDirection = Request.QueryString["sSortDir_0"].ToString(); // asc or desc
+                if (sortDirection == "asc")
+                    queryData = queryData.OrderBy(orderingFunction);
+                else
+                    queryData = queryData.OrderByDescending(orderingFunction);
+
+                List<Usuario> displayedData = queryData
+                                                .Skip(param.iDisplayStart)
+                                                .Take(param.iDisplayLength)
+                                                .ToList();
+
+                var result = from c in displayedData
+                             select new object[] {
+                                 c.Email,
+                                 c.ClienteCUIT,
+                                 c.FechaHoraRegistracion.ToString("dd/MM/yyyy"),
+                            };
+
+                return Json(new
+                {
+                    sEcho = param.sEcho,
+                    iTotalRecords = cantidadRegistros,
+                    iTotalDisplayRecords = queryData.Count(),
+                    aaData = result
+                }, JsonRequestBehavior.AllowGet);
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false, error = ex.Message });
+            }
+        }
+
+        [HttpGet]
         public ActionResult GetOrdenesTableData(JQueryDataTableParamModel param, int filtro)
         {
             try
@@ -323,7 +465,7 @@ namespace natom.varadero.ecomm.Controllers
                     else if (filtro == 4) /* COMPLETADO */
                         queryData = queryData.Where(p => p.FechaHoraConfirmacion.Value < limite || p.FechaHoraCompletado.HasValue);
                 }
-                
+
 
                 var sSearch = Request.QueryString["sSearch"].ToString();
                 var sortColumnIndex = Convert.ToInt32(Request.QueryString["iSortCol_0"].ToString());
@@ -342,7 +484,7 @@ namespace natom.varadero.ecomm.Controllers
                     {
                         queryData = queryData.Where(q => q.Numero.Equals(n));
                     }
-                    
+
                 }
 
                 var sortDirection = Request.QueryString["sSortDir_0"].ToString(); // asc or desc
@@ -395,7 +537,7 @@ namespace natom.varadero.ecomm.Controllers
                     datos = from l in manager.BuscarArticulos(productos)
                             select new
                             {
-                                id = l.PKArticuloId,
+                                id = l.ArticuloCodigo,
                                 label = l.ArticuloNombre
                             }
                 });
@@ -448,7 +590,7 @@ namespace natom.varadero.ecomm.Controllers
                              select new object[] {
                                  c.Articulo,
                                  c.DesdeFecha.ToString("dd/MM/yyyy"),
-                                 c.PKArticuloId
+                                 c.ArticuloCodigo
                             };
 
                 return Json(new
@@ -466,11 +608,11 @@ namespace natom.varadero.ecomm.Controllers
         }
 
         [HttpPost]
-        public ActionResult QuitarDestacado(int id)
+        public ActionResult QuitarDestacado(string articuloCodigo)
         {
             try
             {
-                new ListaProductosManager().QuitarDestacado(id);
+                new ListaProductosManager().QuitarDestacado(articuloCodigo);
                 return Json(new { success = true });
             }
             catch (Exception ex)
@@ -480,11 +622,11 @@ namespace natom.varadero.ecomm.Controllers
         }
 
         [HttpPost]
-        public ActionResult AgregarDestacado(int id)
+        public ActionResult AgregarDestacado(string articuloCodigo)
         {
             try
             {
-                new ListaProductosManager().AgregarDestacado(id);
+                new ListaProductosManager().AgregarDestacado(articuloCodigo);
                 return Json(new { success = true });
             }
             catch (Exception ex)
@@ -495,6 +637,7 @@ namespace natom.varadero.ecomm.Controllers
 
         public ActionResult VerPedido(int id)
         {
+            Usuario usuario = new UsuarioManager().ObtenerPorToken(this.SesionToken);
             ClienteManager clienteMgr = new ClienteManager();
             CarritoManager carritoMgr = new CarritoManager();
             eCommStatusManager mgr = new eCommStatusManager();
@@ -507,6 +650,7 @@ namespace natom.varadero.ecomm.Controllers
 
             var pedido = carritoMgr.ObtenerPedido(id);
             ViewBag.Cliente = clienteMgr.ObtenerParaDashboard();
+            ViewBag.Usuario = usuario;
             ViewBag.Pedido = pedido;
             ViewBag.ClientePedido = carritoMgr.ObtenerClientePorCodigo(pedido.ClienteCodigo);
 

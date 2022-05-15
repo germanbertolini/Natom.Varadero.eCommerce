@@ -82,8 +82,31 @@ namespace natom.ecomm.sync.routine.listaprecios
                 Console.WriteLine("> Sincronizando datos al servidor eCommerce...");
                 LogManager.LogInfo("routine.listaprecios", _ejecucionId, "Program.Main", "SINCRONIZANDO DATOS AL SERVIDOR ECOMMERCE...");
 
-                var task = ServiceAccess.DoPost<string>(_endPointRelativeAddress, dataToSync);
-                Task.WaitAll(task);
+                List<List<ListaPrecios>> tandas = new List<List<ListaPrecios>>();
+                for (int i = 0; i < dataToSync.Count; i++)
+                {
+                    if (i == 0 || i % 999 == 0)
+                    {
+                        tandas.Add(new List<ListaPrecios>());
+                    }
+
+                    tandas[tandas.Count - 1].Add(dataToSync[i]);
+                }
+
+                Task<natom.ecomm.sync.kernel.EndpointResponse<string>> task = default;
+                bool esPrimero = true;
+                foreach (var tanda in tandas)
+                {
+                    task = ServiceAccess.DoPost<string>(_endPointRelativeAddress, new SyncListaPrecio() { ListaPrecios = tanda, EsPrimero = esPrimero });
+                    Task.WaitAll(task);
+
+                    esPrimero = false;
+
+                    if (!(task.IsCompleted && task.Result.Success))
+                    {
+                        break;
+                    }
+                }
 
                 if (task.IsCompleted && task.Result.Success)
                 {

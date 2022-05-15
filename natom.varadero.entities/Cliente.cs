@@ -15,7 +15,6 @@ namespace natom.varadero.entities
         public string CUIT { get; set; }
         public string RazonSocial { get; set; }
         public string NombreFantasia { get; set; }
-        public string CodigoProvincia { get; set; }
 
         public int ListaPreciosId { get; set; }
 
@@ -25,8 +24,6 @@ namespace natom.varadero.entities
         public decimal? SaldoEnCtaCte { get; set; }
 
         public bool Activo { get; set; }
-
-        public List<ClienteDireccion> Direcciones { get; set; }
 
 
         public decimal GetSaldo()

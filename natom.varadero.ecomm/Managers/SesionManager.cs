@@ -13,9 +13,9 @@ namespace natom.varadero.ecomm.Managers
         private const string cTokenForDashboard = "98237_jc193jdxu-_2k11@9j2&%#cvko**fgsw3";
         private DbEcommerceContext db = new DbEcommerceContext();
 
-        public Cliente ValidarLogin(string usuario, string clave, HttpRequestBase request)
+        public Usuario ValidarLogin(string usuario, string clave, HttpRequestBase request)
         {
-            Cliente cliente = null;
+            Usuario modelUsuario = null;
 
             if (string.IsNullOrEmpty(usuario))
             {
@@ -29,23 +29,18 @@ namespace natom.varadero.ecomm.Managers
 
             usuario = usuario.ToLower().Trim();
             bool esEmail = usuario.Contains("@");
-            List<Cliente> encontrados = null;
+            List<Usuario> encontrados = null;
 
-            if (esEmail)
-            {
-                encontrados = db.Clientes.Where(c => c.UsuarioEmail.ToLower().Equals(usuario)).ToList();
-            }
-            else
-            {
-                encontrados = db.Clientes.Where(c => c.UsuarioAlias.ToLower().Equals(usuario)).ToList();
-            }
+
+            encontrados = db.Usuarios.Where(c => c.Email.ToLower().Equals(usuario)).ToList();
+
 
             if (encontrados.Count == 0)
             {
                 throw new HandledException("No existe el usuario");
             }
 
-            encontrados = encontrados.Where(e => e.UsuarioClave != null && e.UsuarioClave.Equals(clave)).ToList();
+            encontrados = encontrados.Where(e => e.Clave != null && e.Clave.Equals(clave)).ToList();
             if (encontrados.Count == 0)
             {
                 throw new HandledException("Clave incorrecta");
@@ -56,20 +51,20 @@ namespace natom.varadero.ecomm.Managers
             }
             else
             {
-                cliente = encontrados[0];
-                this.db.Entry(cliente).State = System.Data.Entity.EntityState.Modified;
-                cliente.SesionAgent = request.UserAgent;
-                cliente.SesionIP = request.UserHostAddress;
-                cliente.SesionInicio = DateTime.Now;
-                cliente.SesionUltimaAccion = DateTime.Now;
-                cliente.SesionToken = Guid.NewGuid().ToString().Replace("{", "").Replace("}", "").Replace("-", "").ToLower();
+                modelUsuario = encontrados[0];
+                this.db.Entry(modelUsuario).State = System.Data.Entity.EntityState.Modified;
+                modelUsuario.SesionAgent = request.UserAgent;
+                modelUsuario.SesionIP = request.UserHostAddress;
+                modelUsuario.SesionInicio = DateTime.Now;
+                modelUsuario.SesionUltimaAccion = DateTime.Now;
+                modelUsuario.SesionToken = Guid.NewGuid().ToString().Replace("{", "").Replace("}", "").Replace("-", "").ToLower();
                 this.db.SaveChanges();
             }
 
-            return cliente;
+            return modelUsuario;
         }
 
-        public Cliente ValidarLoginDashboard(string usuario, string clave, HttpRequestBase request)
+        public Usuario ValidarLoginDashboard(string usuario, string clave, HttpRequestBase request)
         {
             if (string.IsNullOrEmpty(usuario))
                 throw new HandledException("Debe completar USUARIO");
@@ -87,11 +82,9 @@ namespace natom.varadero.ecomm.Managers
             if (!clave.Equals(passwdConfig))
                 throw new HandledException("Clave incorrecta");
 
-            return new Cliente
+            return new Usuario
             {
-                ClienteId = -1,
-                RazonSocial = "Varadero",
-                NombreFantasia = "Varadero",
+                Id = -1,
                 SesionAgent = request.UserAgent,
                 SesionIP = request.UserHostAddress,
                 SesionInicio = DateTime.Now,
@@ -100,9 +93,9 @@ namespace natom.varadero.ecomm.Managers
             };
         }
 
-        public Cliente ObtenerCliente(string sesionToken)
+        public Usuario ObtenerCliente(string sesionToken)
         {
-            return this.db.Clientes.FirstOrDefault(c => c.SesionToken.Equals(sesionToken));
+            return this.db.Usuarios.FirstOrDefault(c => c.SesionToken.Equals(sesionToken));
         }
 
         public bool SesionTokenDashboardValido(string sesionTokenDashboard)
