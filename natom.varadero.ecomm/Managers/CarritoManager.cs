@@ -23,6 +23,8 @@ namespace natom.varadero.ecomm.Managers
                 pedido = new Pedido();
                 pedido.Numero = ((db.Pedidos.Max(p => (int?)p.Numero)) ?? 250000) + 1;
                 pedido.ClienteCodigo = cliente.Codigo;
+                pedido.Cotizacion = CotizacionHelper.ObtenerCotizacion();
+                pedido.Moneda = 1;
                 pedido.Fecha = DateTime.Now;
                 pedido.FechaHoraCreacion = DateTime.Now;
                 pedido.PuntoDeVenta = 9999;

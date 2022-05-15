@@ -83,7 +83,7 @@ namespace natom.ecomm.sync.routine.articulo
                 var articulos = EndpointsServices.GetArticulos(apiAddress: taskPost.Result.Data).GetAwaiter().GetResult();
                 List<Articulo> dataToSync = articulos.Select(dto => new Articulo
                 {
-                    ArticuloCodigo = dto.codigo,
+                    ArticuloCodigo = dto.codigo.Trim(),
                     ArticuloNombre = dto.Nombre,
                     ArticuloDescripcion = dto.Descripcion,
                     ArticuloDescripcionAbreviada = dto.Descripcion_abreviada,
@@ -93,6 +93,7 @@ namespace natom.ecomm.sync.routine.articulo
                     Rubro = dto.Rubro,
                     SubRubro = dto.SubRubro,
                     PrecioVentaPublico = dto.precio_venta_publico,
+                    TienePVP = dto.tiene_pvp,
                     PorcentajeIVA = dto.porcentaje_iva
                 }).ToList();
 

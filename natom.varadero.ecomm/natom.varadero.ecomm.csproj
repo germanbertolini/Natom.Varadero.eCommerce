@@ -194,6 +194,7 @@
     <Compile Include="Managers\BackgroundManager.cs" />
     <Compile Include="Managers\CarritoManager.cs" />
     <Compile Include="Managers\ClienteManager.cs" />
+    <Compile Include="Managers\CotizacionHelper.cs" />
     <Compile Include="Managers\eCommStatusManager.cs" />
     <Compile Include="Managers\EmailManager.cs" />
     <Compile Include="Managers\ListaProductosManager.cs" />

@@ -97,6 +97,8 @@ namespace natom.varadero.ecomm.Controllers
                 var manager = new UsuarioManager();
                 manager.Grabar(usuario);
 
+                EmailManager.EnviarEmailParaConfirmarRegistro(ConfigurationManager.AppSettings["Varadero.System.URL"], usuario.SecretConfirmacionEmail, usuario);
+
                 return Json(new { success = true });
             }
             catch (Exception ex)
@@ -601,7 +603,7 @@ namespace natom.varadero.ecomm.Controllers
                     aaData = result
                 }, JsonRequestBehavior.AllowGet);
             }
-            catch (Exception ex)
+            catch (Exception ex )
             {
                 return Json(new { success = false, error = ex.Message });
             }

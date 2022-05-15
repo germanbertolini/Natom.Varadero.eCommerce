@@ -7,7 +7,7 @@ namespace natom.varadero.ecomm.Models.DataTable
 {
     public class StockReservadoResult
     {
-        public long ArticuloId { get; set; }
+        public string ArticuloCodigo { get; set; }
         public decimal Cantidad { get; set; }
     }
 }

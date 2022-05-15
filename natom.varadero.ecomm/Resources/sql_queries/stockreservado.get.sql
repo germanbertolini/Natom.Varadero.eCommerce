@@ -1,5 +1,5 @@
 ﻿SELECT
-	D.ArticuloId,
+	D.ArticuloCodigo,
     D.Cantidad AS Cantidad
 FROM
 	vwStockReservado D

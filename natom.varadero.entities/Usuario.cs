@@ -7,7 +7,7 @@ namespace natom.varadero.entities
     public class Usuario
     {
         public int Id { get; set; }
-        public int EF_Id { get; set; }
+        public long EF_Id { get; set; }
         public string ClienteCUIT { get; set; }
         public string Email { get; set; }
         public string Clave { get; set; }

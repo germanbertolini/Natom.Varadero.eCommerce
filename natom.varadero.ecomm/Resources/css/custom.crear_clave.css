@@ -1,3 +1,7 @@
-﻿.mt-2{
-    margin-top:20px;
+﻿.mt-2 {
+    margin-top: 20px;
+}
+
+.header-main {
+    display: none;
 }

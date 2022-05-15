@@ -97,7 +97,7 @@ else
                                     <option value="-1">Retiro por Casa Central</option>
                                     @foreach (ClienteDireccion direccion in direcciones)
                                     {
-                                        <option value="@direccion.ClienteDireccionId">@direccion.Direccion (CP: @direccion.CodigoPostal), Tel.: @direccion.Telefono</option>
+                                        <option value="@direccion.EF_Id">@direccion.Direccion (CP: @direccion.CodigoPostal), Tel.: @direccion.Telefono</option>
                                     }
                                 </select>
                             </div>

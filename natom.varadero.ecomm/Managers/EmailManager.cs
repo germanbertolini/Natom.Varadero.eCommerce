@@ -7,6 +7,8 @@ using System.Net.Mail;
 using System.Web;
 using System.Data.Entity;
 using natom.varadero.entities;
+using System.Text;
+using Newtonsoft.Json;
 
 namespace natom.varadero.ecomm.Managers
 {
@@ -98,5 +100,30 @@ namespace natom.varadero.ecomm.Managers
 
             }
         }
+
+        public static void EnviarEmailParaConfirmarRegistro(string systemAddress, string secret, Usuario usuario)
+        {
+            string subject = "Confirmar registración";
+            var dataBytes = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(new { s = secret, e = usuario.Email }));
+            var data = Uri.EscapeDataString(Convert.ToBase64String(dataBytes));
+            string link = new Uri($"{systemAddress}/eCommerce/Crear_clave?d={data}").AbsoluteUri;
+            string body = String.Format("<h2>Varadero eCommerce</h2><br/><br/>Por favor, para <b>generar la clave de acceso al sistema</b> haga clic en el siguiente link: {0}", link);
+
+            var dest = new List<System.Net.Mail.MailAddress>() { new System.Net.Mail.MailAddress(usuario.Email) };
+            EmailManager.Enviar(subject, body, dest);
+        }
+
+        public static void EnviarEmailParaRecuperarClave(string systemAddress, string secret, Usuario usuario)
+        {
+            string subject = "Recuperar clave";
+            var dataBytes = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(new { s = secret, e = usuario.Email }));
+            var data = Uri.EscapeDataString(Convert.ToBase64String(dataBytes));
+            string link = new Uri($"{systemAddress}/eCommerce/Crear_clave?d={data}").AbsoluteUri;
+            string body = String.Format("<h2>Varadero eCommerce</h2><br/><br/>Por favor, para <b>recuperar la clave de acceso al sistema</b> haga clic en el siguiente link: {0}", link);
+
+            var dest = new List<System.Net.Mail.MailAddress>() { new System.Net.Mail.MailAddress(usuario.Email) };
+            EmailManager.Enviar(subject, body, dest);
+        }
+
     }
 }

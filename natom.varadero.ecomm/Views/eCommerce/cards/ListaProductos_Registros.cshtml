@@ -20,7 +20,7 @@ else
 {
     foreach (var producto in Model)
     {
-        <tr class="@(producto.Stock == 0 ? "sinStock" : "")" articuloId="@producto.Id" @(producto.EsDestacado ? "destacado" : "")>
+        <tr class="@(producto.Stock == 0 ? "sinStock" : "")" articuloId="@producto.Codigo" @(producto.EsDestacado ? "destacado" : "")>
             <td>
                 <figure class="media">
                     <figcaption class="media-body">
@@ -36,31 +36,31 @@ else
             </td>
             <td class="hiddenPrecioYDescuento">
                 <div class="price-wrap">
-                    <var class="price tienePVP" style="display:none;" articuloId="@producto.Id">@producto.TienePVP.ToString().ToLower()</var>
-                    <var class="price precioUnitario" style="@(producto.TienePVP && !producto.TieneIVADiscriminado ? "" : "display:none;")" articuloId="@producto.Id">@(producto.EsDestacado ? "¡" : "")$ @producto.PrecioVentaPublico.ToString("F").Replace(".", ",")@(producto.EsDestacado ? "!" : "")</var>
+                    <var class="price tienePVP" style="display:none;" articuloId="@producto.Codigo">@producto.TienePVP.ToString().ToLower()</var>
+                    <var class="price precioUnitario" style="@(producto.TienePVP && !producto.TieneIVADiscriminado ? "" : "display:none;")" articuloId="@producto.Codigo">@(producto.EsDestacado ? "¡" : "")$ @producto.PrecioVentaPublico.ToString("F").Replace(".", ",")@(producto.EsDestacado ? "!" : "")</var>
                     
                 </div> <!-- price-wrap .// -->
             </td>
             <td hidden-para-catalogo="1">
-                <input type="number" class="form-control cantidad" articuloId="@producto.Id" value="0" style="text-align:center; max-width:70px">
+                <input type="number" class="form-control cantidad" articuloId="@producto.Codigo" value="0" style="text-align:center; max-width:70px">
             </td>
             <td class="hiddenPrecioYDescuento">
                 <div class="price-wrap">
-                    <var class="price porcentajeIVA" style="text-align:center; display:none;" articuloId="@producto.Id">% @producto.PorcentajeIVA.ToString("F").Replace(".", ",")</var>    
-                    <var class="price porcentaje" style="text-align:center; @(producto.TienePVP && !producto.TieneIVADiscriminado ? "" : "display:none;")" articuloId="@producto.Id">% @(producto.PorcentajeDescRespectoPVP.ToString("F").Replace(".", ","))</var>
+                    <var class="price porcentajeIVA" style="text-align:center; display:none;" articuloId="@producto.Codigo">% @producto.PorcentajeIVA.ToString("F").Replace(".", ",")</var>    
+                    <var class="price porcentaje" style="text-align:center; @(producto.TienePVP && !producto.TieneIVADiscriminado ? "" : "display:none;")" articuloId="@producto.Codigo">% @(producto.PorcentajeDescRespectoPVP.ToString("F").Replace(".", ","))</var>
                 </div> <!-- price-wrap .// -->
             </td>
             <td>
                 <div class="price-wrap">
-                    <var class="price precioUnitarioConDescuentoNeto" style="text-align:center; display:none;" articuloId="@producto.Id">$ @producto.PrecioConDescuentoNeto.ToString("F").Replace(".", ",")</var>
-                    <var class="price precioUnitarioConDescuento" style="text-align:center" articuloId="@producto.Id">@(producto.EsDestacado ? "¡" : "")$ @producto.PrecioConDescuentoBruto.ToString("F").Replace(".", ",")@(producto.EsDestacado ? "!" : "")</var>
+                    <var class="price precioUnitarioConDescuentoNeto" style="text-align:center; display:none;" articuloId="@producto.Codigo">$ @producto.PrecioConDescuentoNeto.ToString("F").Replace(".", ",")</var>
+                    <var class="price precioUnitarioConDescuento" style="text-align:center" articuloId="@producto.Codigo">@(producto.EsDestacado ? "¡" : "")$ @producto.PrecioConDescuentoBruto.ToString("F").Replace(".", ",")@(producto.EsDestacado ? "!" : "")</var>
                 </div> <!-- price-wrap .// -->
             </td>
             <td class="text-right">
                 <center>
                     @if (producto.Stock > 0)
                     {
-                        <div hidden-para-catalogo="1" class="btn btn-outline-success btnAgregarCarrito" articuloId="@producto.Id"> + </div>
+                        <div hidden-para-catalogo="1" class="btn btn-outline-success btnAgregarCarrito" articuloId="@producto.Codigo"> + </div>
                     }
                     else
                     {

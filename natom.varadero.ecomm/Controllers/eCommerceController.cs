@@ -5,6 +5,7 @@ using natom.varadero.ecomm.Models;
 using natom.varadero.ecomm.Models.ViewModels;
 using natom.varadero.ecomm.Reporting;
 using natom.varadero.entities;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
@@ -47,20 +48,24 @@ namespace natom.varadero.ecomm.Controllers
         }
 
         [HttpPost]
-        public ActionResult AgregarItem(string articuloCodigo, decimal cantidad, bool tienePVP, decimal? pu, decimal porcDesc, decimal puConDesc, decimal porcIVA, decimal puConDescNeto)
+        public ActionResult AgregarItem(string articuloId, decimal cantidad, bool tienePVP, decimal? pu, decimal porcDesc, decimal puConDesc, decimal porcIVA, decimal puConDescNeto)
         {
             try
             {
                 StockManager stockMgr = new StockManager();
                 CarritoManager carritoMgr = new CarritoManager();
-                
-                decimal cantidadDisponible = stockMgr.ConsultarStockDisponible(Server, articuloCodigo);
+
+                SesionManager sesionMgr = new SesionManager();
+                Usuario usuario = sesionMgr.ObtenerCliente(this.SesionToken);
+                Cliente cliente = new ClienteManager().ObtenerClientePorCUIT(usuario.ClienteCUIT);
+
+                decimal cantidadDisponible = stockMgr.ConsultarStockDisponible(cliente.ListaPreciosId, Server, articuloId);
                 if (cantidadDisponible < cantidad)
                 {
                     throw new HandledException(String.Format("No alcanza el stock: Hay disponible {0}", Convert.ToInt32(cantidadDisponible)));
                 }
-                
-                PedidoDetalle item = carritoMgr.AgregarItem(this.PedidoId.Value, articuloCodigo, cantidad, tienePVP, pu, porcDesc, puConDesc, porcIVA, puConDescNeto);
+
+                PedidoDetalle item = carritoMgr.AgregarItem(this.PedidoId.Value, articuloId, cantidad, tienePVP, pu, porcDesc, puConDesc, porcIVA, puConDescNeto);
                 return Json(new
                 {
                     success = true,
@@ -77,7 +82,7 @@ namespace natom.varadero.ecomm.Controllers
             }
             catch (Exception ex)
             {
-                LogManager.Instance.LogException(null, "/eCommerce/AgregarItem", new { SesionToken, this.PedidoId, articuloCodigo, cantidad, pu }, ex, Request);
+                LogManager.Instance.LogException(null, "/eCommerce/AgregarItem", new { SesionToken, this.PedidoId, articuloId, cantidad, pu }, ex, Request);
                 return Json(new { success = false, error = ex.Message });
             }
         }
@@ -145,7 +150,7 @@ namespace natom.varadero.ecomm.Controllers
                 return Json(new { success = false, error = ex.Message });
             }
         }
-        
+
         [HttpPost]
         public ActionResult ObtenerTotalesPedido(int pedidoId)
         {
@@ -395,7 +400,7 @@ namespace natom.varadero.ecomm.Controllers
                 return PartialView("~/Views/eCommerce/Mantenimiento.cshtml");
 
             Usuario usuario = new UsuarioManager().ObtenerPorToken(this.SesionToken);
-            Cliente cliente = new ClienteManager().ObtenerClientePorCUIT(usuario.ClienteCUIT); 
+            Cliente cliente = new ClienteManager().ObtenerClientePorCUIT(usuario.ClienteCUIT);
 
             /** OBTIENE PRECIOS **/
             long rowsCount = 0;
@@ -413,7 +418,7 @@ namespace natom.varadero.ecomm.Controllers
             ReportViewer viewer = new ReportViewer();
             viewer.ProcessingMode = ProcessingMode.Local;
             viewer.LocalReport.ReportPath = System.Web.HttpContext.Current.Server.MapPath("~/Reporting/ListaDePreciosReport.rdlc");
-            
+
             viewer.LocalReport.SetParameters(new ReportParameter("pCliente", cliente.RazonSocial));
             viewer.LocalReport.SetParameters(new ReportParameter("pDate", DateTime.Now.ToString("dd/MM/yyyy")));
             viewer.LocalReport.DataSources.Add(new ReportDataSource("DataSet1", data));
@@ -461,7 +466,7 @@ namespace natom.varadero.ecomm.Controllers
                     Response.Redirect("/eCommerce/Catalogo?destacados=true&filtroDestacados=false");
                     Response.End();
                 }
-                
+
                 return null;
             }
             catch (HandledException ex)
@@ -475,11 +480,19 @@ namespace natom.varadero.ecomm.Controllers
             }
         }
 
-        public ActionResult Crear_clave(string secretConfirmacionEmail)
+        public ActionResult Crear_clave(string d)
         {
-            Usuario usuario = new UsuarioManager().ObtenerUsuarioPorSecretConfirmationEmail(secretConfirmacionEmail);
+            var encodedString = Uri.UnescapeDataString(d);
+            byte[] dataBytes = Convert.FromBase64String(encodedString);
+            string dataString = Encoding.UTF8.GetString(dataBytes);
+            var obj = JsonConvert.DeserializeObject<dynamic>(dataString);
+            var secret = (string)obj.s;
+            var clave = (string)obj.p;
+
+            Usuario usuario = new UsuarioManager().ObtenerUsuarioPorSecretConfirmationEmail(secret);
             if (usuario == null)
-                usuario = new UsuarioManager().ObtenerPorToken(this.SesionToken);
+                throw new Exception("Usuario ya confirmado.");
+
             Cliente cliente = new ClienteManager().ObtenerClientePorCUIT(usuario.ClienteCUIT);
             ViewBag.Cliente = cliente;
             ViewBag.Usuario = usuario;

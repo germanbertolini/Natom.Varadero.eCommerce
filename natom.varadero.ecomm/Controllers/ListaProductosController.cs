@@ -49,7 +49,7 @@ namespace natom.varadero.ecomm.Controllers
                 var registros = taskRegistros.Result;
                 foreach (var registro in registros)
                 {
-                    var reserva = taskStock.Result.FirstOrDefault(r => r.ArticuloId == registro.Id);
+                    var reserva = taskStock.Result.FirstOrDefault(r => r.ArticuloCodigo == registro.Codigo);
                     if (reserva != null)
                     {
                         registro.Stock -= reserva.Cantidad;

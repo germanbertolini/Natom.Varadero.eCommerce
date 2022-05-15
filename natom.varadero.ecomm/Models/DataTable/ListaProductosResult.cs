@@ -9,7 +9,6 @@ namespace natom.varadero.ecomm.Models.DataTable
     public class ListaProductosResult
     {
         public long ROWNUM { get; set; }
-        public long Id { get; set; }
         public string Codigo { get; set; }
         public string Nombre { get; set; }
         public string Descripcion { get; set; }

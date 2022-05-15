@@ -42,7 +42,7 @@ namespace natom.varadero.ecomm
         {
             modelBuilder.Conventions.Remove<PluralizingTableNameConvention>();
             modelBuilder.Entity<Articulo>().HasKey(i => i.EF_Id);
-            modelBuilder.Entity<ArticuloDestacado>().HasKey(i => i.ArticuloCodigo);
+            modelBuilder.Entity<ArticuloDestacado>().HasKey(i => i.EF_Id);
             modelBuilder.Entity<ArticuloGrupo>().HasKey(i => i.EF_Id);
             modelBuilder.Entity<Cliente>().HasKey(i => i.EF_Id);
             modelBuilder.Entity<ClienteDireccion>().HasKey(i => i.EF_Id);

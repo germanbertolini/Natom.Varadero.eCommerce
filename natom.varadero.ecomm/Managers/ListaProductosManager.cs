@@ -65,7 +65,7 @@ namespace natom.varadero.ecomm.Managers
 
             if (soloDestacados)
             {
-                whereStatement += " AND D.PKArticuloId IS NOT NULL";
+                whereStatement += " AND D.ArticuloCodigo IS NOT NULL";
             }
 
             query = query.Replace("/**[[-WHERE_SENTENCIES-]]**/", whereStatement);
@@ -98,11 +98,22 @@ namespace natom.varadero.ecomm.Managers
 
         public void AgregarDestacado(string articuloCodigo)
         {
-            var existente = this.db.ArticulosDestacados.FirstOrDefault(a => a.ArticuloCodigo.Equals(articuloCodigo));
-            if (existente != null)
-                throw new Exception("El artículo ya fue añadido el " + existente.Desde.ToString("dd/MM/yyyy"));
+            try
+            {
+                var existente = this.db.ArticulosDestacados.FirstOrDefault(a => a.ArticuloCodigo.Equals(articuloCodigo));
+                if (existente != null)
+                    throw new Exception("El artículo ya fue añadido el " + existente.Desde.ToString("dd/MM/yyyy"));
 
-            this.db.Database.ExecuteSqlCommand("CALL spArticuloDestacadoAgregar(" + articuloCodigo + ")");
+                this.db.ArticulosDestacados.Add(new ArticuloDestacado { ArticuloCodigo = articuloCodigo, Desde = DateTime.Now });
+                this.db.SaveChanges();
+                //this.db.Database.ExecuteSqlCommand("CALL spArticuloDestacadoAgregar('" + articuloCodigo + "')");
+            }
+            catch (Exception ex)
+            {
+
+                throw;
+            }
+
         }
 
         public int GetDestacadosCount()
@@ -116,10 +127,11 @@ namespace natom.varadero.ecomm.Managers
         {
             return from a in this.db.Articulos
                    join d in this.db.ArticulosDestacados on a.ArticuloCodigo equals d.ArticuloCodigo
-                   select new DestacadoResult() {
-                        ArticuloCodigo = a.ArticuloCodigo,
-                        Articulo = a.ArticuloNombre,
-                        DesdeFecha = d.Desde
+                   select new DestacadoResult()
+                   {
+                       ArticuloCodigo = a.ArticuloCodigo,
+                       Articulo = a.ArticuloNombre,
+                       DesdeFecha = d.Desde
                    };
         }
 

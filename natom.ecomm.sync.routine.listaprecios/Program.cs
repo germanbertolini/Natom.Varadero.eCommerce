@@ -75,7 +75,7 @@ namespace natom.ecomm.sync.routine.listaprecios
                 List<ListaPrecios> dataToSync = listas.Select(dto => new ListaPrecios
                 {
                     ListaDePreciosId = dto.idLista,
-                    CodigoArticulo = dto.articulo_id,
+                    CodigoArticulo = dto.articulo_id.Trim(),
                     PrecioNeto = dto.precio_neto
                 }).ToList();
 

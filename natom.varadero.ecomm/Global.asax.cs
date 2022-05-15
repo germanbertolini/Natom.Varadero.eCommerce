@@ -57,7 +57,7 @@ namespace natom.varadero.ecomm
                             }
                         }
                     }
-                    else if (!controllerName.ToLower().StartsWith("sync"))
+                    else if (!controllerName.ToLower().StartsWith("sync") && !actionName.ToLower().Contains("crear_clave"))
                     {
                         if (rd != null && !string.IsNullOrEmpty(actionName))
                         {

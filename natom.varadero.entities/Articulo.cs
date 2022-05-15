@@ -18,6 +18,7 @@ namespace natom.varadero.entities
         public string Rubro { get; set; }
         public string SubRubro { get; set; }
         public decimal? PrecioUnitario { get; set; }
+        public bool TienePVP { get; set; }
         public decimal? PrecioVentaPublico { get; set; }
 
         public decimal? PorcentajeIVA { get; set; }

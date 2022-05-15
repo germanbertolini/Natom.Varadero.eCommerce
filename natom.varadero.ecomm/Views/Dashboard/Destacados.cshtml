@@ -142,7 +142,7 @@
         $('#tblIndex').on('click', '.remove-smt-btn', function (e) {
             var id = e.currentTarget.id;
             Mensajes.MostrarSiNo("¿Desea realmente quitarlo de 'destacados'?", function () {
-                eCommerce.DoPOST("Dashboard", "QuitarDestacado?id=" + id, { }, function (response) {
+                eCommerce.DoPOST("Dashboard", "QuitarDestacado?articuloCodigo=" + id, { }, function (response) {
                     if (response.success) {
                         $('#tblIndex').DataTable().ajax.reload();
                     }
@@ -156,6 +156,7 @@
 
         $("#btnAgregarDestacado").click(function () {
             var id = $("#buscadorProductoId").val();
+            console.log(id)
             if (id == "") {
                 Mensajes.MostrarError("Debes seleccionar un producto.");
             } else {
@@ -201,7 +202,7 @@
     }
 
     function AgregarDestacado(id) {
-        eCommerce.DoPOST("Dashboard", "AgregarDestacado?id=" + id, {}, function (response) {
+        eCommerce.DoPOST("Dashboard", "AgregarDestacado?articuloCodigo=" + id, {}, function (response) {
             if (response.success) {
                 $("#modalAgregarDestacado").modal("hide");
                 $('#tblIndex').DataTable().ajax.reload();

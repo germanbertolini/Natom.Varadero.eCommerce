@@ -90,25 +90,13 @@
                             <input id="inputEmail" autocomplete="off" class="form-control" type="email" placeholder="Ingrese un email" />
                         </div>
                     </div>
-                    <div class="col-md-12">
-                        <div class="form-group">
-                            <label class="font-weight-bold">Contraseña</label>
-                            <input id="inputContrasena" autocomplete="off" class="form-control" type="password" placeholder="Ingrese la contraseña" />
-                        </div>
-                    </div>
-                    <div class="col-md-12">
-                        <div class="form-group">
-                            <label class="font-weight-bold">Repita contraseña</label>
-                            <input id="inputRepitaContrasena" autocomplete="off" class="form-control" type="password" placeholder="Repita la contraseña" />
-                        </div>
-                    </div>
                 </div>
             </div>
 
             <!-- Modal footer -->
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" style="float:left;" data-dismiss="modal">Cancelar</button>
-                <button type="button" class="btn btn-primary" onclick="AgregarMontoMinimo()">Grabar</button>
+                <button type="button" class="btn btn-primary" onclick="AgregarUsuario()">Grabar</button>
             </div>
 
         </div>
@@ -163,7 +151,7 @@
             <!-- Modal footer -->
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" style="float:left;" data-dismiss="modal">Cancelar</button>
-                <button type="button" class="btn btn-primary" onclick="AgregarMontoMinimo()">Grabar</button>
+                <button type="button" class="btn btn-primary" onclick="AgregarUsuario()">Grabar</button>
             </div>
 
         </div>
@@ -253,16 +241,13 @@
         $("#modalEditar").modal("show");
     }
 
-    function AgregarMontoMinimo() {
-        const contrasena = $("#inputContrasena").val();
-        const repitaContrasena = $("#inputRepitaContrasena").val();
-
+    function AgregarUsuario() {
         var obj = {
             Id: $("#Id").val(),
             EF_Id: $("#EF_Id").val(),
             ClienteCUIT: $("#selectCliente").val(),
             Email: $("#inputEmail").val(),
-            Clave: contrasena,
+            Clave: "",
         };
 
         if (isNaN(obj.ClienteCUIT) || obj.ClienteCUIT == -1) {
@@ -272,21 +257,6 @@
         
         if (obj.Email.length == 0) {
             Mensajes.MostrarError("Debe ingresar 'Email'");
-            return;
-        }
-
-        if (contrasena != repitaContrasena) {
-            Mensajes.MostrarError("Las constraseñas no coinciden");
-            return;
-        }
-
-        if (contrasena.length == 0) {
-            Mensajes.MostrarError("Debe ingresar 'Contraseña'");
-            return;
-        }
-
-        if (contrasena.length <= 5) {
-            Mensajes.MostrarError("Debe ingresar una contraseña de al menos 5 digitos.");
             return;
         }
 
