@@ -108,7 +108,7 @@
         <div class="modal-content">
             <!-- Modal Header -->
             <div class="modal-header">
-                <h4 class="modal-title">Nuevo Usuario</h4>
+                <h4 class="modal-title">Editar Usuario</h4>
                 <button type="button" class="close" data-dismiss="modal">&times;</button>
             </div>
             <input type="hidden" id="EF_IdEditar" name="EF_IdEditar" />
@@ -133,25 +133,13 @@
                             <input id="inputEmailEditar" autocomplete="off" class="form-control" type="email" placeholder="Ingrese un email" />
                         </div>
                     </div>
-                    <div class="col-md-12">
-                        <div class="form-group">
-                            <label class="font-weight-bold">Contraseña</label>
-                            <input id="inputContrasenaEditar" autocomplete="off" class="form-control" type="password" placeholder="Ingrese la contraseña" />
-                        </div>
-                    </div>
-                    <div class="col-md-12">
-                        <div class="form-group">
-                            <label class="font-weight-bold">Repita contraseña</label>
-                            <input id="inputRepitaContrasenaEditar" autocomplete="off" class="form-control" type="password" placeholder="Repita la contraseña" />
-                        </div>
-                    </div>
                 </div>
             </div>
 
             <!-- Modal footer -->
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" style="float:left;" data-dismiss="modal">Cancelar</button>
-                <button type="button" class="btn btn-primary" onclick="AgregarUsuario()">Grabar</button>
+                <button type="button" class="btn btn-primary" onclick="EditarUsuario()">Grabar</button>
             </div>
 
         </div>
@@ -184,7 +172,7 @@
                     "sWidth": '15%',
                     "mRender": function (data, type, full) {
                         var html = "";
-                        html += '&nbsp;<a class="btn btn-primary btn-sm edit-smt-btn" id="' + full[0] + '">Editar</a>';
+                        html += '&nbsp;<a class="btn btn-primary btn-sm editar-smt-btn" id="' + full[0] + '">Editar</a>';
                         html += '&nbsp;<a class="btn btn-danger btn-sm baja-smt-btn" id="' + full[0] + '">Quitar</a>';
 
                         return html;
@@ -195,14 +183,12 @@
 
         $('#tblIndex').on('click', '.editar-smt-btn', function (e) {
             var email = e.currentTarget.id;
-            eCommerce.DoPOST("Dashboard", "EditarUsuario?email=" + email, {}, function (response) {
+            eCommerce.DoPOST("Dashboard", "GetEditarUsuario?email=" + email, {}, function (response) {
                 if (response.success) {
-                    $(".modal-title").html("Editar Monto mínimo");
-                    $("#RegionMontoMinimoId").val(id);
-                    $("#region").val(response.data.RegionId).trigger("chosen:updated");
-                    $("#aplica").val(response.data.DiaDeLaSemana).trigger("chosen:updated");
-                    $("#montoMinimo").val(response.data.MontoMinimo);
-                    $("#modalAgregarNuevo").modal("show");
+                    $("#EF_IdEditar").val(response.data.EF_Id);
+                    $("#selectClienteEditar").val(response.data.ClienteCUIT).trigger("chosen:updated");
+                    $("#inputEmailEditar").val(email);
+                    $("#modalEditar").modal("show");
                 }
                 else {
                     Mensajes.MostrarError(response.error);
@@ -232,15 +218,6 @@
         $("#modalAgregarNuevo").modal("show");
     }
 
-    function MostrarModalEditar() {
-        $("#cliente").val("0").trigger("chosen:updated");
-        $("#selectClienteEditar").filter(function () {
-            //may want to use $.trim in here
-            return $(this).val() == text1;
-        }).prop('selected', true);
-        $("#modalEditar").modal("show");
-    }
-
     function AgregarUsuario() {
         var obj = {
             Id: $("#Id").val(),
@@ -263,6 +240,36 @@
         eCommerce.DoPOST("Dashboard", "AgregarNuevoUsuario", { usuario: obj }, function (response) {
             if (response.success) {
                 $("#modalAgregarNuevo").modal("hide");
+                $('#tblIndex').DataTable().ajax.reload();
+            }
+            else {
+                Mensajes.MostrarError(response.error);
+            }
+            eCommerce.OcultarProcesando();
+        }, false);
+    }
+
+    function EditarUsuario() {
+        var obj = {
+            EF_Id: $("#EF_IdEditar").val(),
+            ClienteCUIT: $("#selectClienteEditar").val(),
+            Email: $("#inputEmailEditar").val(),
+            Clave: "",
+        };
+
+        if (isNaN(obj.ClienteCUIT) || obj.ClienteCUIT == -1) {
+            Mensajes.MostrarError("Debe seleccionar 'Cliente'");
+            return;
+        }
+
+        if (obj.Email.length == 0) {
+            Mensajes.MostrarError("Debe ingresar 'Email'");
+            return;
+        }
+
+        eCommerce.DoPOST("Dashboard", "EditarUsuario", { usuario: obj }, function (response) {
+            if (response.success) {
+                $("#modalEditar").modal("hide");
                 $('#tblIndex').DataTable().ajax.reload();
             }
             else {

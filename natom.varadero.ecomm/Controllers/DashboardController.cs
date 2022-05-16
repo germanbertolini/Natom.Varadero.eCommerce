@@ -286,6 +286,21 @@ namespace natom.varadero.ecomm.Controllers
         }
 
         [HttpPost]
+        public async Task<ActionResult> GetEditarUsuario(string email)
+        {
+            try
+            {
+                var manager = new UsuarioManager();
+                var usuario = manager.ObtenerUsuarioPorEmail(email);
+                return Json(new { success = true, data = usuario });
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false, error = ex.Message });
+            }
+        }
+
+        [HttpPost]
         public async Task<ActionResult> EliminarUsuario(string email)
         {
             try

@@ -21,6 +21,11 @@ namespace natom.varadero.ecomm.Managers
             return this.db.Usuarios.FirstOrDefault(x => x.ClienteCUIT == CUIT);
         }
 
+        public Usuario ObtenerUsuarioPorEmail(string email)
+        {
+            return this.db.Usuarios.FirstOrDefault(x => x.Email == email);
+        }
+
         public Usuario ObtenerUsuarioPorSecretConfirmationEmail(string secretConfirmationEmail)
         {
             return this.db.Usuarios.FirstOrDefault(x => x.SecretConfirmacionEmail == secretConfirmationEmail);
@@ -53,17 +58,7 @@ namespace natom.varadero.ecomm.Managers
         {
             var usuarioDB = this.db.Usuarios.FirstOrDefault(x => x.EF_Id == usuario.EF_Id);
 
-            if (usuarioDB.Email != usuario.Email)
-            {
-                usuarioDB.SecretConfirmacionEmail = Guid.NewGuid().ToString("N");
-                usuarioDB.Email = usuario.Email;
-            }
-
-            if (usuarioDB.Clave != usuario.Clave || usuario.Clave.Length >= 6)
-            {
-                usuarioDB.Clave = usuario.Clave;
-            }
-
+            usuarioDB.Email = usuario.Email;
             usuarioDB.ClienteCUIT = usuario.ClienteCUIT;
 
             db.Entry(usuarioDB).State = EntityState.Modified;
