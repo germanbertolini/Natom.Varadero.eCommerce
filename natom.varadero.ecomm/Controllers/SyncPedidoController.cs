@@ -44,7 +44,7 @@ namespace natom.varadero.ecomm.Controllers
                         {
                             ArticuloCodigo = d.Codigo,
                             CantidadPedido = d.Cantidad,
-                            PrecioUnitario = d.PrecioUnitario ?? 0
+                            PrecioUnitario = d.PrecioUnitarioConDescuentoNeto
                         }).ToList()
                     }).ToList();
 

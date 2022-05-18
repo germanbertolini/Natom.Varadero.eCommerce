@@ -150,5 +150,5 @@ INSERT INTO articuloCodigo(ArticuloCodigo,Desde) VALUES (artCodigo, NOW());
 END$$
 DELIMITER ;
 
-UPDATE Usuario SET ClienteCUIT = '99999999995' WHERE ClienteCUIT = '12121231231';
+UPDATE Usuario SET ClienteCUIT = '99999999995' WHERE ClienteCUIT = '12121231231' and EF_Id > 0;
 
