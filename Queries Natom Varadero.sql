@@ -133,8 +133,8 @@ ALTER VIEW `vwstockreservado` AS
         `d`.`Codigo` AS `ArticuloCodigo`,
         SUM(`d`.`Cantidad`) AS `Cantidad`
     FROM
-        (`wi142361_ecomm`.`pedido` `p`
-        JOIN `wi142361_ecomm`.`pedidodetalle` `d` ON ((`p`.`PedidoId` = `d`.`PedidoId`)))
+        pedido `p`
+        JOIN pedidodetalle `d` ON ((`p`.`PedidoId` = `d`.`PedidoId`))
     WHERE
         (ISNULL(`p`.`FechaHoraAnulacion`)
             AND ISNULL(`p`.`FechaHoraConfirmacion`)
@@ -152,3 +152,7 @@ DELIMITER ;
 
 UPDATE Usuario SET ClienteCUIT = '99999999995' WHERE ClienteCUIT = '12121231231' and EF_Id > 0;
 
+UPDATE pedido SET FechaHoraInicioSincronizado = NOW() WHERE FechaHoraInicioSincronizado IS NULL AND PedidoId > 0;
+UPDATE pedido SET FechaHoraFinSincronizado = NOW() WHERE FechaHoraFinSincronizado IS NULL AND PedidoId > 0;
+UPDATE pedido SET FechaHoraPreparado = NOW() WHERE FechaHoraPreparado IS NULL AND PedidoId > 0;
+UPDATE pedido SET FechaHoraCompletado = NOW() WHERE FechaHoraCompletado IS NULL AND PedidoId > 0;
