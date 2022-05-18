@@ -172,6 +172,8 @@ namespace natom.ecomm.sync.routine.pedido
                         }
                         catch (Exception ex)
                         {
+                            if(ex.Message.Contains("ID de pedido externo ya existe"))
+                                syncronized.Add(pedido.IDPedidoExterno);
                             Console.WriteLine($"> No se pudo sincronizar el pedido ID {pedido.IDPedidoExterno}: {ex.Message}");
                             LogManager.LogInfo("routine.pedido", _ejecucionId, "Program.Main", $"ERROR AL SINCRONIZAR PEDIDO ID {pedido.IDPedidoExterno}: {ex.Message}");
                         }
