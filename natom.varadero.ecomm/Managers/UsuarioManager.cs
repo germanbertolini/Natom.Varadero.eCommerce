@@ -43,7 +43,7 @@ namespace natom.varadero.ecomm.Managers
 
         public void Grabar(Usuario usuario)
         {
-            if (this.db.Usuarios.Any(x => x.Email == usuario.Email))
+            if (this.db.Usuarios.Any(x => x.Email == usuario.Email && x.FechaHoraBaja == null))
             {
                 throw new Exception("Ya existe un usuario registrado con ese email.");
             }
@@ -68,9 +68,8 @@ namespace natom.varadero.ecomm.Managers
         public void EliminarUsuario(string email)
         {
             var usuario = this.db.Usuarios.FirstOrDefault(x => x.Email == email);
-            usuario.FechaHoraBaja = DateTime.Now;
 
-            this.db.Entry(usuario).State = EntityState.Modified;
+            this.db.Entry(usuario).State = EntityState.Deleted;
             this.db.SaveChanges();
         }
 
